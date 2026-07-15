@@ -1,0 +1,251 @@
+[
+  {
+    "id": "q01",
+    "index": 1,
+    "round": 1,
+    "text": "What is Cadence Weapon's real name?",
+    "choices": ["Rollie Pemberton", "Kardinal Offishall", "Shad Kabango", "K-os"],
+    "answerIndex": 0
+  },
+  {
+    "id": "q02",
+    "index": 2,
+    "round": 1,
+    "text": "Which civic arts role did Rollie Pemberton hold in Edmonton?",
+    "choices": ["Poet Laureate", "City Archivist", "Music Director", "Night Mayor"],
+    "answerIndex": 0
+  },
+  {
+    "id": "q03",
+    "index": 3,
+    "round": 1,
+    "text": "Where did Home Front form?",
+    "choices": ["Edmonton", "Calgary", "Winnipeg", "Vancouver"],
+    "answerIndex": 0
+  },
+  {
+    "id": "q04",
+    "index": 4,
+    "round": 1,
+    "text": "Which Alberta city is Sour Patch Men based in?",
+    "choices": ["Calgary", "Edmonton", "Red Deer", "Lethbridge"],
+    "answerIndex": 0
+  },
+  {
+    "id": "q05",
+    "index": 5,
+    "round": 1,
+    "text": "Which city is Mariel Buckley associated with?",
+    "choices": ["Calgary", "Regina", "Toronto", "Victoria"],
+    "answerIndex": 0
+  },
+  {
+    "id": "q06",
+    "index": 6,
+    "round": 2,
+    "text": "What was Ribbon Skirt's former name?",
+    "choices": ["Love Language", "Bite Down", "Mint Records", "Tashiina"],
+    "answerIndex": 0
+  },
+  {
+    "id": "q07",
+    "index": 7,
+    "round": 2,
+    "text": "What is Begonia's real name?",
+    "choices": ["Alexa Dirks", "Katie Tupper", "Hélène Barbier", "Tashiina Buswa"],
+    "answerIndex": 0
+  },
+  {
+    "id": "q08",
+    "index": 8,
+    "round": 2,
+    "text": "Which city formed TOPS?",
+    "choices": ["Montreal", "Halifax", "Saskatoon", "Moncton"],
+    "answerIndex": 0
+  },
+  {
+    "id": "q09",
+    "index": 9,
+    "round": 2,
+    "text": "Which Saskatchewan city is Katie Tupper from?",
+    "choices": ["Saskatoon", "Regina", "Moose Jaw", "Prince Albert"],
+    "answerIndex": 0
+  },
+  {
+    "id": "q10",
+    "index": 10,
+    "round": 2,
+    "text": "Which act topped November 2025 on Earshot's national chart?",
+    "choices": ["FONTINE", "TOPS", "Begonia", "cootie catcher"],
+    "answerIndex": 0
+  },
+  {
+    "id": "q11",
+    "index": 11,
+    "round": 3,
+    "text": "Where did The Weakerthans form?",
+    "choices": ["Winnipeg", "Vancouver", "Halifax", "Toronto"],
+    "answerIndex": 0
+  },
+  {
+    "id": "q12",
+    "index": 12,
+    "round": 3,
+    "text": "What was The New Pornographers' debut album?",
+    "choices": ["Mass Romantic", "Twin Cinema", "Challengers", "Brill Bruisers"],
+    "answerIndex": 0
+  },
+  {
+    "id": "q13",
+    "index": 13,
+    "round": 3,
+    "text": "Who founded Broken Social Scene?",
+    "choices": ["Kevin Drew and Brendan Canning", "Emily Haines and James Shaw", "Torquil Campbell and Chris Seligman", "John K. Samson and Jason Tait"],
+    "answerIndex": 0
+  },
+  {
+    "id": "q14",
+    "index": 14,
+    "round": 3,
+    "text": "What was Metric's original name?",
+    "choices": ["Mainstream", "Nightsongs", "Stars", "The Organ"],
+    "answerIndex": 0
+  },
+  {
+    "id": "q15",
+    "index": 15,
+    "round": 3,
+    "text": "Where did The Organ form?",
+    "choices": ["Vancouver", "Victoria", "Montreal", "Winnipeg"],
+    "answerIndex": 0
+  },
+  {
+    "id": "q16",
+    "index": 16,
+    "round": 4,
+    "text": "Which city did D.O.A. come from?",
+    "choices": ["Vancouver", "Toronto", "Edmonton", "Montreal"],
+    "answerIndex": 0
+  },
+  {
+    "id": "q17",
+    "index": 17,
+    "round": 4,
+    "text": "Which brothers founded Nomeansno?",
+    "choices": ["Rob and John Wright", "Gord and Sandy Deppe", "Brian and Joey Goble", "Ivan and Stefan Doroschuk"],
+    "answerIndex": 0
+  },
+  {
+    "id": "q18",
+    "index": 18,
+    "round": 4,
+    "text": "Which Alberta city was SNFU associated with?",
+    "choices": ["Edmonton", "Calgary", "Medicine Hat", "Banff"],
+    "answerIndex": 0
+  },
+  {
+    "id": "q19",
+    "index": 19,
+    "round": 4,
+    "text": "What is Martha and the Muffins' signature single?",
+    "choices": ["Echo Beach", "Nova Heart", "Safety Dance", "Pop Goes the World"],
+    "answerIndex": 0
+  },
+  {
+    "id": "q20",
+    "index": 20,
+    "round": 4,
+    "text": "Which Montreal band had a 1983 hit with Safety Dance?",
+    "choices": ["Men Without Hats", "The Diodes", "Spoons", "Viletones"],
+    "answerIndex": 0
+  },
+  {
+    "id": "q21",
+    "index": 21,
+    "round": 5,
+    "text": "Where did Eric's Trip form?",
+    "choices": ["Moncton", "Halifax", "Kingston", "Toronto"],
+    "answerIndex": 0
+  },
+  {
+    "id": "q22",
+    "index": 22,
+    "round": 5,
+    "text": "What was Lowest of the Low's debut album?",
+    "choices": ["Shakespeare My Butt", "Love Tara", "Silver", "Naveed"],
+    "answerIndex": 0
+  },
+  {
+    "id": "q23",
+    "index": 23,
+    "round": 5,
+    "text": "What unusual lineup did The Inbreds use?",
+    "choices": ["Bass and drums", "Three drummers", "No guitars", "Two singers only"],
+    "answerIndex": 0
+  },
+  {
+    "id": "q24",
+    "index": 24,
+    "round": 5,
+    "text": "Which Manitoba town did Propagandhi originate in?",
+    "choices": ["Portage la Prairie", "Brandon", "Steinbach", "Selkirk"],
+    "answerIndex": 0
+  },
+  {
+    "id": "q25",
+    "index": 25,
+    "round": 5,
+    "text": "Which album won Sloan the 1997 JUNO for Best Alternative Album?",
+    "choices": ["One Chord to Another", "Navy Blues", "Twice Removed", "Smeared"],
+    "answerIndex": 0
+  },
+  {
+    "id": "q26",
+    "index": 26,
+    "round": 6,
+    "text": "What was Our Lady Peace's 1995 breakthrough album?",
+    "choices": ["Naveed", "Clumsy", "Happiness...", "Spiritual Machines"],
+    "answerIndex": 0
+  },
+  {
+    "id": "q27",
+    "index": 27,
+    "round": 6,
+    "text": "Which Ontario city did The Tea Party form in?",
+    "choices": ["Windsor", "Kingston", "Hamilton", "London"],
+    "answerIndex": 0
+  },
+  {
+    "id": "q28",
+    "index": 28,
+    "round": 6,
+    "text": "What was I Mother Earth's 1993 debut album?",
+    "choices": ["Dig", "Scenery and Fish", "Blue Green Orange", "Silver"],
+    "answerIndex": 0
+  },
+  {
+    "id": "q29",
+    "index": 29,
+    "round": 6,
+    "text": "Which Ontario city did Treble Charger form in?",
+    "choices": ["Sault Ste. Marie", "Kingston", "Windsor", "Ottawa"],
+    "answerIndex": 0
+  },
+  {
+    "id": "q30",
+    "index": 30,
+    "round": 6,
+    "text": "Who fronts Headstones?",
+    "choices": ["Hugh Dillon", "David Usher", "Raine Maida", "Greig Nori"],
+    "answerIndex": 0
+  },
+  {
+    "id": "q31",
+    "index": 31,
+    "round": "suddenDeath",
+    "text": "Sudden death: which station is hosting this volunteer appreciation trivia night?",
+    "choices": ["CJSR", "CKUA", "CBC Music", "Campus Radio Canada"],
+    "answerIndex": 0
+  }
+]
+

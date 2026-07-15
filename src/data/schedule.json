@@ -1,0 +1,17 @@
+{
+  "questionDurationSeconds": 15,
+  "questionsPerRound": 5,
+  "regularQuestionCount": 30,
+  "suddenDeathQuestionIndex": 31,
+  "breaksAfterQuestions": [5, 10, 15, 20, 25],
+  "targetMinutesByQuestion": {
+    "1": 2,
+    "5": 9,
+    "10": 18,
+    "15": 27,
+    "20": 36,
+    "25": 45,
+    "30": 54
+  }
+}
+

@@ -3,7 +3,7 @@
 ## Phase Checklist
 
 - [x] Phase 0: Repository and build foundation
-- [ ] Phase 1: Static data and shared types
+- [x] Phase 1: Static data and shared types
 - [ ] Phase 2: Supabase schema, policies, and data access
 - [ ] Phase 3: Shared synchronization layer
 - [ ] Phase 4: Player join, rejoin, and lobby
@@ -39,6 +39,25 @@ Verification:
 Known follow-up:
 
 - `npm install` reported 2 npm audit findings. Do not run `npm audit fix --force` blindly before the event; review dependency impact first.
+
+## Phase 1
+
+Implemented:
+
+- Authoritative JSON files for team names, scoring, schedule, and 31 questions.
+- Shared TypeScript domain types for games, teams, answers, questions, game state, and leaderboard entries.
+- Trivia data helpers for question lookup, point lookup, round lookup, break detection, next-state derivation, and question duration.
+- `npm run validate:data` script for question/team/scoring validation.
+
+Verification:
+
+- `npm run validate:data` passed.
+- `npm run lint` passed.
+- `npm run build` passed.
+
+Known follow-up:
+
+- The existing question-bank files did not include final team names. `teamNames.json` uses 20 CJSR/radio-themed names and can be swapped when a final list is supplied.
 
 ## Notes
 
