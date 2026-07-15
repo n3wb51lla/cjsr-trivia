@@ -4,12 +4,11 @@ export type RoundNumber = 1 | 2 | 3 | 4 | 5 | 6;
 export type QuestionRound = RoundNumber | 'suddenDeath';
 
 export interface Question {
-  readonly id: string;
-  readonly index: number;
+  readonly id: number;
   readonly round: QuestionRound;
   readonly text: string;
   readonly choices: readonly [string, string, string, string];
-  readonly answerIndex: 0 | 1 | 2 | 3;
+  readonly answer: 0 | 1 | 2 | 3;
 }
 
 export interface Team {
@@ -59,4 +58,3 @@ export interface LeaderboardEntry {
   readonly cumulativeLockMs: number;
   readonly isTiedOnScore: boolean;
 }
-

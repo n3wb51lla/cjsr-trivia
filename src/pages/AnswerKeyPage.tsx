@@ -1,6 +1,6 @@
 export function AnswerKeyPage() {
   return (
-    <section className="page-card bg-white p-6 text-black">
+    <section className="border-4 border-black bg-white p-6 text-black shadow-none">
       <p className="text-sm font-black uppercase tracking-wide">Printable answer key</p>
       <h1 className="mt-3 font-display text-4xl leading-tight">Answer key backup</h1>
       <p className="mt-4 max-w-2xl text-lg">
@@ -9,4 +9,3 @@ export function AnswerKeyPage() {
     </section>
   );
 }
-

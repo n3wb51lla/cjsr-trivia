@@ -1,251 +1,219 @@
 [
   {
-    "id": "q01",
-    "index": 1,
+    "id": 1,
     "round": 1,
-    "text": "What is Cadence Weapon's real name?",
-    "choices": ["Rollie Pemberton", "Kardinal Offishall", "Shad Kabango", "K-os"],
-    "answerIndex": 0
+    "text": "Which Canadian band released Fully Completely?",
+    "choices": ["The Tragically Hip", "Sloan", "Rush", "Blue Rodeo"],
+    "answer": 0
   },
   {
-    "id": "q02",
-    "index": 2,
+    "id": 2,
     "round": 1,
-    "text": "Which civic arts role did Rollie Pemberton hold in Edmonton?",
-    "choices": ["Poet Laureate", "City Archivist", "Music Director", "Night Mayor"],
-    "answerIndex": 0
+    "text": "Which city is CJSR 88.5 FM based in?",
+    "choices": ["Edmonton", "Calgary", "Vancouver", "Winnipeg"],
+    "answer": 0
   },
   {
-    "id": "q03",
-    "index": 3,
+    "id": 3,
     "round": 1,
-    "text": "Where did Home Front form?",
-    "choices": ["Edmonton", "Calgary", "Winnipeg", "Vancouver"],
-    "answerIndex": 0
+    "text": "Which artist wrote Heart of Gold?",
+    "choices": ["Neil Young", "Gordon Lightfoot", "Joni Mitchell", "Leonard Cohen"],
+    "answer": 0
   },
   {
-    "id": "q04",
-    "index": 4,
+    "id": 4,
     "round": 1,
-    "text": "Which Alberta city is Sour Patch Men based in?",
-    "choices": ["Calgary", "Edmonton", "Red Deer", "Lethbridge"],
-    "answerIndex": 0
+    "text": "Which band is famous for The Safety Dance?",
+    "choices": ["Men Without Hats", "Rush", "Metric", "The Guess Who"],
+    "answer": 0
   },
   {
-    "id": "q05",
-    "index": 5,
+    "id": 5,
     "round": 1,
-    "text": "Which city is Mariel Buckley associated with?",
-    "choices": ["Calgary", "Regina", "Toronto", "Victoria"],
-    "answerIndex": 0
+    "text": "Which Canadian group recorded If I Had $1000000?",
+    "choices": ["Barenaked Ladies", "Blue Rodeo", "Great Big Sea", "The Weakerthans"],
+    "answer": 0
   },
   {
-    "id": "q06",
-    "index": 6,
+    "id": 6,
     "round": 2,
-    "text": "What was Ribbon Skirt's former name?",
-    "choices": ["Love Language", "Bite Down", "Mint Records", "Tashiina"],
-    "answerIndex": 0
+    "text": "Which province is Great Big Sea most associated with?",
+    "choices": ["Newfoundland and Labrador", "Alberta", "Quebec", "Saskatchewan"],
+    "answer": 0
   },
   {
-    "id": "q07",
-    "index": 7,
+    "id": 7,
     "round": 2,
-    "text": "What is Begonia's real name?",
-    "choices": ["Alexa Dirks", "Katie Tupper", "Hélène Barbier", "Tashiina Buswa"],
-    "answerIndex": 0
+    "text": "Which Canadian band has a song called Black Sheep?",
+    "choices": ["Metric", "Feist", "Stars", "Alvvays"],
+    "answer": 0
   },
   {
-    "id": "q08",
-    "index": 8,
+    "id": 8,
     "round": 2,
-    "text": "Which city formed TOPS?",
-    "choices": ["Montreal", "Halifax", "Saskatoon", "Moncton"],
-    "answerIndex": 0
+    "text": "Which artist sang Constant Craving?",
+    "choices": ["k.d. lang", "Sarah McLachlan", "Jann Arden", "Alanis Morissette"],
+    "answer": 0
   },
   {
-    "id": "q09",
-    "index": 9,
+    "id": 9,
     "round": 2,
-    "text": "Which Saskatchewan city is Katie Tupper from?",
-    "choices": ["Saskatoon", "Regina", "Moose Jaw", "Prince Albert"],
-    "answerIndex": 0
+    "text": "Which Canadian band released Funeral?",
+    "choices": ["Arcade Fire", "Broken Social Scene", "Stars", "Wolf Parade"],
+    "answer": 0
   },
   {
-    "id": "q10",
-    "index": 10,
+    "id": 10,
     "round": 2,
-    "text": "Which act topped November 2025 on Earshot's national chart?",
-    "choices": ["FONTINE", "TOPS", "Begonia", "cootie catcher"],
-    "answerIndex": 0
+    "text": "Which Canadian songwriter is known for The Wreck of the Edmund Fitzgerald?",
+    "choices": ["Gordon Lightfoot", "Stompin' Tom Connors", "Neil Young", "Ron Sexsmith"],
+    "answer": 0
   },
   {
-    "id": "q11",
-    "index": 11,
+    "id": 11,
     "round": 3,
-    "text": "Where did The Weakerthans form?",
-    "choices": ["Winnipeg", "Vancouver", "Halifax", "Toronto"],
-    "answerIndex": 0
+    "text": "Which Halifax band released One Chord to Another?",
+    "choices": ["Sloan", "Joel Plaskett Emergency", "Thrush Hermit", "The Super Friendz"],
+    "answer": 0
   },
   {
-    "id": "q12",
-    "index": 12,
+    "id": 12,
     "round": 3,
-    "text": "What was The New Pornographers' debut album?",
-    "choices": ["Mass Romantic", "Twin Cinema", "Challengers", "Brill Bruisers"],
-    "answerIndex": 0
+    "text": "Which collective included members of Stars, Metric, and Feist?",
+    "choices": ["Broken Social Scene", "Arcade Fire", "The New Pornographers", "Godspeed You! Black Emperor"],
+    "answer": 0
   },
   {
-    "id": "q13",
-    "index": 13,
+    "id": 13,
     "round": 3,
-    "text": "Who founded Broken Social Scene?",
-    "choices": ["Kevin Drew and Brendan Canning", "Emily Haines and James Shaw", "Torquil Campbell and Chris Seligman", "John K. Samson and Jason Tait"],
-    "answerIndex": 0
+    "text": "Which Canadian punk band released How to Clean Everything?",
+    "choices": ["Propagandhi", "D.O.A.", "SNFU", "Nomeansno"],
+    "answer": 0
   },
   {
-    "id": "q14",
-    "index": 14,
+    "id": 14,
     "round": 3,
-    "text": "What was Metric's original name?",
-    "choices": ["Mainstream", "Nightsongs", "Stars", "The Organ"],
-    "answerIndex": 0
+    "text": "Which Vancouver supergroup released Mass Romantic?",
+    "choices": ["The New Pornographers", "The Organ", "Destroyer", "Hot Hot Heat"],
+    "answer": 0
   },
   {
-    "id": "q15",
-    "index": 15,
+    "id": 15,
     "round": 3,
-    "text": "Where did The Organ form?",
-    "choices": ["Vancouver", "Victoria", "Montreal", "Winnipeg"],
-    "answerIndex": 0
+    "text": "Which Edmonton rapper won the Polaris Music Prize for Parallel World?",
+    "choices": ["Cadence Weapon", "Shad", "Kardinal Offishall", "Classified"],
+    "answer": 0
   },
   {
-    "id": "q16",
-    "index": 16,
+    "id": 16,
     "round": 4,
-    "text": "Which city did D.O.A. come from?",
-    "choices": ["Vancouver", "Toronto", "Edmonton", "Montreal"],
-    "answerIndex": 0
+    "text": "Which Victoria band is linked to the album Wrong?",
+    "choices": ["Nomeansno", "D.O.A.", "The Diodes", "Subhumans"],
+    "answer": 0
   },
   {
-    "id": "q17",
-    "index": 17,
+    "id": 17,
     "round": 4,
-    "text": "Which brothers founded Nomeansno?",
-    "choices": ["Rob and John Wright", "Gord and Sandy Deppe", "Brian and Joey Goble", "Ivan and Stefan Doroschuk"],
-    "answerIndex": 0
+    "text": "Which Canadian band was the first from Canada signed to Sub Pop?",
+    "choices": ["Eric's Trip", "Sloan", "The Inbreds", "The Sadies"],
+    "answer": 0
   },
   {
-    "id": "q18",
-    "index": 18,
+    "id": 18,
     "round": 4,
-    "text": "Which Alberta city was SNFU associated with?",
-    "choices": ["Edmonton", "Calgary", "Medicine Hat", "Banff"],
-    "answerIndex": 0
+    "text": "Which Toronto punk band played CBGB in 1977 with Viletones and Teenage Head?",
+    "choices": ["The Diodes", "Spoons", "Martha and the Muffins", "The Demics"],
+    "answer": 0
   },
   {
-    "id": "q19",
-    "index": 19,
+    "id": 19,
     "round": 4,
-    "text": "What is Martha and the Muffins' signature single?",
-    "choices": ["Echo Beach", "Nova Heart", "Safety Dance", "Pop Goes the World"],
-    "answerIndex": 0
+    "text": "Which Canadian duo is behind the band Blue Moon Marquee?",
+    "choices": ["A.W. Cardinal and Jasmine Colette", "Luke Doucet and Melissa McClelland", "Tegan and Sara Quin", "Kevin Drew and Brendan Canning"],
+    "answer": 0
   },
   {
-    "id": "q20",
-    "index": 20,
+    "id": 20,
     "round": 4,
-    "text": "Which Montreal band had a 1983 hit with Safety Dance?",
-    "choices": ["Men Without Hats", "The Diodes", "Spoons", "Viletones"],
-    "answerIndex": 0
+    "text": "Which Montreal artist released the album Panorama?",
+    "choices": ["Hélène Barbier", "Begonia", "FONTINE", "Katie Tupper"],
+    "answer": 0
   },
   {
-    "id": "q21",
-    "index": 21,
+    "id": 21,
     "round": 5,
-    "text": "Where did Eric's Trip form?",
-    "choices": ["Moncton", "Halifax", "Kingston", "Toronto"],
-    "answerIndex": 0
+    "text": "Which Winnipeg band did John K. Samson form after leaving Propagandhi?",
+    "choices": ["The Weakerthans", "The Watchmen", "Royal Canoe", "The Duhks"],
+    "answer": 0
   },
   {
-    "id": "q22",
-    "index": 22,
+    "id": 22,
     "round": 5,
-    "text": "What was Lowest of the Low's debut album?",
-    "choices": ["Shakespeare My Butt", "Love Tara", "Silver", "Naveed"],
-    "answerIndex": 0
+    "text": "Which band released the Canadian indie landmark You Forgot It in People?",
+    "choices": ["Broken Social Scene", "Arcade Fire", "Stars", "The New Pornographers"],
+    "answer": 0
   },
   {
-    "id": "q23",
-    "index": 23,
+    "id": 23,
     "round": 5,
-    "text": "What unusual lineup did The Inbreds use?",
-    "choices": ["Bass and drums", "Three drummers", "No guitars", "Two singers only"],
-    "answerIndex": 0
+    "text": "Which band formed in Burlington, Ontario and released Nova Heart?",
+    "choices": ["Spoons", "Men Without Hats", "Martha and the Muffins", "The Pursuit of Happiness"],
+    "answer": 0
   },
   {
-    "id": "q24",
-    "index": 24,
+    "id": 24,
     "round": 5,
-    "text": "Which Manitoba town did Propagandhi originate in?",
-    "choices": ["Portage la Prairie", "Brandon", "Steinbach", "Selkirk"],
-    "answerIndex": 0
+    "text": "Which Calgary artist is associated with horse-opera country and Five Dollar Bill?",
+    "choices": ["Corb Lund", "Ian Tyson", "Colter Wall", "Fred Eaglesmith"],
+    "answer": 0
   },
   {
-    "id": "q25",
-    "index": 25,
+    "id": 25,
     "round": 5,
-    "text": "Which album won Sloan the 1997 JUNO for Best Alternative Album?",
-    "choices": ["One Chord to Another", "Navy Blues", "Twice Removed", "Smeared"],
-    "answerIndex": 0
+    "text": "Which Indigenous artist leads the band Ribbon Skirt?",
+    "choices": ["Tashiina Buswa", "Elisapie", "Leela Gilday", "Tanya Tagaq"],
+    "answer": 0
   },
   {
-    "id": "q26",
-    "index": 26,
+    "id": 26,
     "round": 6,
-    "text": "What was Our Lady Peace's 1995 breakthrough album?",
-    "choices": ["Naveed", "Clumsy", "Happiness...", "Spiritual Machines"],
-    "answerIndex": 0
+    "text": "Which Canadian band name is also a unit of measurement joke?",
+    "choices": ["Metric", "Rush", "Moist", "Stars"],
+    "answer": 0
   },
   {
-    "id": "q27",
-    "index": 27,
+    "id": 27,
     "round": 6,
-    "text": "Which Ontario city did The Tea Party form in?",
-    "choices": ["Windsor", "Kingston", "Hamilton", "London"],
-    "answerIndex": 0
+    "text": "Which artist's fans might jokingly be called Feist Mode?",
+    "choices": ["Feist", "Lights", "Grimes", "Basia Bulat"],
+    "answer": 0
   },
   {
-    "id": "q28",
-    "index": 28,
+    "id": 28,
     "round": 6,
-    "text": "What was I Mother Earth's 1993 debut album?",
-    "choices": ["Dig", "Scenery and Fish", "Blue Green Orange", "Silver"],
-    "answerIndex": 0
+    "text": "Which Canadian band gives us the team-name pun Rush Hour Traffic?",
+    "choices": ["Rush", "Triumph", "April Wine", "Loverboy"],
+    "answer": 0
   },
   {
-    "id": "q29",
-    "index": 29,
+    "id": 29,
     "round": 6,
-    "text": "Which Ontario city did Treble Charger form in?",
-    "choices": ["Sault Ste. Marie", "Kingston", "Windsor", "Ottawa"],
-    "answerIndex": 0
+    "text": "Which Edmonton station's volunteers are being celebrated tonight?",
+    "choices": ["CJSR 88.5 FM", "CKUA", "CBC Radio One", "Sonic 102.9"],
+    "answer": 0
   },
   {
-    "id": "q30",
-    "index": 30,
+    "id": 30,
     "round": 6,
-    "text": "Who fronts Headstones?",
-    "choices": ["Hugh Dillon", "David Usher", "Raine Maida", "Greig Nori"],
-    "answerIndex": 0
+    "text": "Which phrase best describes CJSR?",
+    "choices": ["Listener-supported, volunteer-powered", "Corporate-owned, chart-driven", "Satellite-only, ad-free", "Government-run, commercial-free"],
+    "answer": 0
   },
   {
-    "id": "q31",
-    "index": 31,
+    "id": 31,
     "round": "suddenDeath",
-    "text": "Sudden death: which station is hosting this volunteer appreciation trivia night?",
-    "choices": ["CJSR", "CKUA", "CBC Music", "Campus Radio Canada"],
-    "answerIndex": 0
+    "text": "Sudden death: what frequency is CJSR on in Edmonton?",
+    "choices": ["88.5 FM", "90.9 FM", "101.7 FM", "740 AM"],
+    "answer": 0
   }
 ]
-

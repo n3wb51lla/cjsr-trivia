@@ -55,9 +55,12 @@ Verification:
 - `npm run lint` passed.
 - `npm run build` passed.
 
-Known follow-up:
+Context correction:
 
-- The existing question-bank files did not include final team names. `teamNames.json` uses 20 CJSR/radio-themed names and can be swapped when a final list is supplied.
+- Updated team names to the exact 20 supplied in the added brief.
+- Updated `scoring.json` to the specified round-to-points shape.
+- Updated `questions.json` to the specified `{ id, round, text, choices, answer }` shape.
+- Updated brand colors toward near-black, #f01d4f, white/#e5e5e5.
 
 ## Notes
 

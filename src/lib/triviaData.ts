@@ -6,9 +6,10 @@ import type { Question, QuestionRound, RoundNumber } from '../types';
 
 export const QUESTIONS = parseQuestions(questionsJson);
 export const TEAM_NAMES = teamNames as readonly string[];
+export const SUDDEN_DEATH_POINTS = 5;
 
 export function getQuestionByIndex(index: number): Question | undefined {
-  return QUESTIONS.find(question => question.index === index);
+  return QUESTIONS.find(question => question.id === index);
 }
 
 export function getRoundForQuestion(index: number): QuestionRound | undefined {
@@ -17,13 +18,13 @@ export function getRoundForQuestion(index: number): QuestionRound | undefined {
 
 export function getPointsForQuestion(index: number): number {
   const round = getRoundForQuestion(index);
-  if (round === 'suddenDeath') return scoring.suddenDeath;
+  if (round === 'suddenDeath') return SUDDEN_DEATH_POINTS;
   if (round === undefined) throw new Error(`Unknown question index: ${index}`);
   return getPointsForRound(round);
 }
 
 export function getPointsForRound(round: RoundNumber): number {
-  return scoring.rounds[String(round) as keyof typeof scoring.rounds];
+  return scoring[String(round) as keyof typeof scoring];
 }
 
 export function isBreakAfterQuestion(index: number): boolean {
@@ -52,14 +53,13 @@ function parseQuestions(value: unknown): readonly Question[] {
 
 function parseQuestion(value: unknown): Question {
   if (!isRecord(value)) throw new Error('Question must be an object.');
-  const { id, index, round, text, choices, answerIndex } = value;
-  if (typeof id !== 'string') throw new Error('Question id must be a string.');
-  if (typeof index !== 'number' || !Number.isInteger(index)) throw new Error(`Question ${id} index must be an integer.`);
+  const { id, round, text, choices, answer } = value;
+  if (typeof id !== 'number' || !Number.isInteger(id)) throw new Error('Question id must be an integer.');
   if (!isQuestionRound(round)) throw new Error(`Question ${id} has invalid round.`);
   if (typeof text !== 'string') throw new Error(`Question ${id} text must be a string.`);
   if (!isFourChoices(choices)) throw new Error(`Question ${id} must have four choices.`);
-  if (!isAnswerIndex(answerIndex)) throw new Error(`Question ${id} has invalid answer index.`);
-  return { id, index, round, text, choices, answerIndex };
+  if (!isAnswerIndex(answer)) throw new Error(`Question ${id} has invalid answer index.`);
+  return { id, round, text, choices, answer };
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

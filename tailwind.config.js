@@ -7,6 +7,7 @@ export default {
         cjsr: {
           magenta: 'var(--color-cjsr-magenta)',
           black: 'var(--color-cjsr-black)',
+          surface: 'var(--color-cjsr-surface)',
           yellow: 'var(--color-cjsr-yellow)',
           cyan: 'var(--color-cjsr-cyan)',
           paper: 'var(--color-cjsr-paper)',
@@ -20,4 +21,3 @@ export default {
   },
   plugins: [],
 };
-

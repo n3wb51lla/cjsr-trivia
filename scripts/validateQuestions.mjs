@@ -19,15 +19,16 @@ for (const question of questions) {
   if (ids.has(question.id)) errors.push(`Duplicate question id: ${question.id}`);
   ids.add(question.id);
 
-  if (indexes.has(question.index)) errors.push(`Duplicate question index: ${question.index}`);
-  indexes.add(question.index);
+  if (!Number.isInteger(question.id)) errors.push(`Question id must be an integer: ${question.id}`);
+  if (indexes.has(question.id)) errors.push(`Duplicate question index: ${question.id}`);
+  indexes.add(question.id);
 
   if (!Array.isArray(question.choices) || question.choices.length !== 4) {
     errors.push(`Question ${question.id} must have exactly four choices.`);
   }
 
-  if (!Number.isInteger(question.answerIndex) || question.answerIndex < 0 || question.answerIndex > 3) {
-    errors.push(`Question ${question.id} answerIndex must be between 0 and 3.`);
+  if (!Number.isInteger(question.answer) || question.answer < 0 || question.answer > 3) {
+    errors.push(`Question ${question.id} answer must be between 0 and 3.`);
   }
 
   if (typeof question.text !== 'string' || question.text.length > 140) {
@@ -36,7 +37,7 @@ for (const question of questions) {
 }
 
 for (let index = 1; index <= schedule.regularQuestionCount; index++) {
-  const question = questions.find(q => q.index === index);
+  const question = questions.find(q => q.id === index);
   if (!question) {
     errors.push(`Missing question ${index}.`);
     continue;
@@ -47,15 +48,14 @@ for (let index = 1; index <= schedule.regularQuestionCount; index++) {
   }
 }
 
-const suddenDeath = questions.find(q => q.index === schedule.suddenDeathQuestionIndex);
+const suddenDeath = questions.find(q => q.id === schedule.suddenDeathQuestionId);
 if (!suddenDeath) {
-  errors.push(`Missing sudden death question ${schedule.suddenDeathQuestionIndex}.`);
+  errors.push(`Missing sudden death question ${schedule.suddenDeathQuestionId}.`);
 } else if (suddenDeath.round !== 'suddenDeath') {
-  errors.push(`Question ${schedule.suddenDeathQuestionIndex} must be marked suddenDeath.`);
+  errors.push(`Question ${schedule.suddenDeathQuestionId} must be marked suddenDeath.`);
 }
 
-if (scoring.suddenDeath !== 5) errors.push('Sudden death must award five points.');
-if (scoring.rounds['6'] !== 5) errors.push('Round six must award five points.');
+if (scoring['6'] !== 5) errors.push('Round six must award five points.');
 
 if (errors.length > 0) {
   console.error('Question data validation failed:');
@@ -64,4 +64,3 @@ if (errors.length > 0) {
 }
 
 console.log(`Validated ${questions.length} questions and ${teamNames.length} team names.`);
-

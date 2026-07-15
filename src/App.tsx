@@ -10,11 +10,11 @@ export function App() {
   return (
     <ErrorBoundary>
       <BrowserRouter>
-        <div className="min-h-screen bg-cjsr-magenta text-cjsr-black">
+        <div className="min-h-screen bg-cjsr-black text-cjsr-paper">
           <a className="skip-link" href="#main">Skip to main content</a>
-          <header className="border-b-4 border-cjsr-black bg-cjsr-yellow px-4 py-3">
+          <header className="border-b-4 border-cjsr-magenta bg-cjsr-surface px-4 py-3">
             <div className="mx-auto flex max-w-6xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <Link to="/" className="font-display text-2xl font-black uppercase tracking-wide">
+              <Link to="/" className="font-display text-2xl font-black uppercase tracking-wide text-white">
                 CJSR Trivia
               </Link>
               <nav aria-label="Primary navigation" className="flex flex-wrap gap-2 text-sm font-bold">
@@ -39,4 +39,3 @@ export function App() {
     </ErrorBoundary>
   );
 }
-
