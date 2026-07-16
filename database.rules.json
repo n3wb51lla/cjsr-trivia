@@ -7,7 +7,7 @@
         ".read": true,
         "meta": {
           ".read": true,
-          ".write": false
+          ".write": "newData.exists() && newData.child('phase').isString() && (newData.child('phase').val() === 'lobby' || newData.child('phase').val() === 'question' || newData.child('phase').val() === 'reveal' || newData.child('phase').val() === 'break' || newData.child('phase').val() === 'final' || newData.child('phase').val() === 'sudden_death') && (!newData.child('currentQuestionIndex').exists() || newData.child('currentQuestionIndex').isNumber() || newData.child('currentQuestionIndex').val() === null) && (!newData.child('currentRound').exists() || newData.child('currentRound').isNumber() || newData.child('currentRound').val() === 'suddenDeath' || newData.child('currentRound').val() === null) && (!newData.child('questionStartedAt').exists() || newData.child('questionStartedAt').isNumber() || newData.child('questionStartedAt').val() === null)"
         },
         "teamNames": {
           "$teamNameKey": {

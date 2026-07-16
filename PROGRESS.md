@@ -9,7 +9,7 @@
 - [x] Phase 4: Player join, rejoin, and lobby
 - [ ] Phase 5: Server-authoritative question timer
 - [ ] Phase 6: Answer selection, locking, and recovery
-- [ ] Phase 7: Host control screen
+- [x] Phase 7: Host control screen
 - [ ] Phase 8: Scoring, ranking, and reveal
 - [ ] Phase 9: Breaks, finals, projector, and answer key
 - [ ] Phase 10: Host pacing and schedule support
@@ -129,6 +129,30 @@ Known follow-up:
 
 - Late join null historical answers will be added once host progression/scoring exists.
 - Leave/change currently clears only this phone's local team link; deleting/deactivating Firebase team records needs protected host/server logic.
+
+## Phase 7
+
+Implemented:
+
+- Host passphrase gate using `VITE_HOST_PASSPHRASE`.
+- Host control desk for `games/main`.
+- Lobby initialization.
+- Basic advance flow: lobby -> question -> reveal -> break/final.
+- Current question and correct-answer display.
+- Team count and joined-team list.
+- Skip-to-finals control.
+- State reset back to lobby while preserving joined teams.
+
+Verification:
+
+- `npm run validate:data` passed.
+- `npm run lint` passed.
+- `npm run build` passed.
+
+Known follow-up:
+
+- This first host slice uses passphrase-gated browser writes to game metadata. It is suitable for local/event MVP testing, but protected serverless host actions remain the safer production architecture.
+- Updated Firebase rules must be deployed before the host buttons can write game metadata.
 
 ## Notes
 

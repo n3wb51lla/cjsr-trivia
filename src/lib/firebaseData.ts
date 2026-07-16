@@ -1,4 +1,4 @@
-import { get, onValue, push, ref, remove, runTransaction, serverTimestamp, set, type Unsubscribe } from 'firebase/database';
+import { get, onValue, push, ref, remove, runTransaction, serverTimestamp, set, update, type Unsubscribe } from 'firebase/database';
 import type { Answer, Game, GameState, Team } from '../types';
 import { firebaseServices } from './firebase';
 import {
@@ -61,6 +61,14 @@ export function subscribeGameState(
 export async function fetchGameMeta(gameCode: string): Promise<FirebaseGameMeta | null> {
   const snapshot = await get(ref(requireDatabase(), gameMetaPath(gameCode)));
   return snapshot.exists() ? snapshot.val() as FirebaseGameMeta : null;
+}
+
+export async function writeGameMeta(gameCode: string, meta: FirebaseGameMeta): Promise<void> {
+  await set(ref(requireDatabase(), gameMetaPath(gameCode)), meta);
+}
+
+export async function patchGameMeta(gameCode: string, patch: Partial<FirebaseGameMeta>): Promise<void> {
+  await update(ref(requireDatabase(), gameMetaPath(gameCode)), patch);
 }
 
 export async function joinTeam(gameCode: string, input: JoinTeamInput): Promise<Team> {
@@ -189,7 +197,7 @@ function parsePhase(value: unknown): Game['phase'] {
 }
 
 function parseCurrentRound(value: unknown): Game['currentRound'] {
-  if (value === 'suddenDeath') return 'suddenDeath';
+  if (value === 'suddenDeath' || value === 'sudden_death') return 'suddenDeath';
   if (value === 1 || value === 2 || value === 3 || value === 4 || value === 5 || value === 6) return value;
   return null;
 }
