@@ -337,6 +337,7 @@ function RevealPanel({ team, questionIndex, answerChoice, pointsAwarded }: { tea
   const question = getQuestionByIndex(questionIndex);
   if (!question) return null;
   const correct = answerChoice === question.answer;
+  const displayPointsAwarded = correct ? Math.max(pointsAwarded, getPointsForQuestion(questionIndex)) : 0;
   return (
     <section className="page-card p-6" aria-live="polite">
       <p className="text-sm font-black uppercase tracking-wide text-cjsr-magenta">Reveal</p>
@@ -355,7 +356,7 @@ function RevealPanel({ team, questionIndex, answerChoice, pointsAwarded }: { tea
         })}
       </div>
       <p className="mt-5 text-2xl font-black">{answerChoice === null ? 'Timed out.' : correct ? 'Correct!' : 'Not this time.'}</p>
-      <p className="mt-2 text-xl">+{pointsAwarded} points - Running total: {team.score}</p>
+      <p className="mt-2 text-xl">+{displayPointsAwarded} points - Running total: {team.score}</p>
     </section>
   );
 }

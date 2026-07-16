@@ -94,6 +94,9 @@ const totalAnswers = runCount * teamCount * regularQuestionCount;
 const correctnessRate = totalAnswers === 0 ? 0 : totalCorrectAnswers / totalAnswers;
 const timeoutRate = totalAnswers === 0 ? 0 : totalTimedOutAnswers / totalAnswers;
 
+const manualHeadStartRevealPoints = getRevealDisplayPoints(true, 0, 1);
+assert(manualHeadStartRevealPoints === 1, 'Correct answer with stale stored points should still display the question value.');
+
 console.log(`Simulated ${runCount} full games.`);
 console.log(`Teams per game: ${teamCount}`);
 console.log(`Regular questions per game: ${regularQuestionCount}`);
@@ -201,6 +204,10 @@ function assertLeaderboard(leaderboard) {
       assert(previous.cumulativeLockMs <= current.cumulativeLockMs || previous.teamName.localeCompare(current.teamName) <= 0, 'Leaderboard tie-break order failed.');
     }
   }
+}
+
+function getRevealDisplayPoints(correct, storedPointsAwarded, questionPoints) {
+  return correct ? Math.max(storedPointsAwarded, questionPoints) : 0;
 }
 
 function nowFor(runIndex, questionId) {
