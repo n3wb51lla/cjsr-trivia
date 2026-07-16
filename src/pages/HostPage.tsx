@@ -253,7 +253,7 @@ function ScorekeeperPanel({
                 <div>
                   <span className="font-bold">#{entry.rank} {team.teamName}</span>
                   <span className="block text-sm text-cjsr-paper">
-                    {team.playerCount} player{team.playerCount !== 1 ? 's' : ''}{entry.isTiedOnScore && ' · tied'}
+                    {team.playerCount} player{team.playerCount !== 1 ? 's' : ''}{entry.isTiedOnScore && ' - tied'}
                   </span>
                 </div>
                 <span className="text-2xl font-black text-cjsr-magenta">{team.score}</span>

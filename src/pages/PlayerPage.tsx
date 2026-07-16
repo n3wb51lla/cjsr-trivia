@@ -116,7 +116,7 @@ export function PlayerPage() {
       <PlayerShell status={status} error={error?.message ?? null}>
         <section className="page-card p-6" aria-live="polite">
           <p className="text-sm font-black uppercase tracking-wide text-cjsr-magenta">Round in progress</p>
-          <h1 className="mt-3 font-display text-4xl leading-tight">You'll be able to join at the next break.</h1>
+          <h1 className="mt-3 font-display text-4xl leading-tight">You'll be able to join at the next standings checkpoint.</h1>
           <p className="mt-4 text-lg text-cjsr-paper">
             Keep this page open. It will update automatically when joining reopens.
           </p>
@@ -348,14 +348,14 @@ function RevealPanel({ team, questionIndex, answerChoice, pointsAwarded }: { tea
           return (
             <div key={choice} className={`border-2 p-3 font-bold ${isCorrect ? 'border-green-300 text-green-300' : isTeamChoice ? 'border-cjsr-magenta text-cjsr-magenta' : 'border-neutral-700 text-neutral-400'}`}>
               {String.fromCharCode(65 + index)}. {choice}
-              {isCorrect && ' ✓'}
+              {isCorrect && ' (correct)'}
               {isTeamChoice && !isCorrect && ' (your answer)'}
             </div>
           );
         })}
       </div>
       <p className="mt-5 text-2xl font-black">{answerChoice === null ? 'Timed out.' : correct ? 'Correct!' : 'Not this time.'}</p>
-      <p className="mt-2 text-xl">+{pointsAwarded} points · Running total: {team.score}</p>
+      <p className="mt-2 text-xl">+{pointsAwarded} points - Running total: {team.score}</p>
     </section>
   );
 }
@@ -398,7 +398,8 @@ function LobbyPanel({ team, phase, canLeave, onLeave }: { team: Team; phase: str
 function TerritoryText() {
   return (
     <p className="mt-6 max-w-3xl text-sm text-cjsr-paper">
-      CJSR is located in amiskwaciy-wâskahikan, the city of Edmonton, on Treaty 6 territory and region 4 of the Métis Nation of Alberta.
+      CJSR is located in amiskwaciy-waskahikan, the city of Edmonton, on Treaty 6 territory and region 4 of the Metis Nation of Alberta.
     </p>
   );
 }
+
