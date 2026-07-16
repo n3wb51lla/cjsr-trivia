@@ -136,7 +136,7 @@ export function PlayerPage() {
         <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Player join</p>
         <h1 className="mt-3 font-display text-4xl leading-tight">Join CJSR Volunteer Appreciation Trivia</h1>
         <p className="mt-4 max-w-2xl text-lg text-cjsr-paper">
-          Thirty questions, one hour, no pee breaks. Stakes climb as we go, so pace yourself. We're dialed in on Canadian music from the deep past through to present day. As radio aficionados, you all SHOULD ace this. Don't let me down. Most points at the end take it all. The prizes are CJSR swag and glory, sweet sweet glory.
+          Thirty questions, one hour, no pee breaks. Stakes climb as we go, so pace yourself. Each team has 15 seconds to answer AND LOCK IN their answers. Don't forget to lock in your answers or they won't count and your huge brains will feel bad about it. We're dialed in on Canadian music from the deep past through to present day. As radio aficionados, you all SHOULD ace this. Don't let me down. Most points at the end take it all. The prizes are CJSR swag and glory, sweet sweet glory.
         </p>
 
         <fieldset className="mt-6">
