@@ -128,7 +128,7 @@ export function HostPage() {
             value={passphrase}
             onChange={event => setPassphrase(event.target.value)}
           />
-          <button type="submit" className="mt-4 min-h-11 border-2 border-cjsr-red bg-cjsr-red px-5 py-2 font-black text-cjsr-ink">
+          <button type="submit" className="mt-4 min-h-11 border-2 border-cjsr-red bg-cjsr-red px-5 py-2 font-black text-white">
             Unlock host
           </button>
         </form>
@@ -194,7 +194,7 @@ export function HostPage() {
           <button type="button" disabled={busy} onClick={initializeLobby} className="min-h-11 border-2 border-cjsr-ink px-5 py-2 font-bold disabled:opacity-50">
             Initialize lobby
           </button>
-          <button type="button" disabled={busy || !canAdvance} onClick={() => void advance()} className="min-h-11 border-2 border-cjsr-red bg-cjsr-red px-5 py-2 font-black text-cjsr-ink disabled:opacity-50">
+          <button type="button" disabled={busy || !canAdvance} onClick={() => void advance()} className="min-h-11 border-2 border-cjsr-red bg-cjsr-red px-5 py-2 font-black text-white disabled:opacity-50">
             {getHostButtonLabel(meta)}
           </button>
           {isQuestionLive && (

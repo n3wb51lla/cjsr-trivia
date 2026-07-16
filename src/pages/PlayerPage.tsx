@@ -141,7 +141,7 @@ export function PlayerPage() {
               <button
                 key={count}
                 type="button"
-                className={`min-h-14 border-2 px-3 py-2 text-xl font-black ${playerCount === count ? 'border-cjsr-red bg-cjsr-red text-cjsr-ink' : 'border-cjsr-ink bg-cjsr-surface text-cjsr-ink'}`}
+                className={`min-h-14 border-2 px-3 py-2 text-xl font-black ${playerCount === count ? 'border-cjsr-red bg-cjsr-red text-white' : 'border-cjsr-ink bg-cjsr-surface text-cjsr-ink'}`}
                 onClick={() => setPlayerCount(count)}
                 aria-pressed={playerCount === count}
               >
@@ -201,7 +201,7 @@ function FinalPanel({ team, leaderboard }: { team: Team | null; leaderboard: Lea
         {leaderboard.slice(0, 10).map(entry => (
           <li
             key={entry.teamId}
-            className={`grid grid-cols-[3rem_1fr_auto] items-center gap-3 border-2 p-3 ${entry.teamId === team?.id ? 'border-cjsr-red bg-cjsr-red text-cjsr-ink' : 'border-cjsr-ink/50 bg-cjsr-surface text-cjsr-ink'}`}
+            className={`grid grid-cols-[3rem_1fr_auto] items-center gap-3 border-2 p-3 ${entry.teamId === team?.id ? 'border-cjsr-red bg-cjsr-red text-white' : 'border-cjsr-ink/50 bg-cjsr-surface text-cjsr-ink'}`}
           >
             <span className="text-xl font-black">#{entry.rank}</span>
             <span className="min-w-0 font-bold">{entry.teamName}</span>
@@ -307,7 +307,7 @@ function QuestionPanel({
               type="button"
               disabled={locked || timer.isExpired}
               onClick={() => setSelectedChoice(choiceIndex)}
-              className={`min-h-16 border-2 px-4 py-3 text-left text-lg font-bold disabled:opacity-55 ${selected ? 'border-cjsr-red bg-cjsr-red text-cjsr-ink' : 'border-cjsr-ink bg-cjsr-surface text-cjsr-ink'}`}
+              className={`min-h-16 border-2 px-4 py-3 text-left text-lg font-bold disabled:opacity-55 ${selected ? 'border-cjsr-red bg-cjsr-red text-white' : 'border-cjsr-ink bg-cjsr-surface text-cjsr-ink'}`}
               aria-pressed={selected}
             >
               <span className="mr-3 font-black">{String.fromCharCode(65 + index)}.</span>
@@ -321,7 +321,7 @@ function QuestionPanel({
         type="button"
         disabled={locked || selectedChoice === null || timer.isExpired || isLocking}
         onClick={() => void lockAnswer(selectedChoice)}
-        className="mt-5 min-h-14 w-full border-2 border-cjsr-red bg-cjsr-red px-5 py-3 text-xl font-black text-cjsr-ink disabled:border-cjsr-paper/40 disabled:bg-cjsr-surface disabled:text-cjsr-paper/70"
+        className="mt-5 min-h-14 w-full border-2 border-cjsr-red bg-cjsr-red px-5 py-3 text-xl font-black text-white disabled:border-cjsr-paper/40 disabled:bg-cjsr-surface disabled:text-cjsr-paper/70"
       >
         {isLocking ? 'LOCKING...' : locked ? 'LOCKED' : 'LOCK IN'}
       </button>
