@@ -6,6 +6,7 @@ import { buildLeaderboard } from '../lib/leaderboard';
 import { getPointsForQuestion, getQuestionByIndex } from '../lib/triviaData';
 import type { Answer, LeaderboardEntry } from '../types';
 import cjsrLogo from '../assets/cjsr-logo.png';
+import { ThemeToggle } from '../components/common/ThemeToggle';
 
 export function ScreenPage() {
   const { gameState, status, error } = useGameSubscription(DEFAULT_GAME_CODE);
@@ -68,9 +69,12 @@ function ScreenShell({ status, error, children }: { status: string; error: strin
           <img src={cjsrLogo} alt="" className="h-12 w-12" />
           <p className="font-display text-3xl uppercase text-cjsr-ink">CJSR Trivia</p>
         </div>
-        <div className="text-right text-sm font-bold uppercase tracking-wide text-cjsr-paper" aria-live="polite">
-          <p>Connection: {status}</p>
-          {error && <p className="text-cjsr-red-light">{error}</p>}
+        <div className="flex items-center gap-4">
+          <div className="text-right text-sm font-bold uppercase tracking-wide text-cjsr-paper" aria-live="polite">
+            <p>Connection: {status}</p>
+            {error && <p className="text-cjsr-red-light">{error}</p>}
+          </div>
+          <ThemeToggle />
         </div>
       </div>
       {children}
