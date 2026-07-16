@@ -193,6 +193,8 @@ Implemented:
 - Team scores update from round-derived point values.
 - Team cumulative lock time updates for future tiebreaks.
 - Player reveal now reads finalized points and running total from Firebase.
+- Shared leaderboard builder ranks active teams by score, then fastest cumulative lock time.
+- Projector reveal screen shows the correct answer, correct-team count, and leaderboard.
 
 Verification:
 
@@ -202,8 +204,24 @@ Verification:
 
 Known follow-up:
 
-- Ranking display and host tie indicators still need to be added.
+- Host tie indicators still need to be added.
 - Updated Firebase rules must be deployed before browser-host scoring writes work.
+
+## Phase 9
+
+Implemented:
+
+- Projector screen now reflects lobby, question, reveal, break, and final phases.
+- Lobby screen shows joined-team count.
+- Live question screen shows question text, point value, room timer, and lock count.
+- Break screen shows standings and the next question number.
+- Final screen shows the winner and full final standings.
+
+Verification:
+
+- `npm run validate:data` passed.
+- `npm run lint` passed.
+- `npm run build` passed.
 
 ## Notes
 
