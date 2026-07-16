@@ -230,10 +230,10 @@ function LeaderboardPanel({
       ) : (
         <ol className={`${projector ? 'mt-0' : 'mt-4'} grid gap-3 ${columns === 2 ? 'lg:grid-cols-2' : ''}`}>
           {visibleRows.map(entry => (
-            <li key={entry.teamId} className={`grid items-center gap-3 border border-white/30 ${projector ? 'grid-cols-[4.5rem_1fr_5rem] p-4' : 'grid-cols-[3rem_1fr_auto]'} ${compact ? 'p-2' : projector ? '' : 'p-3'}`}>
-              <span className={`${projector ? 'text-4xl' : compact ? 'text-xl' : 'text-2xl'} font-black`}>#{entry.rank}</span>
-              <span className={`min-w-0 font-bold leading-tight ${projector ? 'text-3xl' : compact ? 'text-lg' : 'text-xl'}`}>{entry.teamName}</span>
-              <span className={`${projector ? 'text-5xl' : compact ? 'text-xl' : 'text-2xl'} font-black text-cjsr-magenta`}>{entry.score}</span>
+            <li key={entry.teamId} className={`grid items-center gap-3 border border-white/30 ${projector ? 'grid-cols-[3rem_minmax(0,1fr)_3rem] p-3 lg:grid-cols-[4.5rem_minmax(0,1fr)_5rem] lg:p-4' : 'grid-cols-[3rem_minmax(0,1fr)_auto]'} ${compact ? 'p-2' : projector ? '' : 'p-3'}`}>
+              <span className={`${projector ? 'text-2xl lg:text-4xl' : compact ? 'text-xl' : 'text-2xl'} font-black`}>#{entry.rank}</span>
+              <span className={`min-w-0 font-bold leading-tight ${projector ? 'text-xl lg:text-3xl' : compact ? 'text-lg' : 'text-xl'}`}>{entry.teamName}</span>
+              <span className={`${projector ? 'text-3xl lg:text-5xl' : compact ? 'text-xl' : 'text-2xl'} font-black text-cjsr-magenta`}>{entry.score}</span>
               {entry.isTiedOnScore && <span className="col-span-3 text-sm font-bold uppercase tracking-wide text-cjsr-paper">Tie-break: fastest total lock time</span>}
             </li>
           ))}
