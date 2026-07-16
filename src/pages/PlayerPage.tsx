@@ -26,7 +26,7 @@ export function PlayerPage() {
   const isPrimaryListFull = useMemo(() => TEAM_NAMES.every(name => takenNames.has(makeTeamNameKey(name))), [takenNames]);
   const availableTeamNames = isPrimaryListFull ? [...TEAM_NAMES, ...OVERFLOW_TEAM_NAMES] : TEAM_NAMES;
   const phase = gameState?.game.phase ?? 'lobby';
-  const canJoin = phase === 'lobby' || phase === 'break';
+  const canJoin = phase === 'lobby' || phase === 'reveal' || phase === 'break';
   const leaderboard = useMemo(() => buildLeaderboard(gameState?.teams ?? []), [gameState?.teams]);
   const currentAnswer = useMemo(
     () => gameState?.answers.find(answer => answer.teamId === storedTeamId && answer.questionIndex === gameState.game.currentQuestionIndex) ?? null,
@@ -120,8 +120,8 @@ export function PlayerPage() {
     return (
       <PlayerShell status={status} error={error?.message ?? null}>
         <section className="page-card p-6" aria-live="polite">
-          <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Round in progress</p>
-          <h1 className="mt-3 font-display text-4xl leading-tight">You'll be able to join at the next standings checkpoint.</h1>
+          <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Question in progress</p>
+          <h1 className="mt-3 font-display text-4xl leading-tight">You'll be able to join as soon as this question wraps up.</h1>
           <p className="mt-4 text-lg text-cjsr-paper">
             Keep this page open. It will update automatically when joining reopens.
           </p>
