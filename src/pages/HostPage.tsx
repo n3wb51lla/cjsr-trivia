@@ -1,9 +1,13 @@
 import { useMemo, useState } from 'react';
 import { useGameSubscription } from '../hooks/useGameSubscription';
+import { useQuestionTimer } from '../hooks/useQuestionTimer';
 import { getOptionalEnv } from '../lib/env';
 import { finalizeQuestionScores, patchGameMeta, writeGameMeta, type FirebaseGameMeta } from '../lib/firebaseData';
 import { DEFAULT_GAME_CODE, getCurrentQuestionSummary, getHostAdvanceMeta, getHostButtonLabel, makeInitialGameMeta } from '../lib/hostState';
 import { getPointsForQuestion } from '../lib/triviaData';
+import type { Team } from '../types';
+
+const EMPTY_TEAMS: Team[] = [];
 
 export function HostPage() {
   const [isUnlocked, setIsUnlocked] = useState(false);
@@ -13,9 +17,22 @@ export function HostPage() {
   const { gameState, status, error } = useGameSubscription(DEFAULT_GAME_CODE);
 
   const meta = useMemo<FirebaseGameMeta | null>(() => gameState ? { ...gameState.game, code: DEFAULT_GAME_CODE } : null, [gameState]);
-  const teams = gameState?.teams ?? [];
+  const teams = gameState?.teams ?? EMPTY_TEAMS;
+  const activeTeams = useMemo(() => teams.filter(team => team.isActive), [teams]);
   const question = getCurrentQuestionSummary(meta?.currentQuestionIndex ?? null);
   const pointValue = meta?.currentQuestionIndex ? getPointsForQuestion(meta.currentQuestionIndex) : null;
+  const timer = useQuestionTimer(meta?.questionStartedAt ?? null);
+  const currentQuestionIndex = meta?.currentQuestionIndex ?? null;
+  const currentAnswers = useMemo(
+    () => gameState?.answers.filter(answer => answer.questionIndex === currentQuestionIndex) ?? [],
+    [gameState?.answers, currentQuestionIndex],
+  );
+  const lockedTeamIds = useMemo(() => new Set(currentAnswers.map(answer => answer.teamId)), [currentAnswers]);
+  const lockedCount = activeTeams.filter(team => lockedTeamIds.has(team.id)).length;
+  const unlockedTeams = activeTeams.filter(team => !lockedTeamIds.has(team.id));
+  const isQuestionLive = meta?.phase === 'question';
+  const allTeamsLocked = activeTeams.length > 0 && lockedCount >= activeTeams.length;
+  const canAdvance = !isQuestionLive || allTeamsLocked || timer.isExpired;
 
   function unlock(event: React.FormEvent) {
     event.preventDefault();
@@ -36,8 +53,9 @@ export function HostPage() {
     await runHostAction('Lobby initialized.', () => writeGameMeta(DEFAULT_GAME_CODE, makeInitialGameMeta(DEFAULT_GAME_CODE)));
   }
 
-  async function advance() {
-    await runHostAction('Advanced game state.', async () => {
+  async function advance(force = false) {
+    if (!force && !canAdvance) return;
+    await runHostAction(force ? 'Forced advance and finalized open answers.' : 'Advanced game state.', async () => {
       if (gameState && meta?.phase === 'question' && meta.currentQuestionIndex && question) {
         await finalizeQuestionScores(DEFAULT_GAME_CODE, gameState, meta.currentQuestionIndex, question.answer, getPointsForQuestion(meta.currentQuestionIndex));
       }
@@ -115,6 +133,32 @@ export function HostPage() {
           <Stat label="Point value" value={pointValue ? `${pointValue} points` : '-'} />
         </div>
 
+        {isQuestionLive && (
+          <section className="mt-6 border-2 border-white p-4" aria-live="polite">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p className="text-sm font-black uppercase tracking-wide text-cjsr-magenta">Live lock status</p>
+                <h2 className="mt-1 text-2xl font-bold">{lockedCount} / {activeTeams.length} teams locked</h2>
+              </div>
+              <div className="text-right">
+                <p className="text-sm font-black uppercase tracking-wide text-cjsr-magenta">Timer</p>
+                <p className="text-3xl font-black">{timer.secondsRemaining}s</p>
+              </div>
+            </div>
+            <div className="mt-4 h-4 border-2 border-white bg-cjsr-black" role="timer" aria-label={`${timer.secondsRemaining} seconds remaining`}>
+              <div className="h-full bg-cjsr-magenta transition-[width]" style={{ width: `${Math.round(timer.progress * 100)}%` }} />
+            </div>
+            {unlockedTeams.length > 0 ? (
+              <p className="mt-3 text-sm font-bold text-cjsr-paper">
+                Waiting on: {unlockedTeams.map(team => team.teamName).join(', ')}
+              </p>
+            ) : (
+              <p className="mt-3 text-sm font-bold text-green-300">All active teams are locked.</p>
+            )}
+            {!canAdvance && <p className="mt-3 text-sm font-bold text-cjsr-paper">Advance unlocks when all teams lock or the timer expires.</p>}
+          </section>
+        )}
+
         {question ? (
           <section className="mt-6 border-2 border-white p-4">
             <p className="text-sm font-black uppercase tracking-wide text-cjsr-magenta">Current question</p>
@@ -129,9 +173,14 @@ export function HostPage() {
           <button type="button" disabled={busy} onClick={initializeLobby} className="min-h-11 border-2 border-white px-5 py-2 font-bold disabled:opacity-50">
             Initialize lobby
           </button>
-          <button type="button" disabled={busy} onClick={advance} className="min-h-11 border-2 border-cjsr-magenta bg-cjsr-magenta px-5 py-2 font-black text-cjsr-black disabled:opacity-50">
+          <button type="button" disabled={busy || !canAdvance} onClick={() => void advance()} className="min-h-11 border-2 border-cjsr-magenta bg-cjsr-magenta px-5 py-2 font-black text-cjsr-black disabled:opacity-50">
             {getHostButtonLabel(meta)}
           </button>
+          {isQuestionLive && (
+            <button type="button" disabled={busy} onClick={() => void advance(true)} className="min-h-11 border-2 border-white px-5 py-2 font-bold disabled:opacity-50">
+              Force reveal
+            </button>
+          )}
           <button type="button" disabled={busy} onClick={skipToFinals} className="min-h-11 border-2 border-white px-5 py-2 font-bold disabled:opacity-50">
             Skip to finals
           </button>

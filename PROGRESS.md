@@ -140,6 +140,10 @@ Implemented:
 - Basic advance flow: lobby -> question -> reveal -> break/final.
 - Current question and correct-answer display.
 - Team count and joined-team list.
+- Live question timer and answer lock count.
+- Waiting-team list while a question is open.
+- Normal advance gating until every active team locks or time expires.
+- Force reveal control that finalizes missing answers.
 - Skip-to-finals control.
 - State reset back to lobby while preserving joined teams.
 
@@ -177,7 +181,7 @@ Verification:
 Known follow-up:
 
 - Scoring finalization is not implemented yet, so reveal currently shows `pointsAwarded` from Firebase, which remains zero until the scoring slice updates answers/team totals.
-- Host advance enablement does not yet wait for all teams locked or timer expiry.
+- Host advance waits for all teams locked or timer expiry, with a force reveal override.
 
 ## Phase 8
 
