@@ -1,9 +1,10 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { Team } from '../types';
 import { useGameSubscription } from '../hooks/useGameSubscription';
-import { joinTeam, makeTeamNameKey } from '../lib/firebaseData';
+import { useQuestionTimer } from '../hooks/useQuestionTimer';
+import { joinTeam, makeTeamNameKey, submitAnswerIfMissing } from '../lib/firebaseData';
 import { clearStoredTeamId, getStoredGameCode, getStoredTeamId, storeGameCode, storeTeamId } from '../lib/storage';
-import { TEAM_NAMES } from '../lib/triviaData';
+import { getPointsForQuestion, getQuestionByIndex, TEAM_NAMES } from '../lib/triviaData';
 
 type PlayerCount = 1 | 2 | 3 | 4;
 
@@ -22,6 +23,10 @@ export function PlayerPage() {
   const takenNames = useMemo(() => new Set(gameState?.teams.filter(team => team.isActive).map(team => makeTeamNameKey(team.teamName)) ?? []), [gameState?.teams]);
   const phase = gameState?.game.phase ?? 'lobby';
   const canJoin = phase === 'lobby' || phase === 'break';
+  const currentAnswer = useMemo(
+    () => gameState?.answers.find(answer => answer.teamId === storedTeamId && answer.questionIndex === gameState.game.currentQuestionIndex) ?? null,
+    [gameState?.answers, gameState?.game.currentQuestionIndex, storedTeamId],
+  );
 
   function updateGameCode(next: string) {
     const normalized = next.trim() || 'main';
@@ -58,6 +63,36 @@ export function PlayerPage() {
   }
 
   if (currentTeam) {
+    if (phase === 'question' && gameState?.game.currentQuestionIndex) {
+      return (
+        <PlayerShell status={status} error={error?.message ?? null}>
+          <QuestionPanel
+            gameCode={gameCode}
+            team={currentTeam}
+            questionIndex={gameState.game.currentQuestionIndex}
+            questionStartedAt={gameState.game.questionStartedAt}
+            answerChoice={currentAnswer?.choiceIndex ?? undefined}
+            lockedAnswerExists={currentAnswer !== null}
+            lockedCount={gameState.answers.filter(answer => answer.questionIndex === gameState.game.currentQuestionIndex).length}
+            teamCount={gameState.teams.filter(team => team.isActive).length}
+          />
+        </PlayerShell>
+      );
+    }
+
+    if (phase === 'reveal' && gameState?.game.currentQuestionIndex) {
+      return (
+        <PlayerShell status={status} error={error?.message ?? null}>
+          <RevealPanel
+            team={currentTeam}
+            questionIndex={gameState.game.currentQuestionIndex}
+            answerChoice={currentAnswer?.choiceIndex ?? null}
+            pointsAwarded={currentAnswer?.pointsAwarded ?? 0}
+          />
+        </PlayerShell>
+      );
+    }
+
     return (
       <PlayerShell status={status} error={error?.message ?? null}>
         <LobbyPanel team={currentTeam} phase={phase} canLeave={phase === 'lobby'} onLeave={leaveTeam} />
@@ -142,6 +177,151 @@ export function PlayerPage() {
         <TerritoryText />
       </section>
     </PlayerShell>
+  );
+}
+
+function QuestionPanel({
+  gameCode,
+  team,
+  questionIndex,
+  questionStartedAt,
+  answerChoice,
+  lockedAnswerExists,
+  lockedCount,
+  teamCount,
+}: {
+  gameCode: string;
+  team: Team;
+  questionIndex: number;
+  questionStartedAt: number | null;
+  answerChoice: 0 | 1 | 2 | 3 | null | undefined;
+  lockedAnswerExists: boolean;
+  lockedCount: number;
+  teamCount: number;
+}) {
+  const question = getQuestionByIndex(questionIndex);
+  const [selectedChoice, setSelectedChoice] = useState<0 | 1 | 2 | 3 | null>(answerChoice ?? null);
+  const [lockMessage, setLockMessage] = useState<string | null>(null);
+  const [isLocking, setIsLocking] = useState(false);
+  const timer = useQuestionTimer(questionStartedAt);
+
+  useEffect(() => {
+    if (answerChoice !== undefined) setSelectedChoice(answerChoice);
+  }, [answerChoice]);
+
+  const lockAnswer = useCallback(async (choice: 0 | 1 | 2 | 3 | null, timedOut = false) => {
+    if (lockedAnswerExists || isLocking) return;
+    setIsLocking(true);
+    setLockMessage(null);
+    try {
+      await submitAnswerIfMissing(gameCode, team.id, questionIndex, {
+        choiceIndex: choice,
+        timeToLockMs: questionStartedAt === null ? null : Math.max(0, timer.elapsedMs),
+      });
+      setLockMessage(timedOut ? 'Out of time.' : 'Locked. Waiting for the room...');
+    } catch (caught) {
+      setLockMessage(caught instanceof Error ? caught.message : 'Could not lock answer.');
+    } finally {
+      setIsLocking(false);
+    }
+  }, [gameCode, isLocking, lockedAnswerExists, questionIndex, questionStartedAt, team.id, timer.elapsedMs]);
+
+  useEffect(() => {
+    if (!timer.isExpired || lockedAnswerExists || isLocking) return;
+    void lockAnswer(null, true);
+  }, [timer.isExpired, lockedAnswerExists, isLocking, lockAnswer]);
+
+  if (!question) {
+    return (
+      <section className="page-card p-6">
+        <h1 className="font-display text-3xl">Question missing</h1>
+      </section>
+    );
+  }
+
+  const locked = lockedAnswerExists || lockMessage === 'Locked. Waiting for the room...' || lockMessage === 'Out of time.';
+  const pointValue = getPointsForQuestion(questionIndex);
+
+  return (
+    <section className="page-card p-5 sm:p-6" aria-live="polite">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <p className="text-sm font-black uppercase tracking-wide text-cjsr-magenta">Question {questionIndex}</p>
+          <h1 className="mt-2 text-3xl font-bold leading-tight">{question.text}</h1>
+        </div>
+        <span className="border-2 border-cjsr-magenta px-3 py-2 font-black text-cjsr-magenta">Worth {pointValue} point{pointValue !== 1 ? 's' : ''}</span>
+      </div>
+
+      <div className="mt-5" role="timer" aria-label={`${timer.secondsRemaining} seconds remaining`}>
+        <div className="flex items-center justify-between text-sm font-bold uppercase tracking-wide">
+          <span>Timer</span>
+          <span>{timer.secondsRemaining}s</span>
+        </div>
+        <div className="mt-2 h-4 border-2 border-white bg-cjsr-black">
+          <div className="h-full bg-cjsr-magenta transition-[width]" style={{ width: `${Math.round(timer.progress * 100)}%` }} />
+        </div>
+      </div>
+
+      <div className="mt-6 grid gap-3">
+        {question.choices.map((choice, index) => {
+          const choiceIndex = index as 0 | 1 | 2 | 3;
+          const selected = selectedChoice === choiceIndex;
+          return (
+            <button
+              key={choice}
+              type="button"
+              disabled={locked || timer.isExpired}
+              onClick={() => setSelectedChoice(choiceIndex)}
+              className={`min-h-16 border-2 px-4 py-3 text-left text-lg font-bold disabled:opacity-55 ${selected ? 'border-cjsr-magenta bg-cjsr-magenta text-cjsr-black' : 'border-white bg-cjsr-surface text-white'}`}
+              aria-pressed={selected}
+            >
+              <span className="mr-3 font-black">{String.fromCharCode(65 + index)}.</span>
+              {choice}
+            </button>
+          );
+        })}
+      </div>
+
+      <button
+        type="button"
+        disabled={locked || selectedChoice === null || timer.isExpired || isLocking}
+        onClick={() => void lockAnswer(selectedChoice)}
+        className="mt-5 min-h-14 w-full border-2 border-cjsr-magenta bg-cjsr-magenta px-5 py-3 text-xl font-black text-cjsr-black disabled:border-neutral-600 disabled:bg-neutral-800 disabled:text-neutral-500"
+      >
+        {isLocking ? 'LOCKING...' : locked ? 'LOCKED' : 'LOCK IN'}
+      </button>
+
+      <p className="mt-4 font-bold text-cjsr-paper" role="status">
+        {lockMessage ?? (lockedAnswerExists ? 'Locked. Waiting for the room...' : `${lockedCount} / ${teamCount} teams locked`)}
+      </p>
+    </section>
+  );
+}
+
+function RevealPanel({ team, questionIndex, answerChoice, pointsAwarded }: { team: Team; questionIndex: number; answerChoice: 0 | 1 | 2 | 3 | null; pointsAwarded: number }) {
+  const question = getQuestionByIndex(questionIndex);
+  if (!question) return null;
+  const correct = answerChoice === question.answer;
+  return (
+    <section className="page-card p-6" aria-live="polite">
+      <p className="text-sm font-black uppercase tracking-wide text-cjsr-magenta">Reveal</p>
+      <h1 className="mt-3 text-3xl font-bold">{question.text}</h1>
+      <div className="mt-5 grid gap-2">
+        {question.choices.map((choice, index) => {
+          const isCorrect = index === question.answer;
+          const isTeamChoice = index === answerChoice;
+          return (
+            <div key={choice} className={`border-2 p-3 font-bold ${isCorrect ? 'border-green-300 text-green-300' : isTeamChoice ? 'border-cjsr-magenta text-cjsr-magenta' : 'border-neutral-700 text-neutral-400'}`}>
+              {String.fromCharCode(65 + index)}. {choice}
+              {isCorrect && ' ✓'}
+              {isTeamChoice && !isCorrect && ' (your answer)'}
+            </div>
+          );
+        })}
+      </div>
+      <p className="mt-5 text-2xl font-black">{answerChoice === null ? 'Timed out.' : correct ? 'Correct!' : 'Not this time.'}</p>
+      <p className="mt-2 text-xl">+{pointsAwarded} points · Running total: {team.score}</p>
+    </section>
   );
 }
 

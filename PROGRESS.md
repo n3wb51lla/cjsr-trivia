@@ -7,8 +7,8 @@
 - [x] Phase 2: Firebase Realtime Database rules and data access
 - [ ] Phase 3: Shared synchronization layer
 - [x] Phase 4: Player join, rejoin, and lobby
-- [ ] Phase 5: Server-authoritative question timer
-- [ ] Phase 6: Answer selection, locking, and recovery
+- [x] Phase 5: Server-authoritative question timer
+- [x] Phase 6: Answer selection, locking, and recovery
 - [x] Phase 7: Host control screen
 - [ ] Phase 8: Scoring, ranking, and reveal
 - [ ] Phase 9: Breaks, finals, projector, and answer key
@@ -153,6 +153,31 @@ Known follow-up:
 
 - This first host slice uses passphrase-gated browser writes to game metadata. It is suitable for local/event MVP testing, but protected serverless host actions remain the safer production architecture.
 - Updated Firebase rules must be deployed before the host buttons can write game metadata.
+
+## Phase 5 / 6
+
+Implemented:
+
+- Player question screen with full question text and point-value badge.
+- Server-derived countdown based on Firebase-stored `questionStartedAt` plus `.info/serverTimeOffset`.
+- Visual timer bar and numeric seconds.
+- Four large answer cards with selected state.
+- Separate full-width `LOCK IN` button.
+- One-time Firebase answer write using the transaction-backed `submitAnswerIfMissing` helper.
+- Locked waiting state with live room lock count.
+- Null auto-lock when timer reaches zero and no answer exists.
+- Reveal screen highlighting correct answer, team answer, points for the question, and running total.
+
+Verification:
+
+- `npm run validate:data` passed.
+- `npm run lint` passed.
+- `npm run build` passed.
+
+Known follow-up:
+
+- Scoring finalization is not implemented yet, so reveal currently shows `pointsAwarded` from Firebase, which remains zero until the scoring slice updates answers/team totals.
+- Host advance enablement does not yet wait for all teams locked or timer expiry.
 
 ## Notes
 
