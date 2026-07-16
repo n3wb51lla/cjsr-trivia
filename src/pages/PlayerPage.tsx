@@ -129,7 +129,7 @@ export function PlayerPage() {
     <PlayerShell status={status} error={error?.message ?? null}>
       <section className="page-card p-5 sm:p-6">
         <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Player join</p>
-        <h1 className="mt-3 font-display text-4xl leading-tight">Join CJSR Volunteer Appreciation Trivia</h1>
+        <h1 className="mt-3 font-display text-4xl leading-tight">Join Volunteer Appreciation</h1>
         <p className="mt-4 max-w-2xl text-lg text-cjsr-paper">
           Edmonton's independent radio 88.5 FM. Listener-supported, volunteer-powered.
         </p>
@@ -141,7 +141,7 @@ export function PlayerPage() {
               <button
                 key={count}
                 type="button"
-                className={`min-h-14 border-2 px-3 py-2 text-xl font-black ${playerCount === count ? 'border-cjsr-red bg-cjsr-red text-white' : 'border-white bg-cjsr-surface text-white'}`}
+                className={`min-h-14 border-2 px-3 py-2 text-xl font-black ${playerCount === count ? 'border-cjsr-red bg-cjsr-red text-cjsr-ink' : 'border-cjsr-ink bg-cjsr-surface text-cjsr-ink'}`}
                 onClick={() => setPlayerCount(count)}
                 aria-pressed={playerCount === count}
               >
@@ -162,7 +162,7 @@ export function PlayerPage() {
                   type="button"
                   disabled={taken || !playerCount || joiningName !== null}
                   onClick={() => void handleJoin(teamName)}
-                  className="min-h-14 border-2 border-white bg-cjsr-surface px-4 py-3 text-left font-bold text-white disabled:border-neutral-600 disabled:bg-neutral-900 disabled:text-neutral-500"
+                  className="min-h-14 border-2 border-cjsr-ink bg-cjsr-surface px-4 py-3 text-left font-bold text-cjsr-ink disabled:border-cjsr-paper/40 disabled:bg-cjsr-surface disabled:text-cjsr-paper/70"
                 >
                   <span>{teamName}</span>
                   {taken && <span className="ml-2 text-sm uppercase tracking-wide">(taken)</span>}
@@ -201,7 +201,7 @@ function FinalPanel({ team, leaderboard }: { team: Team | null; leaderboard: Lea
         {leaderboard.slice(0, 10).map(entry => (
           <li
             key={entry.teamId}
-            className={`grid grid-cols-[3rem_1fr_auto] items-center gap-3 border-2 p-3 ${entry.teamId === team?.id ? 'border-cjsr-red bg-cjsr-red text-white' : 'border-white/30 bg-cjsr-surface text-white'}`}
+            className={`grid grid-cols-[3rem_1fr_auto] items-center gap-3 border-2 p-3 ${entry.teamId === team?.id ? 'border-cjsr-red bg-cjsr-red text-cjsr-ink' : 'border-cjsr-ink/30 bg-cjsr-surface text-cjsr-ink'}`}
           >
             <span className="text-xl font-black">#{entry.rank}</span>
             <span className="min-w-0 font-bold">{entry.teamName}</span>
@@ -292,7 +292,7 @@ function QuestionPanel({
           <span>Timer</span>
           <span>{timer.secondsRemaining}s</span>
         </div>
-        <div className="mt-2 h-4 border-2 border-white bg-cjsr-black">
+        <div className="mt-2 h-4 border-2 border-cjsr-ink bg-cjsr-black">
           <div className="h-full bg-cjsr-red transition-[width]" style={{ width: `${Math.round(timer.progress * 100)}%` }} />
         </div>
       </div>
@@ -307,7 +307,7 @@ function QuestionPanel({
               type="button"
               disabled={locked || timer.isExpired}
               onClick={() => setSelectedChoice(choiceIndex)}
-              className={`min-h-16 border-2 px-4 py-3 text-left text-lg font-bold disabled:opacity-55 ${selected ? 'border-cjsr-red bg-cjsr-red text-white' : 'border-white bg-cjsr-surface text-white'}`}
+              className={`min-h-16 border-2 px-4 py-3 text-left text-lg font-bold disabled:opacity-55 ${selected ? 'border-cjsr-red bg-cjsr-red text-cjsr-ink' : 'border-cjsr-ink bg-cjsr-surface text-cjsr-ink'}`}
               aria-pressed={selected}
             >
               <span className="mr-3 font-black">{String.fromCharCode(65 + index)}.</span>
@@ -321,7 +321,7 @@ function QuestionPanel({
         type="button"
         disabled={locked || selectedChoice === null || timer.isExpired || isLocking}
         onClick={() => void lockAnswer(selectedChoice)}
-        className="mt-5 min-h-14 w-full border-2 border-cjsr-red bg-cjsr-red px-5 py-3 text-xl font-black text-white disabled:border-neutral-600 disabled:bg-neutral-800 disabled:text-neutral-500"
+        className="mt-5 min-h-14 w-full border-2 border-cjsr-red bg-cjsr-red px-5 py-3 text-xl font-black text-cjsr-ink disabled:border-cjsr-paper/40 disabled:bg-cjsr-surface disabled:text-cjsr-paper/70"
       >
         {isLocking ? 'LOCKING...' : locked ? 'LOCKED' : 'LOCK IN'}
       </button>
@@ -386,7 +386,7 @@ function LobbyPanel({ team, phase, canLeave, onLeave }: { team: Team; phase: str
         type="button"
         disabled={!canLeave}
         onClick={onLeave}
-        className="mt-6 min-h-11 border-2 border-cjsr-red px-4 py-2 font-bold text-white disabled:border-neutral-600 disabled:text-neutral-500"
+        className="mt-6 min-h-11 border-2 border-cjsr-red px-4 py-2 font-bold text-cjsr-ink disabled:border-neutral-600 disabled:text-neutral-500"
       >
         Leave / change team
       </button>
@@ -403,4 +403,3 @@ function TerritoryText() {
     </p>
   );
 }
-

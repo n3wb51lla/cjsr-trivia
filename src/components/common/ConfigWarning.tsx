@@ -6,7 +6,7 @@ export function ConfigWarning() {
   if (status.isConfigured) return null;
 
   return (
-    <section className="border-b-4 border-cjsr-red bg-cjsr-surface px-4 py-3 text-white" role="status" aria-live="polite">
+    <section className="border-b-4 border-cjsr-red bg-cjsr-surface px-4 py-3 text-cjsr-ink" role="status" aria-live="polite">
       <div className="mx-auto max-w-6xl">
         <p className="font-bold">Configuration warning</p>
         <p className="mt-1 text-sm">

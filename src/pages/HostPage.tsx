@@ -124,11 +124,11 @@ export function HostPage() {
           <input
             id="host-passphrase"
             type="password"
-            className="mt-2 min-h-11 w-full border-2 border-cjsr-red bg-cjsr-black px-3 py-2 text-white"
+            className="mt-2 min-h-11 w-full border-2 border-cjsr-red bg-cjsr-black px-3 py-2 text-cjsr-ink"
             value={passphrase}
             onChange={event => setPassphrase(event.target.value)}
           />
-          <button type="submit" className="mt-4 min-h-11 border-2 border-cjsr-red bg-cjsr-red px-5 py-2 font-black text-white">
+          <button type="submit" className="mt-4 min-h-11 border-2 border-cjsr-red bg-cjsr-red px-5 py-2 font-black text-cjsr-ink">
             Unlock host
           </button>
         </form>
@@ -143,7 +143,7 @@ export function HostPage() {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Host controls</p>
-            <h1 className="mt-2 font-display text-4xl leading-tight">Trivia control desk</h1>
+            <h1 className="mt-2 font-display text-4xl leading-tight">Control desk</h1>
           </div>
           <ConnectionBadge status={status} error={error?.message ?? null} />
         </div>
@@ -155,7 +155,7 @@ export function HostPage() {
         </div>
 
         {isQuestionLive && (
-          <section className="mt-6 border-2 border-white p-4" aria-live="polite">
+          <section className="mt-6 border-2 border-cjsr-ink p-4" aria-live="polite">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Live lock status</p>
@@ -166,7 +166,7 @@ export function HostPage() {
                 <p className="text-3xl font-black">{timer.secondsRemaining}s</p>
               </div>
             </div>
-            <div className="mt-4 h-4 border-2 border-white bg-cjsr-black" role="timer" aria-label={`${timer.secondsRemaining} seconds remaining`}>
+            <div className="mt-4 h-4 border-2 border-cjsr-ink bg-cjsr-black" role="timer" aria-label={`${timer.secondsRemaining} seconds remaining`}>
               <div className="h-full bg-cjsr-red transition-[width]" style={{ width: `${Math.round(timer.progress * 100)}%` }} />
             </div>
             {unlockedTeams.length > 0 ? (
@@ -181,7 +181,7 @@ export function HostPage() {
         )}
 
         {question ? (
-          <section className="mt-6 border-2 border-white p-4">
+          <section className="mt-6 border-2 border-cjsr-ink p-4">
             <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Current question</p>
             <h2 className="mt-2 text-2xl font-bold">{question.text}</h2>
             <p className="mt-3 text-lg text-green-300">Correct: {question.choices[question.answer]}</p>
@@ -191,18 +191,18 @@ export function HostPage() {
         )}
 
         <div className="mt-6 flex flex-wrap gap-3">
-          <button type="button" disabled={busy} onClick={initializeLobby} className="min-h-11 border-2 border-white px-5 py-2 font-bold disabled:opacity-50">
+          <button type="button" disabled={busy} onClick={initializeLobby} className="min-h-11 border-2 border-cjsr-ink px-5 py-2 font-bold disabled:opacity-50">
             Initialize lobby
           </button>
-          <button type="button" disabled={busy || !canAdvance} onClick={() => void advance()} className="min-h-11 border-2 border-cjsr-red bg-cjsr-red px-5 py-2 font-black text-white disabled:opacity-50">
+          <button type="button" disabled={busy || !canAdvance} onClick={() => void advance()} className="min-h-11 border-2 border-cjsr-red bg-cjsr-red px-5 py-2 font-black text-cjsr-ink disabled:opacity-50">
             {getHostButtonLabel(meta)}
           </button>
           {isQuestionLive && (
-            <button type="button" disabled={busy} onClick={() => void advance(true)} className="min-h-11 border-2 border-white px-5 py-2 font-bold disabled:opacity-50">
+            <button type="button" disabled={busy} onClick={() => void advance(true)} className="min-h-11 border-2 border-cjsr-ink px-5 py-2 font-bold disabled:opacity-50">
               Force reveal
             </button>
           )}
-          <button type="button" disabled={busy} onClick={skipToFinals} className="min-h-11 border-2 border-white px-5 py-2 font-bold disabled:opacity-50">
+          <button type="button" disabled={busy} onClick={skipToFinals} className="min-h-11 border-2 border-cjsr-ink px-5 py-2 font-bold disabled:opacity-50">
             Skip to finals
           </button>
           <button type="button" disabled={busy} onClick={resetStateOnly} className="min-h-11 border-2 border-cjsr-red px-5 py-2 font-bold text-cjsr-red-light disabled:opacity-50">
@@ -248,7 +248,7 @@ function ScorekeeperPanel({
           const team = teams.find(candidate => candidate.id === entry.teamId);
           if (!team) return null;
           return (
-            <li key={team.id} className="border border-white/30 p-3">
+            <li key={team.id} className="border border-cjsr-ink/30 p-3">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <span className="font-bold">#{entry.rank} {team.teamName}</span>
@@ -263,7 +263,7 @@ function ScorekeeperPanel({
                   type="button"
                   disabled={busy || team.score <= 0}
                   onClick={() => void onScoreChange(team, team.score - 1)}
-                  className="min-h-10 border border-white px-3 py-1 font-black disabled:border-neutral-700 disabled:text-neutral-500"
+                  className="min-h-10 border border-cjsr-ink px-3 py-1 font-black disabled:border-neutral-700 disabled:text-neutral-500"
                   aria-label={`Subtract one point from ${team.teamName}`}
                 >
                   -1
@@ -287,13 +287,13 @@ function ScorekeeperPanel({
                   onKeyDown={event => {
                     if (event.key === 'Enter') event.currentTarget.blur();
                   }}
-                  className="min-h-10 w-full border border-white/50 bg-cjsr-black px-2 py-1 text-center font-bold text-white disabled:opacity-50"
+                  className="min-h-10 w-full border border-cjsr-ink/50 bg-cjsr-black px-2 py-1 text-center font-bold text-cjsr-ink disabled:opacity-50"
                 />
                 <button
                   type="button"
                   disabled={busy}
                   onClick={() => void onScoreChange(team, team.score + 1)}
-                  className="min-h-10 border border-white px-3 py-1 font-black disabled:border-neutral-700 disabled:text-neutral-500"
+                  className="min-h-10 border border-cjsr-ink px-3 py-1 font-black disabled:border-neutral-700 disabled:text-neutral-500"
                   aria-label={`Add one point to ${team.teamName}`}
                 >
                   +1
@@ -319,7 +319,7 @@ function ScorekeeperPanel({
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="border-2 border-white p-3">
+    <div className="border-2 border-cjsr-ink p-3">
       <p className="text-xs font-black uppercase tracking-wide text-cjsr-red-light">{label}</p>
       <p className="mt-1 text-xl font-bold">{value}</p>
     </div>

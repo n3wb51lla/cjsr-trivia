@@ -7,15 +7,23 @@
   --color-cjsr-red-light: #FF3B30;
   --color-cjsr-black: #0d0d0d;
   --color-cjsr-surface: #1a1a1a;
+  --color-cjsr-ink: #ffffff;
   --color-cjsr-yellow: #fff200;
   --color-cjsr-cyan: #42d9ff;
   --color-cjsr-paper: #e5e5e5;
   --font-display: Archivo Black;
   --font-body: Inter;
+  color-scheme: dark;
 }
 
-html {
-  color-scheme: dark;
+:root[data-theme='light'] {
+  --color-cjsr-red-light: #8a0f00;
+  --color-cjsr-black: #efece4;
+  --color-cjsr-surface: #ffffff;
+  --color-cjsr-ink: #141311;
+  --color-cjsr-paper: #4a4744;
+  --color-cjsr-cyan: #0077b6;
+  color-scheme: light;
 }
 
 body {
@@ -55,7 +63,7 @@ a {
   align-items: center;
   border: 2px solid var(--color-cjsr-red);
   background: var(--color-cjsr-surface);
-  color: white;
+  color: var(--color-cjsr-ink);
   padding: 0.55rem 0.8rem;
   text-decoration: none;
 }
@@ -63,6 +71,19 @@ a {
 .page-card {
   border: 2px solid var(--color-cjsr-red);
   background: var(--color-cjsr-surface);
-  color: white;
+  color: var(--color-cjsr-ink);
   box-shadow: 8px 8px 0 var(--color-cjsr-red);
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--color-cjsr-red);
+  background: var(--color-cjsr-surface);
+  color: var(--color-cjsr-ink);
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
+  cursor: pointer;
 }

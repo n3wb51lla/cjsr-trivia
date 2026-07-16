@@ -3,8 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#ec008c" />
+    <meta name="theme-color" content="#6F0B00" />
     <title>CJSR Volunteer Appreciation Trivia</title>
+    <script>
+      (function () {
+        var stored = localStorage.getItem('cjsr-theme');
+        document.documentElement.dataset.theme = stored === 'light' ? 'light' : 'dark';
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

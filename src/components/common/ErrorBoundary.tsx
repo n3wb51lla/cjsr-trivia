@@ -22,7 +22,7 @@ export class ErrorBoundary extends Component<Props, State> {
   render() {
     if (this.state.hasError) {
       return (
-        <main className="min-h-screen bg-cjsr-black p-6 text-white">
+        <main className="min-h-screen bg-cjsr-black p-6 text-cjsr-ink">
           <section className="page-card mx-auto max-w-xl p-6" role="alert">
             <h1 className="font-display text-3xl">Something went sideways.</h1>
             <p className="mt-4 text-lg">

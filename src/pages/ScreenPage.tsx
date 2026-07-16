@@ -22,7 +22,7 @@ export function ScreenPage() {
       <ScreenShell status={status} error={error?.message ?? null}>
         <section className="border-2 border-cjsr-red bg-cjsr-surface p-8 text-center">
           <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Projector screen</p>
-          <h1 className="mt-3 font-display text-5xl leading-tight">CJSR Trivia Night</h1>
+          <h1 className="mt-3 font-display text-5xl leading-tight">Waiting for host</h1>
           <p className="mt-4 text-xl text-cjsr-paper">Waiting for the host to initialize the lobby.</p>
         </section>
       </ScreenShell>
@@ -66,7 +66,7 @@ function ScreenShell({ status, error, children }: { status: string; error: strin
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <img src={cjsrLogo} alt="" className="h-12 w-12" />
-          <p className="font-display text-3xl uppercase text-white">CJSR Trivia</p>
+          <p className="font-display text-3xl uppercase text-cjsr-ink">CJSR Trivia</p>
         </div>
         <div className="text-right text-sm font-bold uppercase tracking-wide text-cjsr-paper" aria-live="polite">
           <p>Connection: {status}</p>
@@ -83,7 +83,7 @@ function LobbyScreen({ teamCount, leaderboard }: { teamCount: number; leaderboar
     <div className="grid min-h-[62vh] gap-5 lg:grid-cols-[1.4fr_1fr]">
       <section className="flex flex-col justify-center border-2 border-cjsr-red bg-cjsr-surface p-8">
         <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Lobby</p>
-        <h1 className="mt-3 font-display text-6xl leading-none">Volunteer Appreciation Trivia</h1>
+        <h1 className="mt-3 font-display text-6xl leading-none">Volunteer Appreciation</h1>
         <p className="mt-6 text-2xl text-cjsr-paper">{teamCount} team{teamCount !== 1 ? 's' : ''} joined</p>
       </section>
       <LeaderboardPanel leaderboard={leaderboard} title="Teams" />
@@ -115,7 +115,7 @@ function QuestionScreen({
           <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Question {questionIndex}</p>
           <h1 className="mt-4 max-w-5xl text-5xl font-black leading-tight">{questionText}</h1>
         </div>
-        <div className="border-2 border-white px-5 py-4 text-center">
+        <div className="border-2 border-cjsr-ink px-5 py-4 text-center">
           <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Worth</p>
           <p className="text-4xl font-black">{points}</p>
         </div>
@@ -126,7 +126,7 @@ function QuestionScreen({
           <p className="font-display text-6xl">{secondsRemaining}s</p>
           <p className="text-2xl font-bold text-cjsr-paper">{lockedCount} / {activeTeamCount} teams locked</p>
         </div>
-        <div className="mt-4 h-8 border-2 border-white bg-cjsr-black">
+        <div className="mt-4 h-8 border-2 border-cjsr-ink bg-cjsr-black">
           <div className="h-full bg-cjsr-red transition-[width]" style={{ width: `${Math.round(progress * 100)}%` }} />
         </div>
       </div>
@@ -155,7 +155,7 @@ function RevealScreen({
         <h1 className="mt-3 text-4xl font-black leading-tight">{questionText}</h1>
         <div className="mt-7 grid gap-3">
           {choices.map((choice, index) => (
-            <div key={choice} className={`border-2 p-4 text-2xl font-bold ${index === correctAnswer ? 'border-green-300 text-green-300' : 'border-white/30 text-cjsr-paper'}`}>
+            <div key={choice} className={`border-2 p-4 text-2xl font-bold ${index === correctAnswer ? 'border-green-300 text-green-300' : 'border-cjsr-ink/30 text-cjsr-paper'}`}>
               <span className="mr-3 font-black">{String.fromCharCode(65 + index)}.</span>
               {choice}
             </div>
@@ -234,7 +234,7 @@ function LeaderboardPanel({
       ) : (
         <ol className={`${projector ? 'mt-0' : 'mt-4'} grid gap-3 ${columns === 2 ? 'lg:grid-cols-2' : ''}`}>
           {visibleRows.map(entry => (
-            <li key={entry.teamId} className={`grid items-center gap-3 border border-white/30 ${projector ? 'grid-cols-[3rem_minmax(0,1fr)_3rem] p-3 lg:grid-cols-[4.5rem_minmax(0,1fr)_5rem] lg:p-4' : 'grid-cols-[3rem_minmax(0,1fr)_auto]'} ${compact ? 'p-2' : projector ? '' : 'p-3'}`}>
+            <li key={entry.teamId} className={`grid items-center gap-3 border border-cjsr-ink/30 ${projector ? 'grid-cols-[3rem_minmax(0,1fr)_3rem] p-3 lg:grid-cols-[4.5rem_minmax(0,1fr)_5rem] lg:p-4' : 'grid-cols-[3rem_minmax(0,1fr)_auto]'} ${compact ? 'p-2' : projector ? '' : 'p-3'}`}>
               <span className={`${projector ? 'text-2xl lg:text-4xl' : compact ? 'text-xl' : 'text-2xl'} font-black`}>#{entry.rank}</span>
               <span className={`min-w-0 font-bold leading-tight ${projector ? 'text-xl lg:text-3xl' : compact ? 'text-lg' : 'text-xl'}`}>{entry.teamName}</span>
               <span className={`${projector ? 'text-3xl lg:text-5xl' : compact ? 'text-xl' : 'text-2xl'} font-black text-cjsr-red-light`}>{entry.score}</span>
