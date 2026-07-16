@@ -3,7 +3,8 @@
 @tailwind utilities;
 
 :root {
-  --color-cjsr-magenta: #ff4f78;
+  --color-cjsr-red: #6F0B00;
+  --color-cjsr-red-light: #FF3B30;
   --color-cjsr-black: #0d0d0d;
   --color-cjsr-surface: #1a1a1a;
   --color-cjsr-yellow: #fff200;
@@ -39,8 +40,8 @@ a {
   top: -4rem;
   z-index: 50;
   border: 3px solid var(--color-cjsr-black);
-  background: var(--color-cjsr-magenta);
-  color: var(--color-cjsr-black);
+  background: var(--color-cjsr-red);
+  color: white;
   padding: 0.75rem 1rem;
   font-weight: 800;
 }
@@ -52,7 +53,7 @@ a {
 .nav-link {
   display: inline-flex;
   align-items: center;
-  border: 2px solid var(--color-cjsr-magenta);
+  border: 2px solid var(--color-cjsr-red);
   background: var(--color-cjsr-surface);
   color: white;
   padding: 0.55rem 0.8rem;
@@ -60,8 +61,8 @@ a {
 }
 
 .page-card {
-  border: 2px solid var(--color-cjsr-magenta);
+  border: 2px solid var(--color-cjsr-red);
   background: var(--color-cjsr-surface);
   color: white;
-  box-shadow: 8px 8px 0 var(--color-cjsr-magenta);
+  box-shadow: 8px 8px 0 var(--color-cjsr-red);
 }

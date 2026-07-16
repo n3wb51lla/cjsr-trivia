@@ -5,7 +5,8 @@ export default {
     extend: {
       colors: {
         cjsr: {
-          magenta: 'var(--color-cjsr-magenta)',
+          red: 'var(--color-cjsr-red)',
+          'red-light': 'var(--color-cjsr-red-light)',
           black: 'var(--color-cjsr-black)',
           surface: 'var(--color-cjsr-surface)',
           yellow: 'var(--color-cjsr-yellow)',

@@ -5,6 +5,7 @@ import { DEFAULT_GAME_CODE } from '../lib/hostState';
 import { buildLeaderboard } from '../lib/leaderboard';
 import { getPointsForQuestion, getQuestionByIndex } from '../lib/triviaData';
 import type { Answer, LeaderboardEntry } from '../types';
+import cjsrLogo from '../assets/cjsr-logo.png';
 
 export function ScreenPage() {
   const { gameState, status, error } = useGameSubscription(DEFAULT_GAME_CODE);
@@ -19,8 +20,8 @@ export function ScreenPage() {
   if (!gameState) {
     return (
       <ScreenShell status={status} error={error?.message ?? null}>
-        <section className="border-2 border-cjsr-magenta bg-cjsr-surface p-8 text-center">
-          <p className="text-sm font-black uppercase tracking-wide text-cjsr-magenta">Projector screen</p>
+        <section className="border-2 border-cjsr-red bg-cjsr-surface p-8 text-center">
+          <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Projector screen</p>
           <h1 className="mt-3 font-display text-5xl leading-tight">CJSR Trivia Night</h1>
           <p className="mt-4 text-xl text-cjsr-paper">Waiting for the host to initialize the lobby.</p>
         </section>
@@ -63,10 +64,13 @@ function ScreenShell({ status, error, children }: { status: string; error: strin
   return (
     <div className="min-h-[calc(100vh-9rem)]">
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-        <p className="font-display text-3xl uppercase text-white">CJSR Trivia</p>
+        <div className="flex items-center gap-3">
+          <img src={cjsrLogo} alt="" className="h-12 w-12" />
+          <p className="font-display text-3xl uppercase text-white">CJSR Trivia</p>
+        </div>
         <div className="text-right text-sm font-bold uppercase tracking-wide text-cjsr-paper" aria-live="polite">
           <p>Connection: {status}</p>
-          {error && <p className="text-cjsr-magenta">{error}</p>}
+          {error && <p className="text-cjsr-red-light">{error}</p>}
         </div>
       </div>
       {children}
@@ -77,8 +81,8 @@ function ScreenShell({ status, error, children }: { status: string; error: strin
 function LobbyScreen({ teamCount, leaderboard }: { teamCount: number; leaderboard: LeaderboardEntry[] }) {
   return (
     <div className="grid min-h-[62vh] gap-5 lg:grid-cols-[1.4fr_1fr]">
-      <section className="flex flex-col justify-center border-2 border-cjsr-magenta bg-cjsr-surface p-8">
-        <p className="text-sm font-black uppercase tracking-wide text-cjsr-magenta">Lobby</p>
+      <section className="flex flex-col justify-center border-2 border-cjsr-red bg-cjsr-surface p-8">
+        <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Lobby</p>
         <h1 className="mt-3 font-display text-6xl leading-none">Volunteer Appreciation Trivia</h1>
         <p className="mt-6 text-2xl text-cjsr-paper">{teamCount} team{teamCount !== 1 ? 's' : ''} joined</p>
       </section>
@@ -105,14 +109,14 @@ function QuestionScreen({
   activeTeamCount: number;
 }) {
   return (
-    <section className="border-2 border-cjsr-magenta bg-cjsr-surface p-8">
+    <section className="border-2 border-cjsr-red bg-cjsr-surface p-8">
       <div className="flex flex-wrap items-start justify-between gap-6">
         <div>
-          <p className="text-sm font-black uppercase tracking-wide text-cjsr-magenta">Question {questionIndex}</p>
+          <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Question {questionIndex}</p>
           <h1 className="mt-4 max-w-5xl text-5xl font-black leading-tight">{questionText}</h1>
         </div>
         <div className="border-2 border-white px-5 py-4 text-center">
-          <p className="text-sm font-black uppercase tracking-wide text-cjsr-magenta">Worth</p>
+          <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Worth</p>
           <p className="text-4xl font-black">{points}</p>
         </div>
       </div>
@@ -123,7 +127,7 @@ function QuestionScreen({
           <p className="text-2xl font-bold text-cjsr-paper">{lockedCount} / {activeTeamCount} teams locked</p>
         </div>
         <div className="mt-4 h-8 border-2 border-white bg-cjsr-black">
-          <div className="h-full bg-cjsr-magenta transition-[width]" style={{ width: `${Math.round(progress * 100)}%` }} />
+          <div className="h-full bg-cjsr-red transition-[width]" style={{ width: `${Math.round(progress * 100)}%` }} />
         </div>
       </div>
     </section>
@@ -146,8 +150,8 @@ function RevealScreen({
   const correctCount = answers.filter(answer => answer.isCorrect).length;
   return (
     <div className="grid gap-5 lg:grid-cols-[1.35fr_1fr]">
-      <section className="border-2 border-cjsr-magenta bg-cjsr-surface p-8">
-        <p className="text-sm font-black uppercase tracking-wide text-cjsr-magenta">Reveal</p>
+      <section className="border-2 border-cjsr-red bg-cjsr-surface p-8">
+        <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Reveal</p>
         <h1 className="mt-3 text-4xl font-black leading-tight">{questionText}</h1>
         <div className="mt-7 grid gap-3">
           {choices.map((choice, index) => (
@@ -193,10 +197,10 @@ function ScoreboardScreen({
   leaderboard: LeaderboardEntry[];
 }) {
   return (
-    <section className="border-2 border-cjsr-magenta bg-cjsr-surface p-6">
+    <section className="border-2 border-cjsr-red bg-cjsr-surface p-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-sm font-black uppercase tracking-wide text-cjsr-magenta">{eyebrow}</p>
+          <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">{eyebrow}</p>
           <h1 className="mt-1 font-display text-5xl leading-none">{title}</h1>
         </div>
         {detail && <p className="text-right text-2xl font-bold text-cjsr-paper">{detail}</p>}
@@ -223,7 +227,7 @@ function LeaderboardPanel({
 }) {
   const visibleRows = limit ? leaderboard.slice(0, limit) : leaderboard;
   return (
-    <aside className={projector ? 'mt-6' : 'border-2 border-cjsr-magenta bg-cjsr-surface p-5'}>
+    <aside className={projector ? 'mt-6' : 'border-2 border-cjsr-red bg-cjsr-surface p-5'}>
       {!projector && <h2 className="font-display text-3xl">{title}</h2>}
       {visibleRows.length === 0 ? (
         <p className="mt-4 text-xl text-cjsr-paper">No teams yet.</p>
@@ -233,7 +237,7 @@ function LeaderboardPanel({
             <li key={entry.teamId} className={`grid items-center gap-3 border border-white/30 ${projector ? 'grid-cols-[3rem_minmax(0,1fr)_3rem] p-3 lg:grid-cols-[4.5rem_minmax(0,1fr)_5rem] lg:p-4' : 'grid-cols-[3rem_minmax(0,1fr)_auto]'} ${compact ? 'p-2' : projector ? '' : 'p-3'}`}>
               <span className={`${projector ? 'text-2xl lg:text-4xl' : compact ? 'text-xl' : 'text-2xl'} font-black`}>#{entry.rank}</span>
               <span className={`min-w-0 font-bold leading-tight ${projector ? 'text-xl lg:text-3xl' : compact ? 'text-lg' : 'text-xl'}`}>{entry.teamName}</span>
-              <span className={`${projector ? 'text-3xl lg:text-5xl' : compact ? 'text-xl' : 'text-2xl'} font-black text-cjsr-magenta`}>{entry.score}</span>
+              <span className={`${projector ? 'text-3xl lg:text-5xl' : compact ? 'text-xl' : 'text-2xl'} font-black text-cjsr-red-light`}>{entry.score}</span>
               {entry.isTiedOnScore && <span className="col-span-3 text-sm font-bold uppercase tracking-wide text-cjsr-paper">Tie-break: fastest total lock time</span>}
             </li>
           ))}

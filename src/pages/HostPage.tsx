@@ -117,22 +117,22 @@ export function HostPage() {
   if (!isUnlocked) {
     return (
       <section className="page-card p-6">
-        <p className="text-sm font-black uppercase tracking-wide text-cjsr-magenta">Host controls</p>
+        <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Host controls</p>
         <h1 className="mt-3 font-display text-4xl leading-tight">Unlock control desk</h1>
         <form className="mt-6 max-w-sm" onSubmit={unlock}>
           <label className="block text-sm font-bold uppercase tracking-wide" htmlFor="host-passphrase">Host passphrase</label>
           <input
             id="host-passphrase"
             type="password"
-            className="mt-2 min-h-11 w-full border-2 border-cjsr-magenta bg-cjsr-black px-3 py-2 text-white"
+            className="mt-2 min-h-11 w-full border-2 border-cjsr-red bg-cjsr-black px-3 py-2 text-white"
             value={passphrase}
             onChange={event => setPassphrase(event.target.value)}
           />
-          <button type="submit" className="mt-4 min-h-11 border-2 border-cjsr-magenta bg-cjsr-magenta px-5 py-2 font-black text-cjsr-black">
+          <button type="submit" className="mt-4 min-h-11 border-2 border-cjsr-red bg-cjsr-red px-5 py-2 font-black text-white">
             Unlock host
           </button>
         </form>
-        {message && <p className="mt-4 font-bold text-cjsr-magenta" role="alert">{message}</p>}
+        {message && <p className="mt-4 font-bold text-cjsr-red-light" role="alert">{message}</p>}
       </section>
     );
   }
@@ -142,7 +142,7 @@ export function HostPage() {
       <section className="page-card p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="text-sm font-black uppercase tracking-wide text-cjsr-magenta">Host controls</p>
+            <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Host controls</p>
             <h1 className="mt-2 font-display text-4xl leading-tight">Trivia control desk</h1>
           </div>
           <ConnectionBadge status={status} error={error?.message ?? null} />
@@ -158,16 +158,16 @@ export function HostPage() {
           <section className="mt-6 border-2 border-white p-4" aria-live="polite">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <p className="text-sm font-black uppercase tracking-wide text-cjsr-magenta">Live lock status</p>
+                <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Live lock status</p>
                 <h2 className="mt-1 text-2xl font-bold">{lockedCount} / {activeTeams.length} teams locked</h2>
               </div>
               <div className="text-right">
-                <p className="text-sm font-black uppercase tracking-wide text-cjsr-magenta">Timer</p>
+                <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Timer</p>
                 <p className="text-3xl font-black">{timer.secondsRemaining}s</p>
               </div>
             </div>
             <div className="mt-4 h-4 border-2 border-white bg-cjsr-black" role="timer" aria-label={`${timer.secondsRemaining} seconds remaining`}>
-              <div className="h-full bg-cjsr-magenta transition-[width]" style={{ width: `${Math.round(timer.progress * 100)}%` }} />
+              <div className="h-full bg-cjsr-red transition-[width]" style={{ width: `${Math.round(timer.progress * 100)}%` }} />
             </div>
             {unlockedTeams.length > 0 ? (
               <p className="mt-3 text-sm font-bold text-cjsr-paper">
@@ -182,7 +182,7 @@ export function HostPage() {
 
         {question ? (
           <section className="mt-6 border-2 border-white p-4">
-            <p className="text-sm font-black uppercase tracking-wide text-cjsr-magenta">Current question</p>
+            <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Current question</p>
             <h2 className="mt-2 text-2xl font-bold">{question.text}</h2>
             <p className="mt-3 text-lg text-green-300">Correct: {question.choices[question.answer]}</p>
           </section>
@@ -194,7 +194,7 @@ export function HostPage() {
           <button type="button" disabled={busy} onClick={initializeLobby} className="min-h-11 border-2 border-white px-5 py-2 font-bold disabled:opacity-50">
             Initialize lobby
           </button>
-          <button type="button" disabled={busy || !canAdvance} onClick={() => void advance()} className="min-h-11 border-2 border-cjsr-magenta bg-cjsr-magenta px-5 py-2 font-black text-cjsr-black disabled:opacity-50">
+          <button type="button" disabled={busy || !canAdvance} onClick={() => void advance()} className="min-h-11 border-2 border-cjsr-red bg-cjsr-red px-5 py-2 font-black text-white disabled:opacity-50">
             {getHostButtonLabel(meta)}
           </button>
           {isQuestionLive && (
@@ -205,11 +205,11 @@ export function HostPage() {
           <button type="button" disabled={busy} onClick={skipToFinals} className="min-h-11 border-2 border-white px-5 py-2 font-bold disabled:opacity-50">
             Skip to finals
           </button>
-          <button type="button" disabled={busy} onClick={resetStateOnly} className="min-h-11 border-2 border-cjsr-magenta px-5 py-2 font-bold text-cjsr-magenta disabled:opacity-50">
+          <button type="button" disabled={busy} onClick={resetStateOnly} className="min-h-11 border-2 border-cjsr-red px-5 py-2 font-bold text-cjsr-red-light disabled:opacity-50">
             Reset game
           </button>
         </div>
-        {message && <p className="mt-4 font-bold text-cjsr-magenta" role="status">{message}</p>}
+        {message && <p className="mt-4 font-bold text-cjsr-red-light" role="status">{message}</p>}
       </section>
 
       <ScorekeeperPanel
@@ -256,7 +256,7 @@ function ScorekeeperPanel({
                     {team.playerCount} player{team.playerCount !== 1 ? 's' : ''}{entry.isTiedOnScore && ' - tied'}
                   </span>
                 </div>
-                <span className="text-2xl font-black text-cjsr-magenta">{team.score}</span>
+                <span className="text-2xl font-black text-cjsr-red-light">{team.score}</span>
               </div>
               <div className="mt-3 grid grid-cols-[auto_1fr_auto_auto] items-center gap-2">
                 <button
@@ -302,7 +302,7 @@ function ScorekeeperPanel({
                   type="button"
                   disabled={busy || !canKick}
                   onClick={() => void onKick(team)}
-                  className="min-h-10 border border-cjsr-magenta px-2 py-1 text-xs font-black uppercase tracking-wide text-cjsr-magenta disabled:border-neutral-700 disabled:text-neutral-500"
+                  className="min-h-10 border border-cjsr-red px-2 py-1 text-xs font-black uppercase tracking-wide text-cjsr-red-light disabled:border-neutral-700 disabled:text-neutral-500"
                 >
                   Kick
                 </button>
@@ -320,7 +320,7 @@ function ScorekeeperPanel({
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="border-2 border-white p-3">
-      <p className="text-xs font-black uppercase tracking-wide text-cjsr-magenta">{label}</p>
+      <p className="text-xs font-black uppercase tracking-wide text-cjsr-red-light">{label}</p>
       <p className="mt-1 text-xl font-bold">{value}</p>
     </div>
   );
@@ -330,7 +330,7 @@ function ConnectionBadge({ status, error }: { status: string; error: string | nu
   return (
     <div className="text-right text-sm" aria-live="polite">
       <p className="font-black uppercase tracking-wide">Connection: {status}</p>
-      {error && <p className="text-cjsr-magenta">{error}</p>}
+      {error && <p className="text-cjsr-red-light">{error}</p>}
     </div>
   );
 }

@@ -115,7 +115,7 @@ export function PlayerPage() {
     return (
       <PlayerShell status={status} error={error?.message ?? null}>
         <section className="page-card p-6" aria-live="polite">
-          <p className="text-sm font-black uppercase tracking-wide text-cjsr-magenta">Round in progress</p>
+          <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Round in progress</p>
           <h1 className="mt-3 font-display text-4xl leading-tight">You'll be able to join at the next standings checkpoint.</h1>
           <p className="mt-4 text-lg text-cjsr-paper">
             Keep this page open. It will update automatically when joining reopens.
@@ -128,7 +128,7 @@ export function PlayerPage() {
   return (
     <PlayerShell status={status} error={error?.message ?? null}>
       <section className="page-card p-5 sm:p-6">
-        <p className="text-sm font-black uppercase tracking-wide text-cjsr-magenta">Player join</p>
+        <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Player join</p>
         <h1 className="mt-3 font-display text-4xl leading-tight">Join CJSR Volunteer Appreciation Trivia</h1>
         <p className="mt-4 max-w-2xl text-lg text-cjsr-paper">
           Edmonton's independent radio 88.5 FM. Listener-supported, volunteer-powered.
@@ -141,7 +141,7 @@ export function PlayerPage() {
               <button
                 key={count}
                 type="button"
-                className={`min-h-14 border-2 px-3 py-2 text-xl font-black ${playerCount === count ? 'border-cjsr-magenta bg-cjsr-magenta text-cjsr-black' : 'border-white bg-cjsr-surface text-white'}`}
+                className={`min-h-14 border-2 px-3 py-2 text-xl font-black ${playerCount === count ? 'border-cjsr-red bg-cjsr-red text-white' : 'border-white bg-cjsr-surface text-white'}`}
                 onClick={() => setPlayerCount(count)}
                 aria-pressed={playerCount === count}
               >
@@ -173,7 +173,7 @@ export function PlayerPage() {
           </div>
         </section>
 
-        {message && <p className="mt-4 font-bold text-cjsr-magenta" role="status">{message}</p>}
+        {message && <p className="mt-4 font-bold text-cjsr-red-light" role="status">{message}</p>}
         <TerritoryText />
       </section>
     </PlayerShell>
@@ -186,7 +186,7 @@ function FinalPanel({ team, leaderboard }: { team: Team | null; leaderboard: Lea
 
   return (
     <section className="page-card p-6" aria-live="polite">
-      <p className="text-sm font-black uppercase tracking-wide text-cjsr-magenta">Final standings</p>
+      <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Final standings</p>
       <h1 className="mt-3 font-display text-4xl leading-tight">
         {teamEntry ? `${teamEntry.teamName}: #${teamEntry.rank}` : winner ? `${winner.teamName} wins!` : 'Thanks for playing!'}
       </h1>
@@ -201,7 +201,7 @@ function FinalPanel({ team, leaderboard }: { team: Team | null; leaderboard: Lea
         {leaderboard.slice(0, 10).map(entry => (
           <li
             key={entry.teamId}
-            className={`grid grid-cols-[3rem_1fr_auto] items-center gap-3 border-2 p-3 ${entry.teamId === team?.id ? 'border-cjsr-magenta bg-cjsr-magenta text-cjsr-black' : 'border-white/30 bg-cjsr-surface text-white'}`}
+            className={`grid grid-cols-[3rem_1fr_auto] items-center gap-3 border-2 p-3 ${entry.teamId === team?.id ? 'border-cjsr-red bg-cjsr-red text-white' : 'border-white/30 bg-cjsr-surface text-white'}`}
           >
             <span className="text-xl font-black">#{entry.rank}</span>
             <span className="min-w-0 font-bold">{entry.teamName}</span>
@@ -281,10 +281,10 @@ function QuestionPanel({
     <section className="page-card p-5 sm:p-6" aria-live="polite">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="text-sm font-black uppercase tracking-wide text-cjsr-magenta">Question {questionIndex}</p>
+          <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Question {questionIndex}</p>
           <h1 className="mt-2 text-3xl font-bold leading-tight">{question.text}</h1>
         </div>
-        <span className="border-2 border-cjsr-magenta px-3 py-2 font-black text-cjsr-magenta">Worth {pointValue} point{pointValue !== 1 ? 's' : ''}</span>
+        <span className="border-2 border-cjsr-red px-3 py-2 font-black text-cjsr-red-light">Worth {pointValue} point{pointValue !== 1 ? 's' : ''}</span>
       </div>
 
       <div className="mt-5" role="timer" aria-label={`${timer.secondsRemaining} seconds remaining`}>
@@ -293,7 +293,7 @@ function QuestionPanel({
           <span>{timer.secondsRemaining}s</span>
         </div>
         <div className="mt-2 h-4 border-2 border-white bg-cjsr-black">
-          <div className="h-full bg-cjsr-magenta transition-[width]" style={{ width: `${Math.round(timer.progress * 100)}%` }} />
+          <div className="h-full bg-cjsr-red transition-[width]" style={{ width: `${Math.round(timer.progress * 100)}%` }} />
         </div>
       </div>
 
@@ -307,7 +307,7 @@ function QuestionPanel({
               type="button"
               disabled={locked || timer.isExpired}
               onClick={() => setSelectedChoice(choiceIndex)}
-              className={`min-h-16 border-2 px-4 py-3 text-left text-lg font-bold disabled:opacity-55 ${selected ? 'border-cjsr-magenta bg-cjsr-magenta text-cjsr-black' : 'border-white bg-cjsr-surface text-white'}`}
+              className={`min-h-16 border-2 px-4 py-3 text-left text-lg font-bold disabled:opacity-55 ${selected ? 'border-cjsr-red bg-cjsr-red text-white' : 'border-white bg-cjsr-surface text-white'}`}
               aria-pressed={selected}
             >
               <span className="mr-3 font-black">{String.fromCharCode(65 + index)}.</span>
@@ -321,7 +321,7 @@ function QuestionPanel({
         type="button"
         disabled={locked || selectedChoice === null || timer.isExpired || isLocking}
         onClick={() => void lockAnswer(selectedChoice)}
-        className="mt-5 min-h-14 w-full border-2 border-cjsr-magenta bg-cjsr-magenta px-5 py-3 text-xl font-black text-cjsr-black disabled:border-neutral-600 disabled:bg-neutral-800 disabled:text-neutral-500"
+        className="mt-5 min-h-14 w-full border-2 border-cjsr-red bg-cjsr-red px-5 py-3 text-xl font-black text-white disabled:border-neutral-600 disabled:bg-neutral-800 disabled:text-neutral-500"
       >
         {isLocking ? 'LOCKING...' : locked ? 'LOCKED' : 'LOCK IN'}
       </button>
@@ -340,14 +340,14 @@ function RevealPanel({ team, questionIndex, answerChoice, pointsAwarded }: { tea
   const displayPointsAwarded = correct ? Math.max(pointsAwarded, getPointsForQuestion(questionIndex)) : 0;
   return (
     <section className="page-card p-6" aria-live="polite">
-      <p className="text-sm font-black uppercase tracking-wide text-cjsr-magenta">Reveal</p>
+      <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Reveal</p>
       <h1 className="mt-3 text-3xl font-bold">{question.text}</h1>
       <div className="mt-5 grid gap-2">
         {question.choices.map((choice, index) => {
           const isCorrect = index === question.answer;
           const isTeamChoice = index === answerChoice;
           return (
-            <div key={choice} className={`border-2 p-3 font-bold ${isCorrect ? 'border-green-300 text-green-300' : isTeamChoice ? 'border-cjsr-magenta text-cjsr-magenta' : 'border-neutral-700 text-neutral-400'}`}>
+            <div key={choice} className={`border-2 p-3 font-bold ${isCorrect ? 'border-green-300 text-green-300' : isTeamChoice ? 'border-cjsr-red text-cjsr-red-light' : 'border-neutral-700 text-neutral-400'}`}>
               {String.fromCharCode(65 + index)}. {choice}
               {isCorrect && ' (correct)'}
               {isTeamChoice && !isCorrect && ' (your answer)'}
@@ -365,8 +365,8 @@ function PlayerShell({ children, status, error }: { children: React.ReactNode; s
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-2 text-sm" aria-live="polite">
-        <span className="border border-cjsr-magenta px-2 py-1 font-bold uppercase tracking-wide">Connection: {status}</span>
-        {error && <span className="text-cjsr-magenta">{error}</span>}
+        <span className="border border-cjsr-red px-2 py-1 font-bold uppercase tracking-wide">Connection: {status}</span>
+        {error && <span className="text-cjsr-red-light">{error}</span>}
       </div>
       {children}
     </div>
@@ -376,7 +376,7 @@ function PlayerShell({ children, status, error }: { children: React.ReactNode; s
 function LobbyPanel({ team, phase, canLeave, onLeave }: { team: Team; phase: string; canLeave: boolean; onLeave: () => void }) {
   return (
     <section className="page-card p-6" aria-live="polite">
-      <p className="text-sm font-black uppercase tracking-wide text-cjsr-magenta">You're in</p>
+      <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">You're in</p>
       <h1 className="mt-3 font-display text-4xl leading-tight">{team.teamName}</h1>
       <p className="mt-4 text-lg text-cjsr-paper">
         {team.playerCount} player{team.playerCount !== 1 ? 's' : ''}. Watch the screen for the next instruction.
@@ -386,7 +386,7 @@ function LobbyPanel({ team, phase, canLeave, onLeave }: { team: Team; phase: str
         type="button"
         disabled={!canLeave}
         onClick={onLeave}
-        className="mt-6 min-h-11 border-2 border-cjsr-magenta px-4 py-2 font-bold text-white disabled:border-neutral-600 disabled:text-neutral-500"
+        className="mt-6 min-h-11 border-2 border-cjsr-red px-4 py-2 font-bold text-white disabled:border-neutral-600 disabled:text-neutral-500"
       >
         Leave / change team
       </button>

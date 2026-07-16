@@ -5,6 +5,7 @@ import { AnswerKeyPage } from './pages/AnswerKeyPage';
 import { HostPage } from './pages/HostPage';
 import { PlayerPage } from './pages/PlayerPage';
 import { ScreenPage } from './pages/ScreenPage';
+import cjsrLogo from './assets/cjsr-logo.png';
 
 export function App() {
   return (
@@ -12,7 +13,7 @@ export function App() {
       <BrowserRouter>
         <div className="min-h-screen bg-cjsr-black text-cjsr-paper">
           <a className="skip-link" href="#main">Skip to main content</a>
-          <header className="border-b-4 border-cjsr-magenta bg-cjsr-surface px-4 py-3">
+          <header className="border-b-4 border-cjsr-red bg-cjsr-surface px-4 py-3">
             <HeaderContent />
           </header>
           <ConfigWarning />
@@ -36,7 +37,8 @@ function HeaderContent() {
 
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <Link to={showHostNav ? '/host' : '/'} className="font-display text-2xl font-black uppercase tracking-wide text-white">
+      <Link to={showHostNav ? '/host' : '/'} className="flex items-center gap-2 font-display text-2xl font-black uppercase tracking-wide text-white">
+        <img src={cjsrLogo} alt="" className="h-9 w-9" />
         CJSR Trivia
       </Link>
       {showHostNav && (
