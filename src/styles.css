@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  --color-cjsr-magenta: #f01d4f;
+  --color-cjsr-magenta: #ff4f78;
   --color-cjsr-black: #0d0d0d;
   --color-cjsr-surface: #1a1a1a;
   --color-cjsr-yellow: #fff200;
