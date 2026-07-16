@@ -6,7 +6,7 @@ import { joinTeam, makeTeamNameKey, submitAnswerIfMissing } from '../lib/firebas
 import { buildLeaderboard } from '../lib/leaderboard';
 import { DEFAULT_GAME_CODE } from '../lib/hostState';
 import { clearStoredTeamId, getStoredTeamId, storeTeamId } from '../lib/storage';
-import { getPointsForQuestion, getQuestionByIndex, resolveQuestions, TEAM_NAMES } from '../lib/triviaData';
+import { getPointsForQuestion, getQuestionByIndex, OVERFLOW_TEAM_NAMES, resolveQuestions, TEAM_NAMES } from '../lib/triviaData';
 
 type PlayerCount = 1 | 2 | 3 | 4;
 
@@ -23,6 +23,8 @@ export function PlayerPage() {
     [gameState?.teams, storedTeamId],
   );
   const takenNames = useMemo(() => new Set(gameState?.teams.filter(team => team.isActive).map(team => makeTeamNameKey(team.teamName)) ?? []), [gameState?.teams]);
+  const isPrimaryListFull = useMemo(() => TEAM_NAMES.every(name => takenNames.has(makeTeamNameKey(name))), [takenNames]);
+  const availableTeamNames = isPrimaryListFull ? [...TEAM_NAMES, ...OVERFLOW_TEAM_NAMES] : TEAM_NAMES;
   const phase = gameState?.game.phase ?? 'lobby';
   const canJoin = phase === 'lobby' || phase === 'break';
   const leaderboard = useMemo(() => buildLeaderboard(gameState?.teams ?? []), [gameState?.teams]);
@@ -156,8 +158,11 @@ export function PlayerPage() {
 
         <section className="mt-7">
           <h2 className="font-display text-2xl">Choose a team name</h2>
+          {isPrimaryListFull && (
+            <p className="mt-2 text-sm font-bold text-cjsr-paper">More names unlocked because the first 20 are full.</p>
+          )}
           <div className="mt-3 grid gap-2 sm:grid-cols-2">
-            {TEAM_NAMES.map(teamName => {
+            {availableTeamNames.map(teamName => {
               const taken = takenNames.has(makeTeamNameKey(teamName));
               return (
                 <button

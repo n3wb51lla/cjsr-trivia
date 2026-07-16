@@ -2,10 +2,12 @@ import questionsJson from '../data/questions.json';
 import schedule from '../data/schedule.json';
 import scoring from '../data/scoring.json';
 import teamNames from '../data/teamNames.json';
+import overflowTeamNames from '../data/teamNamesOverflow.json';
 import type { GameState, Question, QuestionRound, RoundNumber } from '../types';
 
 export const SEED_QUESTIONS = parseQuestions(questionsJson);
 export const TEAM_NAMES = teamNames as readonly string[];
+export const OVERFLOW_TEAM_NAMES = overflowTeamNames as readonly string[];
 export const SUDDEN_DEATH_POINTS = 5;
 export const ROUND_ORDER: readonly QuestionRound[] = [1, 2, 3, 4, 5, 6, 'suddenDeath'];
 
