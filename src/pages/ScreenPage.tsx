@@ -155,7 +155,7 @@ function RevealScreen({
         <h1 className="mt-3 text-4xl font-black leading-tight">{questionText}</h1>
         <div className="mt-7 grid gap-3">
           {choices.map((choice, index) => (
-            <div key={choice} className={`border-2 p-4 text-2xl font-bold ${index === correctAnswer ? 'border-green-300 text-green-300' : 'border-cjsr-ink/30 text-cjsr-paper'}`}>
+            <div key={choice} className={`border-2 p-4 text-2xl font-bold ${index === correctAnswer ? 'border-cjsr-correct text-cjsr-correct' : 'border-cjsr-ink/50 text-cjsr-paper'}`}>
               <span className="mr-3 font-black">{String.fromCharCode(65 + index)}.</span>
               {choice}
             </div>
@@ -234,7 +234,7 @@ function LeaderboardPanel({
       ) : (
         <ol className={`${projector ? 'mt-0' : 'mt-4'} grid gap-3 ${columns === 2 ? 'lg:grid-cols-2' : ''}`}>
           {visibleRows.map(entry => (
-            <li key={entry.teamId} className={`grid items-center gap-3 border border-cjsr-ink/30 ${projector ? 'grid-cols-[3rem_minmax(0,1fr)_3rem] p-3 lg:grid-cols-[4.5rem_minmax(0,1fr)_5rem] lg:p-4' : 'grid-cols-[3rem_minmax(0,1fr)_auto]'} ${compact ? 'p-2' : projector ? '' : 'p-3'}`}>
+            <li key={entry.teamId} className={`grid items-center gap-3 border border-cjsr-ink/50 ${projector ? 'grid-cols-[3rem_minmax(0,1fr)_3rem] p-3 lg:grid-cols-[4.5rem_minmax(0,1fr)_5rem] lg:p-4' : 'grid-cols-[3rem_minmax(0,1fr)_auto]'} ${compact ? 'p-2' : projector ? '' : 'p-3'}`}>
               <span className={`${projector ? 'text-2xl lg:text-4xl' : compact ? 'text-xl' : 'text-2xl'} font-black`}>#{entry.rank}</span>
               <span className={`min-w-0 font-bold leading-tight ${projector ? 'text-xl lg:text-3xl' : compact ? 'text-lg' : 'text-xl'}`}>{entry.teamName}</span>
               <span className={`${projector ? 'text-3xl lg:text-5xl' : compact ? 'text-xl' : 'text-2xl'} font-black text-cjsr-red-light`}>{entry.score}</span>

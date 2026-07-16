@@ -8,6 +8,7 @@
   --color-cjsr-black: #0d0d0d;
   --color-cjsr-surface: #1a1a1a;
   --color-cjsr-ink: #ffffff;
+  --color-cjsr-correct: #86efac;
   --color-cjsr-yellow: #fff200;
   --color-cjsr-cyan: #42d9ff;
   --color-cjsr-paper: #e5e5e5;
@@ -21,6 +22,7 @@
   --color-cjsr-black: #efece4;
   --color-cjsr-surface: #ffffff;
   --color-cjsr-ink: #141311;
+  --color-cjsr-correct: #15803d;
   --color-cjsr-paper: #4a4744;
   --color-cjsr-cyan: #0077b6;
   color-scheme: light;

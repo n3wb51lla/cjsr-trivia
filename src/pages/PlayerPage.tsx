@@ -201,7 +201,7 @@ function FinalPanel({ team, leaderboard }: { team: Team | null; leaderboard: Lea
         {leaderboard.slice(0, 10).map(entry => (
           <li
             key={entry.teamId}
-            className={`grid grid-cols-[3rem_1fr_auto] items-center gap-3 border-2 p-3 ${entry.teamId === team?.id ? 'border-cjsr-red bg-cjsr-red text-cjsr-ink' : 'border-cjsr-ink/30 bg-cjsr-surface text-cjsr-ink'}`}
+            className={`grid grid-cols-[3rem_1fr_auto] items-center gap-3 border-2 p-3 ${entry.teamId === team?.id ? 'border-cjsr-red bg-cjsr-red text-cjsr-ink' : 'border-cjsr-ink/50 bg-cjsr-surface text-cjsr-ink'}`}
           >
             <span className="text-xl font-black">#{entry.rank}</span>
             <span className="min-w-0 font-bold">{entry.teamName}</span>
@@ -347,7 +347,7 @@ function RevealPanel({ team, questionIndex, answerChoice, pointsAwarded }: { tea
           const isCorrect = index === question.answer;
           const isTeamChoice = index === answerChoice;
           return (
-            <div key={choice} className={`border-2 p-3 font-bold ${isCorrect ? 'border-green-300 text-green-300' : isTeamChoice ? 'border-cjsr-red text-cjsr-red-light' : 'border-neutral-700 text-neutral-400'}`}>
+            <div key={choice} className={`border-2 p-3 font-bold ${isCorrect ? 'border-cjsr-correct text-cjsr-correct' : isTeamChoice ? 'border-cjsr-red text-cjsr-red-light' : 'border-cjsr-ink/50 text-cjsr-paper'}`}>
               {String.fromCharCode(65 + index)}. {choice}
               {isCorrect && ' (correct)'}
               {isTeamChoice && !isCorrect && ' (your answer)'}

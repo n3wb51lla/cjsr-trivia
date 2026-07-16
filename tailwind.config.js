@@ -10,6 +10,7 @@ export default {
           black: 'var(--color-cjsr-black)',
           surface: 'var(--color-cjsr-surface)',
           ink: 'var(--color-cjsr-ink)',
+          correct: 'var(--color-cjsr-correct)',
           yellow: 'var(--color-cjsr-yellow)',
           cyan: 'var(--color-cjsr-cyan)',
           paper: 'var(--color-cjsr-paper)',

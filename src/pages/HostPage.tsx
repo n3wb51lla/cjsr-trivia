@@ -174,7 +174,7 @@ export function HostPage() {
                 Waiting on: {unlockedTeams.map(team => team.teamName).join(', ')}
               </p>
             ) : (
-              <p className="mt-3 text-sm font-bold text-green-300">All active teams are locked.</p>
+              <p className="mt-3 text-sm font-bold text-cjsr-correct">All active teams are locked.</p>
             )}
             {!canAdvance && <p className="mt-3 text-sm font-bold text-cjsr-paper">Advance unlocks when all teams lock or the timer expires.</p>}
           </section>
@@ -184,7 +184,7 @@ export function HostPage() {
           <section className="mt-6 border-2 border-cjsr-ink p-4">
             <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Current question</p>
             <h2 className="mt-2 text-2xl font-bold">{question.text}</h2>
-            <p className="mt-3 text-lg text-green-300">Correct: {question.choices[question.answer]}</p>
+            <p className="mt-3 text-lg text-cjsr-correct">Correct: {question.choices[question.answer]}</p>
           </section>
         ) : (
           <p className="mt-6 text-lg text-cjsr-paper">Initialize the lobby, then start question 1.</p>
@@ -248,7 +248,7 @@ function ScorekeeperPanel({
           const team = teams.find(candidate => candidate.id === entry.teamId);
           if (!team) return null;
           return (
-            <li key={team.id} className="border border-cjsr-ink/30 p-3">
+            <li key={team.id} className="border border-cjsr-ink/50 p-3">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <span className="font-bold">#{entry.rank} {team.teamName}</span>
