@@ -48,7 +48,7 @@ function HeaderContent() {
   const showHostNav = location.pathname.startsWith('/host');
 
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3">
       <Link to={showHostNav ? '/host' : '/'} className="flex items-center gap-2 font-display text-2xl font-black uppercase tracking-wide text-cjsr-ink">
         <img src={cjsrLogo} alt="" className="h-9 w-9" />
         CJSR Trivia
