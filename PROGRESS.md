@@ -4,7 +4,7 @@
 
 - [x] Phase 0: Repository and build foundation
 - [x] Phase 1: Static data and shared types
-- [ ] Phase 2: Firebase Realtime Database rules and data access
+- [x] Phase 2: Firebase Realtime Database rules and data access
 - [ ] Phase 3: Shared synchronization layer
 - [ ] Phase 4: Player join, rejoin, and lobby
 - [ ] Phase 5: Server-authoritative question timer
@@ -81,6 +81,28 @@ Known follow-up:
 
 - Host mutations, scoring, reset, and game-state advancement should use Vercel serverless functions with Firebase Admin credentials, or much tighter Firebase rules.
 - Team-name uniqueness should be enforced with a canonical reservation path in the join-flow phase.
+
+## Phase 2
+
+Implemented:
+
+- Firebase Realtime Database path helpers for game meta, teams, team-name reservations, and answers.
+- Typed data-access helpers for fetching game state, subscribing to game state, joining a team, submitting an answer idempotently, and reading Firebase server time offset.
+- Starter database rules that allow public reads, anonymous one-time team creation, anonymous one-time answer creation, and block direct game-state writes.
+- Firebase-friendly timestamp/domain model updates.
+- Initial `useGameSubscription` hook with realtime listener, stale-listener detection, focus/online recovery, and 2-second polling fallback.
+- Initial `useServerTimeOffset` hook.
+
+Verification:
+
+- `npm run validate:data` passed.
+- `npm run lint` passed.
+- `npm run build` passed.
+
+Known follow-up:
+
+- Host controls still need protected serverless actions before they can mutate game state, score answers, or reset a dry run.
+- Team-name reservation is represented in the data model now; the Phase 4 join UI must write both the team and reservation path.
 
 ## Notes
 

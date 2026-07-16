@@ -9,17 +9,23 @@
           ".read": true,
           ".write": false
         },
+        "teamNames": {
+          "$teamNameKey": {
+            ".read": true,
+            ".write": "!data.exists() && newData.isString()"
+          }
+        },
         "teams": {
           ".read": true,
           "$teamId": {
-            ".write": "newData.exists() && !data.exists() && newData.child('teamName').isString() && newData.child('playerCount').isNumber() && newData.child('playerCount').val() >= 1 && newData.child('playerCount').val() <= 4"
+            ".write": "newData.exists() && !data.exists() && newData.child('teamName').isString() && newData.child('teamName').val().length > 0 && newData.child('playerCount').isNumber() && newData.child('playerCount').val() >= 1 && newData.child('playerCount').val() <= 4 && newData.child('score').val() === 0 && newData.child('cumulativeLockMs').val() === 0 && newData.child('isActive').val() === true"
           }
         },
         "answers": {
           ".read": true,
           "$teamId": {
             "$questionId": {
-              ".write": "newData.exists() && !data.exists() && newData.child('teamId').val() === $teamId && (newData.child('choiceIndex').val() === null || (newData.child('choiceIndex').isNumber() && newData.child('choiceIndex').val() >= 0 && newData.child('choiceIndex').val() <= 3))"
+              ".write": "newData.exists() && !data.exists() && root.child('games/' + $gameCode + '/teams/' + $teamId).exists() && newData.child('teamId').val() === $teamId && newData.child('questionIndex').isNumber() && newData.child('questionIndex').val() >= 1 && newData.child('questionIndex').val() <= 31 && (newData.child('choiceIndex').val() === null || (newData.child('choiceIndex').isNumber() && newData.child('choiceIndex').val() >= 0 && newData.child('choiceIndex').val() <= 3)) && newData.child('pointsAwarded').val() === 0"
             }
           }
         }
@@ -27,4 +33,3 @@
     }
   }
 }
-

@@ -41,6 +41,42 @@ The host passphrase is a UI gate only. Privileged database actions must be prote
 4. Start in locked mode, then publish this repo's `database.rules.json` once reviewed.
 5. Keep Firebase Admin credentials out of the browser. If later phases need admin actions, put those credentials in Vercel environment variables only.
 
+## Realtime Database Shape
+
+```text
+games/
+  {gameCode}/
+    meta/
+      phase
+      currentQuestionIndex
+      currentRound
+      questionStartedAt
+      startedAt
+      createdAt
+    teams/
+      {teamId}/
+        teamName
+        playerCount
+        score
+        cumulativeLockMs
+        joinedAt
+        isActive
+    teamNames/
+      {normalizedTeamName}: {teamId}
+    answers/
+      {teamId}/
+        {questionId}/
+          teamId
+          questionIndex
+          choiceIndex
+          lockedAt
+          timeToLockMs
+          isCorrect
+          pointsAwarded
+```
+
+Client-side writes are limited to one-time team creation and one-time answer creation. Host actions are intentionally blocked by rules until protected serverless endpoints are implemented.
+
 Run locally:
 
 ```bash

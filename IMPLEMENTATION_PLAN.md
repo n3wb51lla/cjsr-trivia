@@ -59,6 +59,8 @@ Shared rules should live outside React components in `src/lib/`, including quest
 
 `useGameSubscription` will fetch the current game immediately, subscribe to Firebase Realtime Database listeners, and expose connection state. If the listener disconnects, errors, or goes stale, `usePollingFallback` will poll every two seconds until the listener is healthy again. Focus, visibility, and online events will trigger immediate refetches. Cleanup must unsubscribe listeners and clear intervals.
 
+Phase 2 note: the first shared subscription hook now exists in `src/hooks/useGameSubscription.ts`; Phase 3 will connect it to UI and harden room-level status indicators.
+
 ## Server-Authoritative Timer Plan
 
 Clients will derive remaining time from `question_started_at`, not component mount time. Where practical, Firebase server timestamps and `.info/serverTimeOffset` will calculate clock offset:

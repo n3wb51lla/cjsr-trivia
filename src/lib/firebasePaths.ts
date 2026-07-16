@@ -10,8 +10,16 @@ export function teamsPath(gameCode: string): string {
   return `${gamePath(gameCode)}/teams`;
 }
 
+export function teamNamesPath(gameCode: string): string {
+  return `${gamePath(gameCode)}/teamNames`;
+}
+
 export function teamPath(gameCode: string, teamId: string): string {
   return `${teamsPath(gameCode)}/${teamId}`;
+}
+
+export function teamNameReservationPath(gameCode: string, teamNameKey: string): string {
+  return `${teamNamesPath(gameCode)}/${teamNameKey}`;
 }
 
 export function answersPath(gameCode: string): string {
@@ -25,4 +33,3 @@ export function teamAnswersPath(gameCode: string, teamId: string): string {
 export function answerPath(gameCode: string, teamId: string, questionId: number): string {
   return `${teamAnswersPath(gameCode, teamId)}/${questionId}`;
 }
-

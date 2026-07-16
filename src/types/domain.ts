@@ -1,4 +1,4 @@
-export type GamePhase = 'lobby' | 'question' | 'reveal' | 'break' | 'final' | 'suddenDeath';
+export type GamePhase = 'lobby' | 'question' | 'reveal' | 'break' | 'final' | 'sudden_death';
 
 export type RoundNumber = 1 | 2 | 3 | 4 | 5 | 6;
 export type QuestionRound = RoundNumber | 'suddenDeath';
@@ -14,11 +14,11 @@ export interface Question {
 export interface Team {
   readonly id: string;
   readonly gameId: string;
-  readonly name: string;
+  readonly teamName: string;
   readonly playerCount: 1 | 2 | 3 | 4;
   readonly score: number;
   readonly cumulativeLockMs: number;
-  readonly joinedAt: string;
+  readonly joinedAt: number;
   readonly isActive: boolean;
 }
 
@@ -28,7 +28,7 @@ export interface Answer {
   readonly teamId: string;
   readonly questionIndex: number;
   readonly choiceIndex: 0 | 1 | 2 | 3 | null;
-  readonly lockedAt: string;
+  readonly lockedAt: number;
   readonly timeToLockMs: number | null;
   readonly isCorrect: boolean | null;
   readonly pointsAwarded: number;
@@ -39,9 +39,9 @@ export interface Game {
   readonly phase: GamePhase;
   readonly currentQuestionIndex: number | null;
   readonly currentRound: RoundNumber | 'suddenDeath' | null;
-  readonly questionStartedAt: string | null;
-  readonly startedAt: string | null;
-  readonly createdAt: string;
+  readonly questionStartedAt: number | null;
+  readonly startedAt: number | null;
+  readonly createdAt: number;
 }
 
 export interface GameState {
