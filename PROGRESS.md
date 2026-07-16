@@ -141,6 +141,7 @@ Implemented:
 - Current question and correct-answer display.
 - Team count and joined-team list.
 - Lobby-only team kick control that deactivates a team and frees its team name.
+- Host scorekeeper controls for manual score corrections during the event.
 - Live question timer and answer lock count.
 - Waiting-team list while a question is open.
 - Normal advance gating until every active team locks or time expires.
@@ -215,7 +216,7 @@ Implemented:
 - Projector screen now reflects lobby, question, reveal, break, and final phases.
 - Lobby screen shows joined-team count.
 - Live question screen shows question text, point value, room timer, and lock count.
-- Break screen shows standings and the next question number.
+- Standings checkpoint screen shows scores and the next question number.
 - Final screen shows the winner and full final standings.
 - Player phones show final standings and the joined team's final rank when the host enters finals.
 

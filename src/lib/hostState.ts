@@ -41,7 +41,7 @@ export function getHostButtonLabel(meta: FirebaseGameMeta | null): string {
   if (meta.phase === 'question') return 'Reveal answer';
   if (meta.phase === 'reveal') {
     if ((meta.currentQuestionIndex ?? 0) >= 30) return 'Go to finals';
-    if (meta.currentQuestionIndex !== null && meta.currentQuestionIndex % 5 === 0) return 'Go to break';
+    if (meta.currentQuestionIndex !== null && meta.currentQuestionIndex % 5 === 0) return 'Show standings';
     return `Start question ${(meta.currentQuestionIndex ?? 0) + 1}`;
   }
   if (meta.phase === 'break') return `Start question ${(meta.currentQuestionIndex ?? 0) + 1}`;

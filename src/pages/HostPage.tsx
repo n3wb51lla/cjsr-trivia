@@ -2,10 +2,11 @@ import { useMemo, useState } from 'react';
 import { useGameSubscription } from '../hooks/useGameSubscription';
 import { useQuestionTimer } from '../hooks/useQuestionTimer';
 import { getOptionalEnv } from '../lib/env';
-import { finalizeQuestionScores, kickTeamFromLobby, patchGameMeta, resetGameForReplay, writeGameMeta, type FirebaseGameMeta } from '../lib/firebaseData';
+import { finalizeQuestionScores, kickTeamFromLobby, patchGameMeta, resetGameForReplay, setTeamScore, writeGameMeta, type FirebaseGameMeta } from '../lib/firebaseData';
 import { DEFAULT_GAME_CODE, getCurrentQuestionSummary, getHostAdvanceMeta, getHostButtonLabel, makeInitialGameMeta } from '../lib/hostState';
+import { buildLeaderboard } from '../lib/leaderboard';
 import { getPointsForQuestion } from '../lib/triviaData';
-import type { Team } from '../types';
+import type { LeaderboardEntry, Team } from '../types';
 
 const EMPTY_TEAMS: Team[] = [];
 
@@ -19,6 +20,7 @@ export function HostPage() {
   const meta = useMemo<FirebaseGameMeta | null>(() => gameState ? { ...gameState.game, code: DEFAULT_GAME_CODE } : null, [gameState]);
   const teams = gameState?.teams ?? EMPTY_TEAMS;
   const activeTeams = useMemo(() => teams.filter(team => team.isActive), [teams]);
+  const leaderboard = useMemo(() => buildLeaderboard(activeTeams), [activeTeams]);
   const question = getCurrentQuestionSummary(meta?.currentQuestionIndex ?? null);
   const pointValue = meta?.currentQuestionIndex ? getPointsForQuestion(meta.currentQuestionIndex) : null;
   const timer = useQuestionTimer(meta?.questionStartedAt ?? null);
@@ -93,6 +95,10 @@ export function HostPage() {
       return;
     }
     await runHostAction(`${team.teamName} was removed from the lobby.`, () => kickTeamFromLobby(DEFAULT_GAME_CODE, team));
+  }
+
+  async function updateScore(team: Team, nextScore: number) {
+    await runHostAction(`${team.teamName} score updated to ${Math.max(0, Math.trunc(nextScore))}.`, () => setTeamScore(DEFAULT_GAME_CODE, team, nextScore));
   }
 
   async function runHostAction(success: string, action: () => Promise<void>) {
@@ -206,35 +212,108 @@ export function HostPage() {
         {message && <p className="mt-4 font-bold text-cjsr-magenta" role="status">{message}</p>}
       </section>
 
-      <aside className="page-card p-5">
-        <h2 className="font-display text-2xl">Teams joined</h2>
-        <p className="mt-1 text-cjsr-paper">{activeTeams.length} active team{activeTeams.length !== 1 ? 's' : ''}</p>
-        <ol className="mt-4 space-y-2">
-          {activeTeams.map(team => (
+      <ScorekeeperPanel
+        busy={busy}
+        canKick={meta?.phase === 'lobby'}
+        leaderboard={leaderboard}
+        teams={activeTeams}
+        onKick={kickTeam}
+        onScoreChange={updateScore}
+      />
+    </div>
+  );
+}
+
+function ScorekeeperPanel({
+  busy,
+  canKick,
+  leaderboard,
+  teams,
+  onKick,
+  onScoreChange,
+}: {
+  busy: boolean;
+  canKick: boolean;
+  leaderboard: LeaderboardEntry[];
+  teams: readonly Team[];
+  onKick: (team: Team) => Promise<void>;
+  onScoreChange: (team: Team, nextScore: number) => Promise<void>;
+}) {
+  return (
+    <aside className="page-card p-5">
+      <h2 className="font-display text-2xl">Scores & teams</h2>
+      <p className="mt-1 text-cjsr-paper">{teams.length} active team{teams.length !== 1 ? 's' : ''}</p>
+      <ol className="mt-4 space-y-3">
+        {leaderboard.map(entry => {
+          const team = teams.find(candidate => candidate.id === entry.teamId);
+          if (!team) return null;
+          return (
             <li key={team.id} className="border border-white/30 p-3">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <span className="font-bold">{team.teamName}</span>
+                  <span className="font-bold">#{entry.rank} {team.teamName}</span>
                   <span className="block text-sm text-cjsr-paper">
-                    {team.playerCount} player{team.playerCount !== 1 ? 's' : ''}
+                    {team.playerCount} player{team.playerCount !== 1 ? 's' : ''}{entry.isTiedOnScore && ' · tied'}
                   </span>
                 </div>
+                <span className="text-2xl font-black text-cjsr-magenta">{team.score}</span>
+              </div>
+              <div className="mt-3 grid grid-cols-[auto_1fr_auto_auto] items-center gap-2">
                 <button
                   type="button"
-                  disabled={busy || meta?.phase !== 'lobby'}
-                  onClick={() => void kickTeam(team)}
-                  className="min-h-9 border border-cjsr-magenta px-2 py-1 text-xs font-black uppercase tracking-wide text-cjsr-magenta disabled:border-neutral-700 disabled:text-neutral-500"
+                  disabled={busy || team.score <= 0}
+                  onClick={() => void onScoreChange(team, team.score - 1)}
+                  className="min-h-10 border border-white px-3 py-1 font-black disabled:border-neutral-700 disabled:text-neutral-500"
+                  aria-label={`Subtract one point from ${team.teamName}`}
+                >
+                  -1
+                </button>
+                <label className="sr-only" htmlFor={`score-${team.id}`}>{team.teamName} score</label>
+                <input
+                  key={`${team.id}-${team.score}`}
+                  id={`score-${team.id}`}
+                  type="number"
+                  min={0}
+                  defaultValue={team.score}
+                  disabled={busy}
+                  onBlur={event => {
+                    if (event.currentTarget.value === '') {
+                      event.currentTarget.value = String(team.score);
+                      return;
+                    }
+                    const nextScore = event.currentTarget.valueAsNumber;
+                    if (nextScore !== team.score) void onScoreChange(team, nextScore);
+                  }}
+                  onKeyDown={event => {
+                    if (event.key === 'Enter') event.currentTarget.blur();
+                  }}
+                  className="min-h-10 w-full border border-white/50 bg-cjsr-black px-2 py-1 text-center font-bold text-white disabled:opacity-50"
+                />
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={() => void onScoreChange(team, team.score + 1)}
+                  className="min-h-10 border border-white px-3 py-1 font-black disabled:border-neutral-700 disabled:text-neutral-500"
+                  aria-label={`Add one point to ${team.teamName}`}
+                >
+                  +1
+                </button>
+                <button
+                  type="button"
+                  disabled={busy || !canKick}
+                  onClick={() => void onKick(team)}
+                  className="min-h-10 border border-cjsr-magenta px-2 py-1 text-xs font-black uppercase tracking-wide text-cjsr-magenta disabled:border-neutral-700 disabled:text-neutral-500"
                 >
                   Kick
                 </button>
               </div>
             </li>
-          ))}
-        </ol>
-        {activeTeams.length === 0 && <p className="mt-4 text-sm font-bold text-cjsr-paper">No active teams in the lobby.</p>}
-        {meta?.phase !== 'lobby' && activeTeams.length > 0 && <p className="mt-3 text-sm text-cjsr-paper">Kicking is available in the lobby only.</p>}
-      </aside>
-    </div>
+          );
+        })}
+      </ol>
+      {teams.length === 0 && <p className="mt-4 text-sm font-bold text-cjsr-paper">No active teams in the lobby.</p>}
+      {!canKick && teams.length > 0 && <p className="mt-3 text-sm text-cjsr-paper">Kicking is available in the lobby only. Score edits are available any time.</p>}
+    </aside>
   );
 }
 

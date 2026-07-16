@@ -168,8 +168,8 @@ function BreakScreen({ leaderboard, nextQuestion }: { leaderboard: LeaderboardEn
   return (
     <div className="grid gap-5 lg:grid-cols-[1fr_1.2fr]">
       <section className="flex flex-col justify-center border-2 border-cjsr-magenta bg-cjsr-surface p-8">
-        <p className="text-sm font-black uppercase tracking-wide text-cjsr-magenta">Break</p>
-        <h1 className="mt-3 font-display text-6xl leading-none">Leaderboard Check</h1>
+        <p className="text-sm font-black uppercase tracking-wide text-cjsr-magenta">Standings</p>
+        <h1 className="mt-3 font-display text-6xl leading-none">Scoreboard</h1>
         <p className="mt-6 text-2xl text-cjsr-paper">Next up: question {nextQuestion}</p>
       </section>
       <LeaderboardPanel leaderboard={leaderboard} title="Standings" />

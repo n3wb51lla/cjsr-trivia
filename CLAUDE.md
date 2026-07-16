@@ -194,13 +194,14 @@ Host flow:
 - Full reset to lobby while preserving joined teams, clearing scores, lock times, and answers
 - Lobby-only kick button for active teams
 - Host team list shows active teams only; kicked teams remain in Firebase but are hidden from the sidebar
+- Host scorekeeper panel shows leaderboard-ranked teams and allows manual score correction with `-1`, `+1`, or direct numeric entry
 
 Projector screen:
 
 - Lobby joined-team count and team list
 - Live question text, point value, timer, and lock count
 - Reveal answer, correct-team count, and leaderboard
-- Break standings and next question number
+- Standings checkpoint screen with scores and next question number
 - Final winner and standings
 
 Leaderboard:
@@ -251,6 +252,14 @@ Kick:
 - Deletes the team-name reservation so the name can be picked again.
 - The host sidebar renders active teams only, so kicked teams disappear from the visible lobby list.
 - Required Firebase rules have been deployed.
+
+Manual score corrections:
+
+- Host scorekeeper controls are available in the Host view.
+- `-1` and `+1` buttons update immediately.
+- Direct score input commits on blur or Enter.
+- Scores are clamped to whole numbers at or above zero.
+- This uses the existing team write rule by writing the full team record with an updated score.
 
 ## Known Follow-Ups
 

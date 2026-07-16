@@ -126,6 +126,21 @@ export async function kickTeamFromLobby(gameCode: string, team: Team): Promise<v
   await update(ref(requireDatabase()), updates);
 }
 
+export async function setTeamScore(gameCode: string, team: Team, score: number): Promise<void> {
+  if (!Number.isFinite(score)) throw new Error('Score must be a number.');
+  const nextScore = Math.max(0, Math.trunc(score));
+  const nextTeam: FirebaseTeam = {
+    teamName: team.teamName,
+    playerCount: team.playerCount,
+    score: nextScore,
+    cumulativeLockMs: team.cumulativeLockMs,
+    joinedAt: team.joinedAt,
+    isActive: team.isActive,
+  };
+
+  await set(ref(requireDatabase(), teamPath(gameCode, team.id)), nextTeam);
+}
+
 export async function submitAnswerIfMissing(
   gameCode: string,
   teamId: string,
