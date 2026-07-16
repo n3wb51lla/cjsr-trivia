@@ -23,6 +23,7 @@
         },
         "answers": {
           ".read": true,
+          ".write": "newData.val() === null",
           "$teamId": {
             "$questionId": {
               ".write": "newData.exists() && root.child('games/' + $gameCode + '/teams/' + $teamId).exists() && newData.child('teamId').val() === $teamId && newData.child('questionIndex').isNumber() && newData.child('questionIndex').val() >= 1 && newData.child('questionIndex').val() <= 31 && (newData.child('choiceIndex').val() === null || (newData.child('choiceIndex').isNumber() && newData.child('choiceIndex').val() >= 0 && newData.child('choiceIndex').val() <= 3)) && newData.child('pointsAwarded').isNumber() && newData.child('pointsAwarded').val() >= 0"

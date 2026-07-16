@@ -2,7 +2,7 @@ import { get, onValue, push, ref, remove, runTransaction, serverTimestamp, set, 
 import type { Answer, Game, GameState, Team } from '../types';
 import { firebaseServices } from './firebase';
 import {
-  answerPath, gameMetaPath, gamePath, teamCumulativeLockMsPath, teamNameReservationPath, teamPath, teamScorePath,
+  answerPath, answersPath, gameMetaPath, gamePath, teamCumulativeLockMsPath, teamNameReservationPath, teamPath, teamScorePath,
 } from './firebasePaths';
 
 export type FirebaseGameMeta = Omit<Game, 'id'> & {
@@ -160,6 +160,20 @@ export async function finalizeQuestionScores(gameCode: string, state: GameState,
   if (Object.keys(updates).length > 0) {
     await update(ref(requireDatabase()), updates);
   }
+}
+
+export async function resetGameForReplay(gameCode: string, state: GameState, meta: FirebaseGameMeta): Promise<void> {
+  const updates: Record<string, unknown> = {
+    [gameMetaPath(gameCode)]: meta,
+    [answersPath(gameCode)]: null,
+  };
+
+  for (const team of state.teams) {
+    updates[teamScorePath(gameCode, team.id)] = 0;
+    updates[teamCumulativeLockMsPath(gameCode, team.id)] = 0;
+  }
+
+  await update(ref(requireDatabase()), updates);
 }
 
 export async function fetchServerTimeOffsetMs(): Promise<number> {

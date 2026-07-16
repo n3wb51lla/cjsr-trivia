@@ -145,7 +145,7 @@ Implemented:
 - Normal advance gating until every active team locks or time expires.
 - Force reveal control that finalizes missing answers.
 - Skip-to-finals control.
-- State reset back to lobby while preserving joined teams.
+- Full game reset back to lobby while preserving joined teams and clearing scores, tie-break timers, and answers.
 
 Verification:
 
@@ -156,7 +156,7 @@ Verification:
 Known follow-up:
 
 - This first host slice uses passphrase-gated browser writes to game metadata. It is suitable for local/event MVP testing, but protected serverless host actions remain the safer production architecture.
-- Updated Firebase rules must be deployed before the host buttons can write game metadata.
+- Updated Firebase rules must be deployed before reset can clear old answers.
 
 ## Phase 5 / 6
 

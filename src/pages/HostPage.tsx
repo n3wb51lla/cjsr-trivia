@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { useGameSubscription } from '../hooks/useGameSubscription';
 import { useQuestionTimer } from '../hooks/useQuestionTimer';
 import { getOptionalEnv } from '../lib/env';
-import { finalizeQuestionScores, patchGameMeta, writeGameMeta, type FirebaseGameMeta } from '../lib/firebaseData';
+import { finalizeQuestionScores, patchGameMeta, resetGameForReplay, writeGameMeta, type FirebaseGameMeta } from '../lib/firebaseData';
 import { DEFAULT_GAME_CODE, getCurrentQuestionSummary, getHostAdvanceMeta, getHostButtonLabel, makeInitialGameMeta } from '../lib/hostState';
 import { getPointsForQuestion } from '../lib/triviaData';
 import type { Team } from '../types';
@@ -77,7 +77,14 @@ export function HostPage() {
   }
 
   async function resetStateOnly() {
-    await runHostAction('Game state reset to lobby. Joined teams are kept for now.', () => writeGameMeta(DEFAULT_GAME_CODE, makeInitialGameMeta(DEFAULT_GAME_CODE)));
+    await runHostAction('Game reset to lobby. Joined teams were kept, scores and answers were cleared.', async () => {
+      const nextMeta = makeInitialGameMeta(DEFAULT_GAME_CODE);
+      if (!gameState) {
+        await writeGameMeta(DEFAULT_GAME_CODE, nextMeta);
+        return;
+      }
+      await resetGameForReplay(DEFAULT_GAME_CODE, gameState, nextMeta);
+    });
   }
 
   async function runHostAction(success: string, action: () => Promise<void>) {
@@ -185,7 +192,7 @@ export function HostPage() {
             Skip to finals
           </button>
           <button type="button" disabled={busy} onClick={resetStateOnly} className="min-h-11 border-2 border-cjsr-magenta px-5 py-2 font-bold text-cjsr-magenta disabled:opacity-50">
-            Reset state
+            Reset game
           </button>
         </div>
         {message && <p className="mt-4 font-bold text-cjsr-magenta" role="status">{message}</p>}
