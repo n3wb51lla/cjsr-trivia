@@ -17,13 +17,14 @@ Primary routes:
 
 - `/` - player join, question, reveal, and final standings flow
 - `/host` - passphrase-protected host control desk
+- `/host/questions` - passphrase-protected live question/answer editor
 - `/screen` - read-only projector display
-- `/host/answer-key` - answer key route
+- `/host/answer-key` - passphrase-protected printable answer key
 
 Navigation:
 
 - The player root route is intentionally clean and has no visible nav links.
-- Host/admin nav appears only while on host routes and links to Host, Screen, and Answer key.
+- Host/admin nav appears only while on host routes and links to Host, Questions, Screen, and Answer key.
 - The projector route intentionally hides the global app header; `/screen` owns its own logo/title/status header to avoid duplicated CJSR branding on the display.
 - The global header row no longer force-stacks on mobile; it's a single wrapping flex row so the dark/light theme toggle sits beside the logo instead of dropping to its own row when there's no host nav to share space with.
 
@@ -35,19 +36,21 @@ Default game code:
 
 Recent commits (newest first):
 
+- `3058d57 New copy`
+- `fbd51e3 Fix`
+- `ff71baf Copy changes`
+- `ba1be41 Extra team names`
+- `ede1b1c Description change`
+- `425c5f6 Edit state`
+- `de2c389 Changes to copy`
+- `dd78b09 Answer Key`
+- `4119a5d screen dark mode`
+- `ea4a5e9 Claude.md`
 - `317730e Claude.md`
 - `43bf5d3 Fix`
 - `2394914 Dark light mode`
-- `e2e3e52 Fix`
-- `2ed8ca0 UI improvements`
-- `7f587b5 UI improvements`
-- `1900d1f Updates`
-- `6e19a9c Update teamNames.json`
-- `f396df7 fix: derive reveal points for correct answers`
-- `0f07216 data: load real event questions`
-- `91f3d3f fix: make scoreboard rows responsive`
 
-Important: the live Firebase Hosting site is available at `https://cjsr-trivia.web.app`. It was redeployed (`npx firebase-tools deploy --only hosting`) after the initial red/logo rebrand (commit `1900d1f`), but the later dark/light theme system, contrast fixes, and mobile header layout fix have **not** been confirmed deployed as of the last session — re-run the hosting deploy command before the event if those changes need to be live.
+Important: the live Firebase Hosting site is available at `https://cjsr-trivia.web.app`. It was redeployed (`npx firebase-tools deploy --only hosting`) after the initial red/logo rebrand (commit `1900d1f`), but everything since — the dark/light theme system, contrast fixes, mobile header layout fix, the live question/answer editor, the printable answer key, all player-facing copy changes, and the overflow team names — has **not** been confirmed deployed to hosting as of the last session. Re-run the hosting deploy command before the event. (Database rules, including the new `questions` write rule, **have** been deployed live via `npx firebase-tools deploy --only database` — that part is current.)
 
 This repo's git state changes without an explicit `git commit`/`git push` from a session. Something in this environment (observed to be outside of any Claude Code git command) auto-commits and auto-pushes working-tree changes to `origin/main`, using generic messages like `Fix` and `UI improvements`. Practically this means: assume every edit lands on GitHub immediately, don't rely on commit messages here to describe *why* something changed (check the conversation/PROGRESS notes instead), and don't assume `git status` being clean means nothing changed recently — always diff against what you expect.
 
@@ -105,33 +108,38 @@ Rules already deployed:
 - Scoring write rules
 - Reset rules allowing host reset to clear the answers tree
 - Kick rules allowing host kick to clear a team-name reservation
+- `questions/$questionId` write rule (shape-validated: id/round/text/choices/answer), enabling the live question editor at `/host/questions`
 
 Hosting already deployed:
 
-- Latest UI deploy completed successfully to `https://cjsr-trivia.web.app`
+- Latest confirmed UI deploy to `https://cjsr-trivia.web.app` predates the theme system and everything listed under "Current Git State" above — see that section before assuming any specific feature is live.
 
 ## Architecture
 
 Key files:
 
 - `src/lib/firebase.ts` - Firebase browser initialization and missing-env handling
-- `src/lib/firebasePaths.ts` - typed path helpers for game, teams, reservations, answers
-- `src/lib/firebaseData.ts` - Firebase read/write helpers
+- `src/lib/firebasePaths.ts` - typed path helpers for game, teams, reservations, answers, questions
+- `src/lib/firebaseData.ts` - Firebase read/write helpers, including `writeQuestion`/`ensureQuestionsSeeded`
 - `src/lib/hostState.ts` - host game-state transitions
-- `src/lib/triviaData.ts` - question/scoring/schedule helpers
+- `src/lib/triviaData.ts` - question/scoring/schedule helpers; `SEED_QUESTIONS` is the static build-time fallback, `resolveQuestions(gameState)` prefers live Firebase-backed questions when present
 - `src/lib/leaderboard.ts` - leaderboard ranking helper
-- `src/hooks/useGameSubscription.ts` - realtime subscription with fallback behavior
+- `src/hooks/useGameSubscription.ts` - realtime subscription with fallback behavior; the single `GameState` blob now also carries `questions`
 - `src/hooks/useServerTimeOffset.ts` - Firebase server time offset
 - `src/hooks/useQuestionTimer.ts` - server-derived question countdown
 - `src/pages/PlayerPage.tsx` - player join/play/reveal/final UI
 - `src/pages/HostPage.tsx` - host controls
+- `src/pages/HostQuestionsPage.tsx` - live question/answer editor (text, 4 choices, correct answer per question; round/points fixed, no add/delete)
 - `src/pages/ScreenPage.tsx` - projector display
+- `src/pages/AnswerKeyPage.tsx` - printable, host-gated answer key; reads the same live question data as everything else
+- `src/components/host/HostGate.tsx` - shared passphrase-unlock gate, used by `/host`, `/host/questions`, and `/host/answer-key`
 - `src/hooks/useTheme.ts` - dark/light theme state, persisted to `localStorage` under `cjsr-theme`, applied via `data-theme` on `<html>`
 - `src/components/common/ThemeToggle.tsx` - header theme-toggle button (upside-down cross for dark, right-side-up cross for light)
 - `src/assets/cjsr-logo.png` - CJSR star logo with the white background removed (flood-fill from image edges so the white "cjsr" lettering stayed intact); used in the app header and the projector top bar
 - `src/styles.css` - CSS custom properties for the `cjsr-*` color tokens; dark values live on `:root`, light overrides live on `:root[data-theme='light']`
 - `tailwind.config.js` - maps the `cjsr-*` Tailwind color classes to the CSS custom properties above
 - `scripts/simulateFullGame.mjs` - deterministic full-game stress simulation
+- `scripts/validateQuestions.mjs` - validates `questions.json`, `teamNames.json`, and `teamNamesOverflow.json` (including cross-file duplicate name checks)
 - `database.rules.json` - Realtime Database rules
 - `firebase.json` - Firebase hosting/database config
 
@@ -149,6 +157,7 @@ Main children:
 - `teams` - team records
 - `teamNames` - reservation map for unique team names
 - `answers` - answer records by team and question
+- `questions` - live question bank (id, round, text, 4 choices, correct answer index), keyed by question id; only exists once a host has opened `/host/questions` at least once (it self-seeds from `src/data/questions.json` on first load via `ensureQuestionsSeeded`). Until seeded, every page transparently falls back to the static seed file, so gameplay works either way.
 
 Team records are not deleted when kicked. They are marked:
 
@@ -167,23 +176,26 @@ Foundation:
 - Tailwind and CJSR visual theme
 - Global error boundary
 - Firebase Hosting config
-- Data validation script for questions/team names
+- Data validation script for questions/team names/overflow team names
 
 Trivia data:
 
-- 30 real event questions plus 1 sudden-death question
-- 20 official team names in `src/data/teamNames.json`, currently pub-quiz pun names (`Quizzy McQuizface`, `Agatha Quiztie`, `Les Quizerables`, etc.) after an earlier Canadian-music-pun theme was tried and replaced
+- 30 real event questions plus 1 sudden-death question, defined in `src/data/questions.json` as the seed/fallback
+- Live-editable via `/host/questions`: once a host opens that page, the question bank is copied into Firebase (`games/{gameCode}/questions`) and becomes the live source of truth for every connected client (Player, Screen, Host, Answer key) in realtime. Only text/choices/correct-answer are editable; round and point value are fixed by design.
+- 20 official team names in `src/data/teamNames.json` (pub-quiz pun names: `Quizzy McQuizface`, `Agatha Quiztie`, `Les Quizerables`, etc.)
+- 15 additional "overflow" team names in `src/data/teamNamesOverflow.json`, same pun style. Hidden on the player join screen until all 20 primary names are taken, then revealed automatically (with a short "More names unlocked" note) so the event can scale past 20 teams without a code change on the night.
 - Round-based scoring
-- Schedule/break metadata
+- Schedule/break metadata (this event runs as one continuous ~1 hour block with no scheduled breaks — see `schedule.json`)
 - Shared domain types
 
 Player flow:
 
 - Default `main` game code with no player-facing game-code field
 - Team join with 1-4 players
-- Team name reservation and taken-name disabling
+- Team name reservation and taken-name disabling, with the 15-name overflow pool unlocking once the primary 20 are full
 - `team_id` localStorage rejoin
 - Lobby screen
+- Join-screen copy covers format (30 questions, 1 hour, no breaks, rising stakes), the 15-second answer-and-lock-in window, Canadian-music theme, and the prize (CJSR swag and glory)
 - Question screen with server-derived timer
 - Answer selection and one-time lock-in
 - Auto-lock null answer on timeout
@@ -192,7 +204,7 @@ Player flow:
 
 Host flow:
 
-- Passphrase gate via `VITE_HOST_PASSPHRASE`
+- Passphrase gate via `VITE_HOST_PASSPHRASE` (shared `HostGate` component across all host-only routes)
 - Initialize lobby
 - Advance lobby -> question -> reveal -> break/final
 - Current question and correct answer display
@@ -206,17 +218,21 @@ Host flow:
 - Lobby-only kick button for active teams
 - Host team list shows active teams only; kicked teams remain in Firebase but are hidden from the sidebar
 - Host scorekeeper panel shows leaderboard-ranked teams and allows manual score correction with `-1`, `+1`, or direct numeric entry
+- Question editor (`/host/questions`): grouped by round, per-question text/choices/correct-answer editing with a per-row Save button; changes are live immediately for all connected clients
+
+Answer key:
+
+- `/host/answer-key` is a passphrase-gated, printable (black-on-white, print-friendly CSS) listing of every question grouped by round with the correct answer marked, plus a point value per round. Reads the same live question data as gameplay, so edits made in the question editor show up here automatically.
 
 Projector screen:
 
 - Does not render the global app shell header, so the projector view only shows one CJSR logo/title.
-- Lobby joined-team count and team list
+- Lobby joined-team count and team list; lobby headline reads "Volunteer Appreciation Trivia"
 - Live question text, point value, timer, and lock count
 - Reveal answer, correct-team count, and leaderboard
 - Standings checkpoint screen with scores and next question number
 - Final winner and standings
-- Waiting state now says "Waiting for host" instead of repeating "CJSR Trivia Night".
-- Lobby headline now says "Volunteer Appreciation" instead of repeating "Trivia".
+- Waiting state says "Waiting for host"
 
 Leaderboard:
 
@@ -250,6 +266,7 @@ node scripts/simulateFullGame.mjs 500 20 30
   - Timeout/null answer rate: `3.46%`
   - Winning score range: `48 - 78`
   - All team score range: `7 - 78`
+- This sim is pinned to exactly 20 teams by design and does not model the overflow team-name pool; it exercises the primary 20-team path only.
 
 ## Current Behavior Details
 
@@ -267,6 +284,7 @@ Reset:
 - Sets all team scores to `0`.
 - Sets all cumulative lock times to `0`.
 - Deletes `answers`.
+- Does not touch `questions` — question edits persist across resets.
 
 Kick:
 
@@ -285,11 +303,16 @@ Manual score corrections:
 - Scores are clamped to whole numbers at or above zero.
 - This uses the existing team write rule by writing the full team record with an updated score.
 
+Question editing:
+
+- `/host/questions` seeds `games/{gameCode}/questions` from `SEED_QUESTIONS` the first time it's opened (no-op if already seeded, so host edits are never clobbered by a later visit).
+- Per-question Save writes only that question via a `set()` at its exact path; the seed step uses a multi-location `update()` across all question paths rather than a single `set()` on the parent node, because a Firebase RTDB `.write` rule defined only on the `$questionId` child does not authorize a `set()` on its parent — this is the same multi-location-update pattern already used by `finalizeQuestionScores`/`resetGameForReplay`.
+- Round and question id are fixed; only text, the 4 choices, and the correct-answer index are editable.
+
 UI repetition cleanup:
 
 - `src/App.tsx` now wraps routes in `AppLayout`, which hides the global header on `/screen`.
 - The global header remains on `/` and `/host*`; host/admin nav still appears only on `/host*`.
-- Player join headline was shortened to "Join Volunteer Appreciation" because the global header already supplies "CJSR Trivia".
 - Host unlocked headline was shortened to "Control desk" because the global header already supplies the trivia context.
 - Screen waiting/lobby copy was shortened so the projector experience does not stack multiple CJSR/Trivia labels.
 
@@ -297,16 +320,17 @@ UI repetition cleanup:
 
 High priority:
 
-- Keep real event questions in `src/data/questions.json` and run validation after edits.
+- Keep real event questions in `src/data/questions.json` (or via `/host/questions` once seeded) and run validation after edits to the seed file.
 - Run a final dry run after real questions are loaded.
-- Re-run `npx firebase-tools deploy --only hosting` — the dark/light theme system, contrast fixes, and mobile header fix landed after the last confirmed deploy.
+- Re-run `npx firebase-tools deploy --only hosting` — everything under "Current Git State" above is still only on the dev server / GitHub, not on the live site.
 - Do a live-browser smoke test of the theme toggle and the reveal screens in both themes before the event; verification so far has been build/lint plus isolated CSS-swatch screenshots (see below), not a full click-through of the live Firebase-connected app.
+- No terminal or local process needs to run during the event itself — hosting is a static `dist` build served from Firebase's CDN, and the Realtime Database is a fully managed cloud service. `npm run dev` is local-preview only. The one prerequisite is the hosting redeploy above, done ahead of time.
 
 Security/architecture:
 
 - Host actions currently use passphrase-gated browser writes and permissive-enough Firebase rules for event MVP testing.
 - Safer production architecture would move host mutations, scoring, reset, and kicking into serverless functions using Firebase Admin credentials.
-- There is no auth; `VITE_HOST_PASSPHRASE` ships in the client bundle and any Firebase write that matches the shape rules in `database.rules.json` is accepted regardless of who sends it (e.g. a team could edit its own score from the browser console). Acceptable for a low-stakes volunteer event, not for anything higher-stakes without real auth.
+- There is no auth; `VITE_HOST_PASSPHRASE` ships in the client bundle and any Firebase write that matches the shape rules in `database.rules.json` is accepted regardless of who sends it (e.g. a team could edit its own score from the browser console, or anyone could edit questions without knowing the passphrase if they call the Firebase write directly). Acceptable for a low-stakes volunteer event, not for anything higher-stakes without real auth.
 
 Feature follow-ups:
 
@@ -315,6 +339,7 @@ Feature follow-ups:
 - Host pacing and schedule support.
 - Late-join historical null answers if needed.
 - Reliability/failure dry run.
+- Question editor currently supports edit-only (text/choices/answer); add/delete/reorder was explicitly deferred to avoid disturbing round-count and sudden-death invariants this close to the event.
 
 Accessibility:
 
