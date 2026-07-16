@@ -1,4 +1,5 @@
 import type { FirebaseGameMeta } from './firebaseData';
+import type { Question } from '../types';
 import { getNextGameState, getQuestionByIndex, getRoundForQuestion } from './triviaData';
 
 export const DEFAULT_GAME_CODE = 'main';
@@ -16,12 +17,12 @@ export function makeInitialGameMeta(gameCode = DEFAULT_GAME_CODE): FirebaseGameM
   };
 }
 
-export function getHostAdvanceMeta(current: FirebaseGameMeta | null, gameCode = DEFAULT_GAME_CODE): FirebaseGameMeta {
+export function getHostAdvanceMeta(current: FirebaseGameMeta | null, questions: readonly Question[], gameCode = DEFAULT_GAME_CODE): FirebaseGameMeta {
   const base = current ?? makeInitialGameMeta(gameCode);
   const phase = base.phase === 'sudden_death' ? 'final' : base.phase;
   const nextPhase = getNextGameState(phase, base.currentQuestionIndex);
   const nextQuestionIndex = getNextQuestionIndex(base.currentQuestionIndex, base.phase, nextPhase);
-  const nextRound = nextQuestionIndex ? getRoundForQuestion(nextQuestionIndex) : null;
+  const nextRound = nextQuestionIndex ? getRoundForQuestion(questions, nextQuestionIndex) : null;
   const now = Date.now();
 
   return {
@@ -48,9 +49,9 @@ export function getHostButtonLabel(meta: FirebaseGameMeta | null): string {
   return 'Finals';
 }
 
-export function getCurrentQuestionSummary(questionIndex: number | null) {
+export function getCurrentQuestionSummary(questions: readonly Question[], questionIndex: number | null) {
   if (questionIndex === null) return null;
-  return getQuestionByIndex(questionIndex) ?? null;
+  return getQuestionByIndex(questions, questionIndex) ?? null;
 }
 
 function getNextQuestionIndex(currentQuestionIndex: number | null, currentPhase: FirebaseGameMeta['phase'], nextPhase: FirebaseGameMeta['phase']): number | null {

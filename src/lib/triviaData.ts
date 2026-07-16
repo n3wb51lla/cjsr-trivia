@@ -2,22 +2,27 @@ import questionsJson from '../data/questions.json';
 import schedule from '../data/schedule.json';
 import scoring from '../data/scoring.json';
 import teamNames from '../data/teamNames.json';
-import type { Question, QuestionRound, RoundNumber } from '../types';
+import type { GameState, Question, QuestionRound, RoundNumber } from '../types';
 
-export const QUESTIONS = parseQuestions(questionsJson);
+export const SEED_QUESTIONS = parseQuestions(questionsJson);
 export const TEAM_NAMES = teamNames as readonly string[];
 export const SUDDEN_DEATH_POINTS = 5;
+export const ROUND_ORDER: readonly QuestionRound[] = [1, 2, 3, 4, 5, 6, 'suddenDeath'];
 
-export function getQuestionByIndex(index: number): Question | undefined {
-  return QUESTIONS.find(question => question.id === index);
+export function resolveQuestions(gameState: GameState | null): readonly Question[] {
+  return gameState?.questions.length ? gameState.questions : SEED_QUESTIONS;
 }
 
-export function getRoundForQuestion(index: number): QuestionRound | undefined {
-  return getQuestionByIndex(index)?.round;
+export function getQuestionByIndex(questions: readonly Question[], index: number): Question | undefined {
+  return questions.find(question => question.id === index);
 }
 
-export function getPointsForQuestion(index: number): number {
-  const round = getRoundForQuestion(index);
+export function getRoundForQuestion(questions: readonly Question[], index: number): QuestionRound | undefined {
+  return getQuestionByIndex(questions, index)?.round;
+}
+
+export function getPointsForQuestion(questions: readonly Question[], index: number): number {
+  const round = getRoundForQuestion(questions, index);
   if (round === 'suddenDeath') return SUDDEN_DEATH_POINTS;
   if (round === undefined) throw new Error(`Unknown question index: ${index}`);
   return getPointsForRound(round);

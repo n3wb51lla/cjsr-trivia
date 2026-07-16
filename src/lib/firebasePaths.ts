@@ -34,6 +34,14 @@ export function answersPath(gameCode: string): string {
   return `${gamePath(gameCode)}/answers`;
 }
 
+export function questionsPath(gameCode: string): string {
+  return `${gamePath(gameCode)}/questions`;
+}
+
+export function questionPath(gameCode: string, questionId: number): string {
+  return `${questionsPath(gameCode)}/${questionId}`;
+}
+
 export function teamAnswersPath(gameCode: string, teamId: string): string {
   return `${answersPath(gameCode)}/${teamId}`;
 }

@@ -48,6 +48,7 @@ export interface GameState {
   readonly game: Game;
   readonly teams: readonly Team[];
   readonly answers: readonly Answer[];
+  readonly questions: readonly Question[];
 }
 
 export interface LeaderboardEntry {

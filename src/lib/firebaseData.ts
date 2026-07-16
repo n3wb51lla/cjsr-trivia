@@ -1,8 +1,8 @@
 import { get, onValue, push, ref, remove, runTransaction, serverTimestamp, set, update, type Unsubscribe } from 'firebase/database';
-import type { Answer, Game, GameState, Team } from '../types';
+import type { Answer, Game, GameState, Question, Team } from '../types';
 import { firebaseServices } from './firebase';
 import {
-  answerPath, answersPath, gameMetaPath, gamePath, teamCumulativeLockMsPath, teamNameReservationPath, teamPath, teamScorePath,
+  answerPath, answersPath, gameMetaPath, gamePath, questionPath, questionsPath, teamCumulativeLockMsPath, teamNameReservationPath, teamPath, teamScorePath,
 } from './firebasePaths';
 
 export type FirebaseGameMeta = Omit<Game, 'id'> & {
@@ -212,6 +212,36 @@ export async function resetGameForReplay(gameCode: string, state: GameState, met
   await update(ref(requireDatabase()), updates);
 }
 
+export async function writeQuestion(gameCode: string, question: Question): Promise<void> {
+  await set(ref(requireDatabase(), questionPath(gameCode, question.id)), {
+    id: question.id,
+    round: question.round,
+    text: question.text,
+    choices: question.choices,
+    answer: question.answer,
+  });
+}
+
+export async function ensureQuestionsSeeded(gameCode: string, seedQuestions: readonly Question[]): Promise<void> {
+  const snapshot = await get(ref(requireDatabase(), questionsPath(gameCode)));
+  if (snapshot.exists()) return;
+
+  const updates: Record<string, unknown> = {};
+  for (const question of seedQuestions) {
+    updates[questionPath(gameCode, question.id)] = {
+      id: question.id,
+      round: question.round,
+      text: question.text,
+      choices: question.choices,
+      answer: question.answer,
+    };
+  }
+
+  if (Object.keys(updates).length > 0) {
+    await update(ref(requireDatabase()), updates);
+  }
+}
+
 export async function fetchServerTimeOffsetMs(): Promise<number> {
   const snapshot = await get(ref(requireDatabase(), '.info/serverTimeOffset'));
   return typeof snapshot.val() === 'number' ? snapshot.val() : 0;
@@ -257,6 +287,13 @@ function parseGameState(gameCode: string, value: unknown): GameState {
         pointsAwarded: parseNumber(answer.pointsAwarded, 0),
       })),
     ),
+    questions: parseRecordList<Question>(root.questions, (id, question) => ({
+      id: parseNumber(question.id, Number(id)),
+      round: parseQuestionRound(question.round),
+      text: typeof question.text === 'string' ? question.text : '',
+      choices: parseChoices(question.choices),
+      answer: parseChoice(question.answer) ?? 0,
+    })),
   };
 }
 
@@ -290,6 +327,18 @@ function parsePlayerCount(value: unknown): Team['playerCount'] {
 function parseChoice(value: unknown): Answer['choiceIndex'] {
   if (value === 0 || value === 1 || value === 2 || value === 3) return value;
   return null;
+}
+
+function parseQuestionRound(value: unknown): Question['round'] {
+  if (value === 'suddenDeath' || value === 1 || value === 2 || value === 3 || value === 4 || value === 5 || value === 6) return value;
+  return 1;
+}
+
+function parseChoices(value: unknown): Question['choices'] {
+  if (Array.isArray(value) && value.length === 4 && value.every(choice => typeof choice === 'string')) {
+    return value as [string, string, string, string];
+  }
+  return ['', '', '', ''];
 }
 
 function parseNullableNumber(value: unknown): number | null {

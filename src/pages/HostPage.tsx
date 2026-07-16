@@ -1,28 +1,27 @@
 import { useMemo, useState } from 'react';
+import { HostGate } from '../components/host/HostGate';
 import { useGameSubscription } from '../hooks/useGameSubscription';
 import { useQuestionTimer } from '../hooks/useQuestionTimer';
-import { getOptionalEnv } from '../lib/env';
 import { finalizeQuestionScores, kickTeamFromLobby, patchGameMeta, resetGameForReplay, setTeamScore, writeGameMeta, type FirebaseGameMeta } from '../lib/firebaseData';
 import { DEFAULT_GAME_CODE, getCurrentQuestionSummary, getHostAdvanceMeta, getHostButtonLabel, makeInitialGameMeta } from '../lib/hostState';
 import { buildLeaderboard } from '../lib/leaderboard';
-import { getPointsForQuestion } from '../lib/triviaData';
+import { getPointsForQuestion, resolveQuestions } from '../lib/triviaData';
 import type { LeaderboardEntry, Team } from '../types';
 
 const EMPTY_TEAMS: Team[] = [];
 
 export function HostPage() {
-  const [isUnlocked, setIsUnlocked] = useState(false);
-  const [passphrase, setPassphrase] = useState('');
   const [message, setMessage] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const { gameState, status, error } = useGameSubscription(DEFAULT_GAME_CODE);
 
   const meta = useMemo<FirebaseGameMeta | null>(() => gameState ? { ...gameState.game, code: DEFAULT_GAME_CODE } : null, [gameState]);
+  const questions = useMemo(() => resolveQuestions(gameState), [gameState]);
   const teams = gameState?.teams ?? EMPTY_TEAMS;
   const activeTeams = useMemo(() => teams.filter(team => team.isActive), [teams]);
   const leaderboard = useMemo(() => buildLeaderboard(activeTeams), [activeTeams]);
-  const question = getCurrentQuestionSummary(meta?.currentQuestionIndex ?? null);
-  const pointValue = meta?.currentQuestionIndex ? getPointsForQuestion(meta.currentQuestionIndex) : null;
+  const question = getCurrentQuestionSummary(questions, meta?.currentQuestionIndex ?? null);
+  const pointValue = meta?.currentQuestionIndex ? getPointsForQuestion(questions, meta.currentQuestionIndex) : null;
   const timer = useQuestionTimer(meta?.questionStartedAt ?? null);
   const currentQuestionIndex = meta?.currentQuestionIndex ?? null;
   const currentAnswers = useMemo(
@@ -36,21 +35,6 @@ export function HostPage() {
   const allTeamsLocked = activeTeams.length > 0 && lockedCount >= activeTeams.length;
   const canAdvance = !isQuestionLive || allTeamsLocked || timer.isExpired;
 
-  function unlock(event: React.FormEvent) {
-    event.preventDefault();
-    const expected = getOptionalEnv('VITE_HOST_PASSPHRASE');
-    if (!expected) {
-      setMessage('Missing VITE_HOST_PASSPHRASE in .env.local.');
-      return;
-    }
-    if (passphrase !== expected) {
-      setMessage('Incorrect host passphrase.');
-      return;
-    }
-    setIsUnlocked(true);
-    setMessage(null);
-  }
-
   async function initializeLobby() {
     await runHostAction('Lobby initialized.', () => writeGameMeta(DEFAULT_GAME_CODE, makeInitialGameMeta(DEFAULT_GAME_CODE)));
   }
@@ -59,9 +43,9 @@ export function HostPage() {
     if (!force && !canAdvance) return;
     await runHostAction(force ? 'Forced advance and finalized open answers.' : 'Advanced game state.', async () => {
       if (gameState && meta?.phase === 'question' && meta.currentQuestionIndex && question) {
-        await finalizeQuestionScores(DEFAULT_GAME_CODE, gameState, meta.currentQuestionIndex, question.answer, getPointsForQuestion(meta.currentQuestionIndex));
+        await finalizeQuestionScores(DEFAULT_GAME_CODE, gameState, meta.currentQuestionIndex, question.answer, getPointsForQuestion(questions, meta.currentQuestionIndex));
       }
-      await writeGameMeta(DEFAULT_GAME_CODE, getHostAdvanceMeta(meta, DEFAULT_GAME_CODE));
+      await writeGameMeta(DEFAULT_GAME_CODE, getHostAdvanceMeta(meta, questions, DEFAULT_GAME_CODE));
     });
   }
 
@@ -114,30 +98,8 @@ export function HostPage() {
     }
   }
 
-  if (!isUnlocked) {
-    return (
-      <section className="page-card p-6">
-        <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Host controls</p>
-        <h1 className="mt-3 font-display text-4xl leading-tight">Unlock control desk</h1>
-        <form className="mt-6 max-w-sm" onSubmit={unlock}>
-          <label className="block text-sm font-bold uppercase tracking-wide" htmlFor="host-passphrase">Host passphrase</label>
-          <input
-            id="host-passphrase"
-            type="password"
-            className="mt-2 min-h-11 w-full border-2 border-cjsr-red bg-cjsr-black px-3 py-2 text-cjsr-ink"
-            value={passphrase}
-            onChange={event => setPassphrase(event.target.value)}
-          />
-          <button type="submit" className="mt-4 min-h-11 border-2 border-cjsr-red bg-cjsr-red px-5 py-2 font-black text-white">
-            Unlock host
-          </button>
-        </form>
-        {message && <p className="mt-4 font-bold text-cjsr-red-light" role="alert">{message}</p>}
-      </section>
-    );
-  }
-
   return (
+    <HostGate title="Unlock control desk">
     <div className="grid gap-4 lg:grid-cols-[2fr_1fr]">
       <section className="page-card p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -221,6 +183,7 @@ export function HostPage() {
         onScoreChange={updateScore}
       />
     </div>
+    </HostGate>
   );
 }
 

@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { LeaderboardEntry, Team } from '../types';
+import type { LeaderboardEntry, Question, Team } from '../types';
 import { useGameSubscription } from '../hooks/useGameSubscription';
 import { useQuestionTimer } from '../hooks/useQuestionTimer';
 import { joinTeam, makeTeamNameKey, submitAnswerIfMissing } from '../lib/firebaseData';
 import { buildLeaderboard } from '../lib/leaderboard';
 import { DEFAULT_GAME_CODE } from '../lib/hostState';
 import { clearStoredTeamId, getStoredTeamId, storeTeamId } from '../lib/storage';
-import { getPointsForQuestion, getQuestionByIndex, TEAM_NAMES } from '../lib/triviaData';
+import { getPointsForQuestion, getQuestionByIndex, resolveQuestions, TEAM_NAMES } from '../lib/triviaData';
 
 type PlayerCount = 1 | 2 | 3 | 4;
 
@@ -16,6 +16,7 @@ export function PlayerPage() {
   const [joiningName, setJoiningName] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const { gameState, status, error } = useGameSubscription(DEFAULT_GAME_CODE);
+  const questions = useMemo(() => resolveQuestions(gameState), [gameState]);
 
   const currentTeam = useMemo(
     () => gameState?.teams.find(team => team.id === storedTeamId && team.isActive) ?? null,
@@ -64,6 +65,7 @@ export function PlayerPage() {
           <QuestionPanel
             gameCode={DEFAULT_GAME_CODE}
             team={currentTeam}
+            questions={questions}
             questionIndex={gameState.game.currentQuestionIndex}
             questionStartedAt={gameState.game.questionStartedAt}
             answerChoice={currentAnswer?.choiceIndex ?? undefined}
@@ -80,6 +82,7 @@ export function PlayerPage() {
         <PlayerShell status={status} error={error?.message ?? null}>
           <RevealPanel
             team={currentTeam}
+            questions={questions}
             questionIndex={gameState.game.currentQuestionIndex}
             answerChoice={currentAnswer?.choiceIndex ?? null}
             pointsAwarded={currentAnswer?.pointsAwarded ?? 0}
@@ -218,6 +221,7 @@ function FinalPanel({ team, leaderboard }: { team: Team | null; leaderboard: Lea
 function QuestionPanel({
   gameCode,
   team,
+  questions,
   questionIndex,
   questionStartedAt,
   answerChoice,
@@ -227,6 +231,7 @@ function QuestionPanel({
 }: {
   gameCode: string;
   team: Team;
+  questions: readonly Question[];
   questionIndex: number;
   questionStartedAt: number | null;
   answerChoice: 0 | 1 | 2 | 3 | null | undefined;
@@ -234,7 +239,7 @@ function QuestionPanel({
   lockedCount: number;
   teamCount: number;
 }) {
-  const question = getQuestionByIndex(questionIndex);
+  const question = getQuestionByIndex(questions, questionIndex);
   const [selectedChoice, setSelectedChoice] = useState<0 | 1 | 2 | 3 | null>(answerChoice ?? null);
   const [lockMessage, setLockMessage] = useState<string | null>(null);
   const [isLocking, setIsLocking] = useState(false);
@@ -275,7 +280,7 @@ function QuestionPanel({
   }
 
   const locked = lockedAnswerExists || lockMessage === 'Locked. Waiting for the room...' || lockMessage === 'Out of time.';
-  const pointValue = getPointsForQuestion(questionIndex);
+  const pointValue = getPointsForQuestion(questions, questionIndex);
 
   return (
     <section className="page-card p-5 sm:p-6" aria-live="polite">
@@ -333,11 +338,11 @@ function QuestionPanel({
   );
 }
 
-function RevealPanel({ team, questionIndex, answerChoice, pointsAwarded }: { team: Team; questionIndex: number; answerChoice: 0 | 1 | 2 | 3 | null; pointsAwarded: number }) {
-  const question = getQuestionByIndex(questionIndex);
+function RevealPanel({ team, questions, questionIndex, answerChoice, pointsAwarded }: { team: Team; questions: readonly Question[]; questionIndex: number; answerChoice: 0 | 1 | 2 | 3 | null; pointsAwarded: number }) {
+  const question = getQuestionByIndex(questions, questionIndex);
   if (!question) return null;
   const correct = answerChoice === question.answer;
-  const displayPointsAwarded = correct ? Math.max(pointsAwarded, getPointsForQuestion(questionIndex)) : 0;
+  const displayPointsAwarded = correct ? Math.max(pointsAwarded, getPointsForQuestion(questions, questionIndex)) : 0;
   return (
     <section className="page-card p-6" aria-live="polite">
       <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Reveal</p>

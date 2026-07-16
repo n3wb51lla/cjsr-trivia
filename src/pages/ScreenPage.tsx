@@ -3,17 +3,18 @@ import { useGameSubscription } from '../hooks/useGameSubscription';
 import { useQuestionTimer } from '../hooks/useQuestionTimer';
 import { DEFAULT_GAME_CODE } from '../lib/hostState';
 import { buildLeaderboard } from '../lib/leaderboard';
-import { getPointsForQuestion, getQuestionByIndex } from '../lib/triviaData';
+import { getPointsForQuestion, getQuestionByIndex, resolveQuestions } from '../lib/triviaData';
 import type { Answer, LeaderboardEntry } from '../types';
 import cjsrLogo from '../assets/cjsr-logo.png';
 import { ThemeToggle } from '../components/common/ThemeToggle';
 
 export function ScreenPage() {
   const { gameState, status, error } = useGameSubscription(DEFAULT_GAME_CODE);
+  const questions = useMemo(() => resolveQuestions(gameState), [gameState]);
   const leaderboard = useMemo(() => buildLeaderboard(gameState?.teams ?? []), [gameState?.teams]);
   const phase = gameState?.game.phase ?? 'lobby';
   const questionIndex = gameState?.game.currentQuestionIndex ?? null;
-  const question = questionIndex === null ? null : getQuestionByIndex(questionIndex);
+  const question = questionIndex === null ? null : getQuestionByIndex(questions, questionIndex);
   const timer = useQuestionTimer(gameState?.game.questionStartedAt ?? null);
   const currentAnswers = gameState?.answers.filter(answer => answer.questionIndex === questionIndex) ?? [];
   const activeTeamCount = gameState?.teams.filter(team => team.isActive).length ?? 0;
@@ -36,7 +37,7 @@ export function ScreenPage() {
         <QuestionScreen
           questionIndex={question.id}
           questionText={question.text}
-          points={getPointsForQuestion(question.id)}
+          points={getPointsForQuestion(questions, question.id)}
           secondsRemaining={timer.secondsRemaining}
           progress={timer.progress}
           lockedCount={currentAnswers.length}

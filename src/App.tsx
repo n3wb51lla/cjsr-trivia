@@ -4,6 +4,7 @@ import { ConfigWarning } from './components/common/ConfigWarning';
 import { ThemeToggle } from './components/common/ThemeToggle';
 import { AnswerKeyPage } from './pages/AnswerKeyPage';
 import { HostPage } from './pages/HostPage';
+import { HostQuestionsPage } from './pages/HostQuestionsPage';
 import { PlayerPage } from './pages/PlayerPage';
 import { ScreenPage } from './pages/ScreenPage';
 import cjsrLogo from './assets/cjsr-logo.png';
@@ -35,6 +36,7 @@ function AppLayout() {
         <Routes>
           <Route path="/" element={<PlayerPage />} />
           <Route path="/host" element={<HostPage />} />
+          <Route path="/host/questions" element={<HostQuestionsPage />} />
           <Route path="/screen" element={<ScreenPage />} />
           <Route path="/host/answer-key" element={<AnswerKeyPage />} />
         </Routes>
@@ -57,6 +59,7 @@ function HeaderContent() {
         {showHostNav && (
           <nav aria-label="Host navigation" className="flex flex-wrap gap-2 text-sm font-bold">
             <Link className="nav-link" to="/host">Host</Link>
+            <Link className="nav-link" to="/host/questions">Questions</Link>
             <Link className="nav-link" to="/screen">Screen</Link>
             <Link className="nav-link" to="/host/answer-key">Answer key</Link>
           </nav>
