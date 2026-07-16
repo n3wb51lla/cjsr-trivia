@@ -2,212 +2,212 @@
   {
     "id": 1,
     "round": 1,
-    "text": "Which Canadian band released Fully Completely?",
-    "choices": ["The Tragically Hip", "Sloan", "Rush", "Blue Rodeo"],
-    "answer": 0
+    "text": "Rollie Pemberton performs as which artist?",
+    "choices": ["Shad", "Cadence Weapon", "K-OS", "Classified"],
+    "answer": 1
   },
   {
     "id": 2,
     "round": 1,
-    "text": "Which city is CJSR 88.5 FM based in?",
-    "choices": ["Edmonton", "Calgary", "Vancouver", "Winnipeg"],
-    "answer": 0
+    "text": "This band, hailing from Halifax has all four members write and sing their own respective songs.",
+    "choices": ["Wintersleep", "Sloan", "Thrush Hermit", "The Super Friendz"],
+    "answer": 1
   },
   {
     "id": 3,
     "round": 1,
-    "text": "Which artist wrote Heart of Gold?",
-    "choices": ["Neil Young", "Gordon Lightfoot", "Joni Mitchell", "Leonard Cohen"],
-    "answer": 0
+    "text": "Who had the single \"Echo Beach\"?",
+    "choices": ["Spoons", "Martha and the Muffins", "Men Without Hats", "The Diodes"],
+    "answer": 1
   },
   {
     "id": 4,
     "round": 1,
-    "text": "Which band is famous for The Safety Dance?",
-    "choices": ["Men Without Hats", "Rush", "Metric", "The Guess Who"],
-    "answer": 0
+    "text": "Who fronts the band, Sister Ray?",
+    "choices": ["Katie Tupper", "Ella Coyes", "Mariel Buckley", "Alexa Dirks"],
+    "answer": 1
   },
   {
     "id": 5,
     "round": 1,
-    "text": "Which Canadian group recorded If I Had $1000000?",
-    "choices": ["Barenaked Ladies", "Blue Rodeo", "Great Big Sea", "The Weakerthans"],
-    "answer": 0
+    "text": "Which D.O.A. album popularized the term \"hardcore\"?",
+    "choices": ["Something Better Change", "Hardcore '81", "No Wishes, No Prayers", "Mama"],
+    "answer": 1
   },
   {
     "id": 6,
     "round": 2,
-    "text": "Which province is Great Big Sea most associated with?",
-    "choices": ["Newfoundland and Labrador", "Alberta", "Quebec", "Saskatchewan"],
-    "answer": 0
+    "text": "Which Feist song appeared in an iPod ad?",
+    "choices": ["Mushaboom", "My Moon My Man", "1234", "Inside and Out"],
+    "answer": 2
   },
   {
     "id": 7,
     "round": 2,
-    "text": "Which Canadian band has a song called Black Sheep?",
-    "choices": ["Metric", "Feist", "Stars", "Alvvays"],
-    "answer": 0
+    "text": "What was The New Pornographers' debut album?",
+    "choices": ["Twin Cinema", "Mass Romantic", "Electric Version", "Challengers"],
+    "answer": 1
   },
   {
     "id": 8,
     "round": 2,
-    "text": "Which artist sang Constant Craving?",
-    "choices": ["k.d. lang", "Sarah McLachlan", "Jann Arden", "Alanis Morissette"],
-    "answer": 0
+    "text": "What does SNFU stand for?",
+    "choices": ["Sorry, Not For Us", "Society's No Fucking Use", "Saturday Night Freak Unit", "Sounds Nice, Feels Ugly"],
+    "answer": 1
   },
   {
     "id": 9,
     "round": 2,
-    "text": "Which Canadian band released Funeral?",
-    "choices": ["Arcade Fire", "Broken Social Scene", "Stars", "Wolf Parade"],
-    "answer": 0
+    "text": "Who was Rush's main lyricist?",
+    "choices": ["Alex Lifeson", "Kim Mitchell", "Geddy Lee", "Neil Peart"],
+    "answer": 3
   },
   {
     "id": 10,
     "round": 2,
-    "text": "Which Canadian songwriter is known for The Wreck of the Edmund Fitzgerald?",
-    "choices": ["Gordon Lightfoot", "Stompin' Tom Connors", "Neil Young", "Ron Sexsmith"],
-    "answer": 0
+    "text": "What two punk bands' ex-members formed Edmonton's Home Front?",
+    "choices": ["Wednesday Night Heroes & The Franklins", "The Kasuals & Old Wives", "Ten Second Epic & The Lackeys", "L.A.M.S. & Les Tabernacles"],
+    "answer": 1
   },
   {
     "id": 11,
     "round": 3,
-    "text": "Which Halifax band released One Chord to Another?",
-    "choices": ["Sloan", "Joel Plaskett Emergency", "Thrush Hermit", "The Super Friendz"],
-    "answer": 0
+    "text": "What was The Weakerthans' debut album called?",
+    "choices": ["Left and Leaving", "Fallow", "Reconstruction Site", "Mass Romantic"],
+    "answer": 1
   },
   {
     "id": 12,
     "round": 3,
-    "text": "Which collective included members of Stars, Metric, and Feist?",
-    "choices": ["Broken Social Scene", "Arcade Fire", "The New Pornographers", "Godspeed You! Black Emperor"],
+    "text": "Who are Mariel Buckley's songs often written for?",
+    "choices": ["Underdogs", "Radio hosts", "Drummers", "Tour managers"],
     "answer": 0
   },
   {
     "id": 13,
     "round": 3,
-    "text": "Which Canadian punk band released How to Clean Everything?",
-    "choices": ["Propagandhi", "D.O.A.", "SNFU", "Nomeansno"],
-    "answer": 0
+    "text": "Which label signed Eric's Trip for their 1993 release, \"Love Tara\"?",
+    "choices": ["Dischord", "Matador", "Sub Pop", "Merge"],
+    "answer": 2
   },
   {
     "id": 14,
     "round": 3,
-    "text": "Which Vancouver supergroup released Mass Romantic?",
-    "choices": ["The New Pornographers", "The Organ", "Destroyer", "Hot Hot Heat"],
+    "text": "Who co-produced Calgary's Sunglaciers' album, Regular Nature?",
+    "choices": ["Chad VanGaalen", "Dan Mangan", "Joel Plaskett", "Mac DeMarco"],
     "answer": 0
   },
   {
     "id": 15,
     "round": 3,
-    "text": "Which Edmonton rapper won the Polaris Music Prize for Parallel World?",
-    "choices": ["Cadence Weapon", "Shad", "Kardinal Offishall", "Classified"],
-    "answer": 0
+    "text": "What was Broken Social Scene's 2002 landmark album?",
+    "choices": ["Feel Good Lost", "Funeral", "Old World Underground", "You Forgot It in People"],
+    "answer": 3
   },
   {
     "id": 16,
     "round": 4,
-    "text": "Which Victoria band is linked to the album Wrong?",
-    "choices": ["Nomeansno", "D.O.A.", "The Diodes", "Subhumans"],
-    "answer": 0
+    "text": "Which Canadian punk band became the centre of an obscenity trial in 1988?",
+    "choices": ["D.O.A.", "Subhumans", "Dayglo Abortions", "S.N.F.U."],
+    "answer": 2
   },
   {
     "id": 17,
     "round": 4,
-    "text": "Which Canadian band was the first from Canada signed to Sub Pop?",
-    "choices": ["Eric's Trip", "Sloan", "The Inbreds", "The Sadies"],
-    "answer": 0
+    "text": "What is k.d. lang's 1992 hit album?",
+    "choices": ["Drag", "Absolute Torch and Twang", "Ingenue", "Hymns of the 49th Parallel"],
+    "answer": 2
   },
   {
     "id": 18,
     "round": 4,
-    "text": "Which Toronto punk band played CBGB in 1977 with Viletones and Teenage Head?",
-    "choices": ["The Diodes", "Spoons", "Martha and the Muffins", "The Demics"],
-    "answer": 0
+    "text": "Which label released Bury the Key?",
+    "choices": ["Mint Records", "Arts & Crafts", "Ghostly International", "Sub Pop"],
+    "answer": 2
   },
   {
     "id": 19,
     "round": 4,
-    "text": "Which Canadian duo is behind the band Blue Moon Marquee?",
-    "choices": ["A.W. Cardinal and Jasmine Colette", "Luke Doucet and Melissa McClelland", "Tegan and Sara Quin", "Kevin Drew and Brendan Canning"],
-    "answer": 0
+    "text": "Which brothers founded Nomeansno?",
+    "choices": ["Mike and Dave Ullrich", "Joey and John Keithley", "Rob and John Wright", "Greig and Bill Nori"],
+    "answer": 2
   },
   {
     "id": 20,
     "round": 4,
-    "text": "Which Montreal artist released the album Panorama?",
-    "choices": ["Hélène Barbier", "Begonia", "FONTINE", "Katie Tupper"],
+    "text": "What tour helped break Propagandhi in 1992?",
+    "choices": ["Opening for NOFX", "Opening for Green Day", "Opening for Bad Religion", "Opening for Rancid"],
     "answer": 0
   },
   {
     "id": 21,
     "round": 5,
-    "text": "Which Winnipeg band did John K. Samson form after leaving Propagandhi?",
-    "choices": ["The Weakerthans", "The Watchmen", "Royal Canoe", "The Duhks"],
+    "text": "What was Ribbon Skirt formerly called?",
+    "choices": ["Love Language", "Soft Signal", "Twin Flame", "Good Buddy"],
     "answer": 0
   },
   {
     "id": 22,
     "round": 5,
-    "text": "Which band released the Canadian indie landmark You Forgot It in People?",
-    "choices": ["Broken Social Scene", "Arcade Fire", "Stars", "The New Pornographers"],
-    "answer": 0
+    "text": "Who are Blue Rodeo's two lead singers?",
+    "choices": ["Steven Page and Ed Robertson", "Jim Cuddy and Greg Keelor", "Gord Downie and Rob Baker", "Jim Bryson and Kathleen Edwards"],
+    "answer": 1
   },
   {
     "id": 23,
     "round": 5,
-    "text": "Which band formed in Burlington, Ontario and released Nova Heart?",
-    "choices": ["Spoons", "Men Without Hats", "Martha and the Muffins", "The Pursuit of Happiness"],
-    "answer": 0
+    "text": "What is FONTINE's 2025 album called?",
+    "choices": ["Greyhound", "Good Buddy", "Bite Down", "Bury the Key"],
+    "answer": 1
   },
   {
     "id": 24,
     "round": 5,
-    "text": "Which Calgary artist is associated with horse-opera country and Five Dollar Bill?",
-    "choices": ["Corb Lund", "Ian Tyson", "Colter Wall", "Fred Eaglesmith"],
-    "answer": 0
+    "text": "Northern Cree collaborated with which act?",
+    "choices": ["Home Front", "The Sadies", "Blue Moon Marquee", "Sargeant X Comrade"],
+    "answer": 2
   },
   {
     "id": 25,
     "round": 5,
-    "text": "Which Indigenous artist leads the band Ribbon Skirt?",
-    "choices": ["Tashiina Buswa", "Elisapie", "Leela Gilday", "Tanya Tagaq"],
-    "answer": 0
+    "text": "What was the Viletones singer Steven Leckie's stage name?",
+    "choices": ["Art Bergmann", "Joey Shithead", "Nazi Dog", "Johnny Rotten"],
+    "answer": 2
   },
   {
     "id": 26,
     "round": 6,
-    "text": "Which Canadian band name is also a unit of measurement joke?",
-    "choices": ["Metric", "Rush", "Moist", "Stars"],
-    "answer": 0
+    "text": "Which band was Neil Young in when he was a lot younger?",
+    "choices": ["Blue Rodeo", "Rush", "Buffalo Springfield", "The Band"],
+    "answer": 2
   },
   {
     "id": 27,
     "round": 6,
-    "text": "Which artist's fans might jokingly be called Feist Mode?",
-    "choices": ["Feist", "Lights", "Grimes", "Basia Bulat"],
-    "answer": 0
+    "text": "Who are Blue Moon Marquee's core members?",
+    "choices": ["Kevin Drew and Brendan Canning", "A.W. Cardinal and Jasmine Colette", "Rob and John Wright", "Gord Deppe and Sandy Horne"],
+    "answer": 1
   },
   {
     "id": 28,
     "round": 6,
-    "text": "Which Canadian band gives us the team-name pun Rush Hour Traffic?",
-    "choices": ["Rush", "Triumph", "April Wine", "Loverboy"],
-    "answer": 0
+    "text": "Which label first released Constantines?",
+    "choices": ["Sub Pop", "Three Gut Records", "Mint Records", "Epitaph"],
+    "answer": 1
   },
   {
     "id": 29,
     "round": 6,
-    "text": "Which Edmonton station's volunteers are being celebrated tonight?",
-    "choices": ["CJSR 88.5 FM", "CKUA", "CBC Radio One", "Sonic 102.9"],
+    "text": "Which Subhumans member later joined D.O.A.?",
+    "choices": ["Brian \"Wimpy\" Goble", "Joey Keithley", "Rob Wright", "Chi Pig"],
     "answer": 0
   },
   {
     "id": 30,
     "round": 6,
-    "text": "Which phrase best describes CJSR?",
-    "choices": ["Listener-supported, volunteer-powered", "Corporate-owned, chart-driven", "Satellite-only, ad-free", "Government-run, commercial-free"],
-    "answer": 0
+    "text": "What is cootie catcher's 2026 album called?",
+    "choices": ["Shy at First", "Good Buddy", "Something We All Got", "Fantasy Life"],
+    "answer": 2
   },
   {
     "id": 31,

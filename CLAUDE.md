@@ -165,7 +165,7 @@ Foundation:
 
 Trivia data:
 
-- 31 questions
+- 30 real event questions plus 1 sudden-death question
 - 20 official team names
 - Round-based scoring
 - Schedule/break metadata

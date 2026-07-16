@@ -45,7 +45,7 @@ Known follow-up:
 
 Implemented:
 
-- Authoritative JSON files for team names, scoring, schedule, and 31 questions.
+- Authoritative JSON files for team names, scoring, schedule, 30 real event questions, and 1 sudden-death question.
 - Shared TypeScript domain types for games, teams, answers, questions, game state, and leaderboard entries.
 - Trivia data helpers for question lookup, point lookup, round lookup, break detection, next-state derivation, and question duration.
 - `npm run validate:data` script for question/team/scoring validation.
