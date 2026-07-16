@@ -1,4 +1,4 @@
-import { get, onValue, push, ref, runTransaction, serverTimestamp, update, type Unsubscribe } from 'firebase/database';
+import { get, onValue, push, ref, remove, runTransaction, serverTimestamp, set, type Unsubscribe } from 'firebase/database';
 import type { Answer, Game, GameState, Team } from '../types';
 import { firebaseServices } from './firebase';
 import {
@@ -77,12 +77,23 @@ export async function joinTeam(gameCode: string, input: JoinTeamInput): Promise<
     isActive: true,
   };
 
-  const updates: Record<string, unknown> = {
-    [teamPath(gameCode, teamId)]: team,
-    [teamNameReservationPath(gameCode, teamNameKey)]: teamId,
-  };
+  const reservationRef = ref(requireDatabase(), teamNameReservationPath(gameCode, teamNameKey));
+  const reservation = await runTransaction(reservationRef, current => {
+    if (current !== null) return current;
+    return teamId;
+  }, { applyLocally: false });
 
-  await update(ref(requireDatabase()), updates);
+  if (reservation.snapshot.val() !== teamId) {
+    throw new Error('That team name is already taken.');
+  }
+
+  try {
+    await set(ref(requireDatabase(), teamPath(gameCode, teamId)), team);
+  } catch (error) {
+    await remove(reservationRef);
+    throw error;
+  }
+
   return { id: teamId, gameId: gameCode, ...team };
 }
 

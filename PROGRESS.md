@@ -6,7 +6,7 @@
 - [x] Phase 1: Static data and shared types
 - [x] Phase 2: Firebase Realtime Database rules and data access
 - [ ] Phase 3: Shared synchronization layer
-- [ ] Phase 4: Player join, rejoin, and lobby
+- [x] Phase 4: Player join, rejoin, and lobby
 - [ ] Phase 5: Server-authoritative question timer
 - [ ] Phase 6: Answer selection, locking, and recovery
 - [ ] Phase 7: Host control screen
@@ -103,6 +103,32 @@ Known follow-up:
 
 - Host controls still need protected serverless actions before they can mutate game state, score answers, or reset a dry run.
 - Team-name reservation is represented in the data model now; the Phase 4 join UI must write both the team and reservation path.
+
+## Phase 4
+
+Implemented:
+
+- Mobile-first player join page.
+- Game code field with localStorage persistence.
+- Player count selection with 44px+ touch targets.
+- Exact team-name list with taken names disabled.
+- Firebase-backed join flow using team-name reservation plus team record creation.
+- `team_id` localStorage persistence and rejoin restoration.
+- Lobby state showing team name and player count.
+- Leave/change-team control while the game is in lobby.
+- Friendly hold screen outside lobby/break for new teams.
+- Connection status display from the shared Firebase subscription hook.
+
+Verification:
+
+- `npm run validate:data` passed.
+- `npm run lint` passed.
+- `npm run build` passed.
+
+Known follow-up:
+
+- Late join null historical answers will be added once host progression/scoring exists.
+- Leave/change currently clears only this phone's local team link; deleting/deactivating Firebase team records needs protected host/server logic.
 
 ## Notes
 
