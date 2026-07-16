@@ -24,6 +24,7 @@ Navigation:
 
 - The player root route is intentionally clean and has no visible nav links.
 - Host/admin nav appears only while on host routes and links to Host, Screen, and Answer key.
+- The projector route intentionally hides the global app header; `/screen` owns its own logo/title/status header to avoid duplicated CJSR branding on the display.
 
 Default game code:
 
@@ -203,11 +204,14 @@ Host flow:
 
 Projector screen:
 
+- Does not render the global app shell header, so the projector view only shows one CJSR logo/title.
 - Lobby joined-team count and team list
 - Live question text, point value, timer, and lock count
 - Reveal answer, correct-team count, and leaderboard
 - Standings checkpoint screen with scores and next question number
 - Final winner and standings
+- Waiting state now says "Waiting for host" instead of repeating "CJSR Trivia Night".
+- Lobby headline now says "Volunteer Appreciation" instead of repeating "Trivia".
 
 Leaderboard:
 
@@ -265,6 +269,14 @@ Manual score corrections:
 - Direct score input commits on blur or Enter.
 - Scores are clamped to whole numbers at or above zero.
 - This uses the existing team write rule by writing the full team record with an updated score.
+
+UI repetition cleanup:
+
+- `src/App.tsx` now wraps routes in `AppLayout`, which hides the global header on `/screen`.
+- The global header remains on `/` and `/host*`; host/admin nav still appears only on `/host*`.
+- Player join headline was shortened to "Join Volunteer Appreciation" because the global header already supplies "CJSR Trivia".
+- Host unlocked headline was shortened to "Control desk" because the global header already supplies the trivia context.
+- Screen waiting/lobby copy was shortened so the projector experience does not stack multiple CJSR/Trivia labels.
 
 ## Known Follow-Ups
 
