@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useGameSubscription } from '../hooks/useGameSubscription';
 import { getOptionalEnv } from '../lib/env';
-import { patchGameMeta, writeGameMeta, type FirebaseGameMeta } from '../lib/firebaseData';
+import { finalizeQuestionScores, patchGameMeta, writeGameMeta, type FirebaseGameMeta } from '../lib/firebaseData';
 import { DEFAULT_GAME_CODE, getCurrentQuestionSummary, getHostAdvanceMeta, getHostButtonLabel, makeInitialGameMeta } from '../lib/hostState';
 import { getPointsForQuestion } from '../lib/triviaData';
 
@@ -37,7 +37,12 @@ export function HostPage() {
   }
 
   async function advance() {
-    await runHostAction('Advanced game state.', () => writeGameMeta(DEFAULT_GAME_CODE, getHostAdvanceMeta(meta, DEFAULT_GAME_CODE)));
+    await runHostAction('Advanced game state.', async () => {
+      if (gameState && meta?.phase === 'question' && meta.currentQuestionIndex && question) {
+        await finalizeQuestionScores(DEFAULT_GAME_CODE, gameState, meta.currentQuestionIndex, question.answer, getPointsForQuestion(meta.currentQuestionIndex));
+      }
+      await writeGameMeta(DEFAULT_GAME_CODE, getHostAdvanceMeta(meta, DEFAULT_GAME_CODE));
+    });
   }
 
   async function skipToFinals() {

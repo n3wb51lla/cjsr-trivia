@@ -18,6 +18,14 @@ export function teamPath(gameCode: string, teamId: string): string {
   return `${teamsPath(gameCode)}/${teamId}`;
 }
 
+export function teamScorePath(gameCode: string, teamId: string): string {
+  return `${teamPath(gameCode, teamId)}/score`;
+}
+
+export function teamCumulativeLockMsPath(gameCode: string, teamId: string): string {
+  return `${teamPath(gameCode, teamId)}/cumulativeLockMs`;
+}
+
 export function teamNameReservationPath(gameCode: string, teamNameKey: string): string {
   return `${teamNamesPath(gameCode)}/${teamNameKey}`;
 }

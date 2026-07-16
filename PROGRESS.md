@@ -10,7 +10,7 @@
 - [x] Phase 5: Server-authoritative question timer
 - [x] Phase 6: Answer selection, locking, and recovery
 - [x] Phase 7: Host control screen
-- [ ] Phase 8: Scoring, ranking, and reveal
+- [x] Phase 8: Scoring, ranking, and reveal
 - [ ] Phase 9: Breaks, finals, projector, and answer key
 - [ ] Phase 10: Host pacing and schedule support
 - [ ] Phase 11: Sudden death
@@ -178,6 +178,28 @@ Known follow-up:
 
 - Scoring finalization is not implemented yet, so reveal currently shows `pointsAwarded` from Firebase, which remains zero until the scoring slice updates answers/team totals.
 - Host advance enablement does not yet wait for all teams locked or timer expiry.
+
+## Phase 8
+
+Implemented:
+
+- Host finalizes question scoring while advancing from question to reveal.
+- Missing team answers are filled as null/timed-out answers.
+- Answers receive `isCorrect` and `pointsAwarded`.
+- Team scores update from round-derived point values.
+- Team cumulative lock time updates for future tiebreaks.
+- Player reveal now reads finalized points and running total from Firebase.
+
+Verification:
+
+- `npm run validate:data` passed.
+- `npm run lint` passed.
+- `npm run build` passed.
+
+Known follow-up:
+
+- Ranking display and host tie indicators still need to be added.
+- Updated Firebase rules must be deployed before browser-host scoring writes work.
 
 ## Notes
 

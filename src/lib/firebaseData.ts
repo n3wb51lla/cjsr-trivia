@@ -2,7 +2,7 @@ import { get, onValue, push, ref, remove, runTransaction, serverTimestamp, set, 
 import type { Answer, Game, GameState, Team } from '../types';
 import { firebaseServices } from './firebase';
 import {
-  answerPath, gameMetaPath, gamePath, teamNameReservationPath, teamPath,
+  answerPath, gameMetaPath, gamePath, teamCumulativeLockMsPath, teamNameReservationPath, teamPath, teamScorePath,
 } from './firebasePaths';
 
 export type FirebaseGameMeta = Omit<Game, 'id'> & {
@@ -130,6 +130,36 @@ export async function submitAnswerIfMissing(
   const saved = result.snapshot.val();
   if (!saved) throw new Error('Answer was not saved.');
   return saved as FirebaseAnswer;
+}
+
+export async function finalizeQuestionScores(gameCode: string, state: GameState, questionId: number, correctChoice: 0 | 1 | 2 | 3, points: number): Promise<void> {
+  const activeTeams = state.teams.filter(team => team.isActive);
+  const updates: Record<string, unknown> = {};
+
+  for (const team of activeTeams) {
+    const existing = state.answers.find(answer => answer.teamId === team.id && answer.questionIndex === questionId);
+    const choiceIndex = existing?.choiceIndex ?? null;
+    const isCorrect = choiceIndex === correctChoice;
+    const pointsAwarded = isCorrect ? points : 0;
+    const timeToLockMs = existing?.timeToLockMs ?? null;
+    const finalizedAnswer: FirebaseAnswer = {
+      teamId: team.id,
+      questionIndex: questionId,
+      choiceIndex,
+      lockedAt: existing?.lockedAt ?? Date.now(),
+      timeToLockMs,
+      isCorrect,
+      pointsAwarded,
+    };
+
+    updates[answerPath(gameCode, team.id, questionId)] = finalizedAnswer;
+    updates[teamScorePath(gameCode, team.id)] = team.score + pointsAwarded;
+    updates[teamCumulativeLockMsPath(gameCode, team.id)] = team.cumulativeLockMs + (timeToLockMs ?? 0);
+  }
+
+  if (Object.keys(updates).length > 0) {
+    await update(ref(requireDatabase()), updates);
+  }
 }
 
 export async function fetchServerTimeOffsetMs(): Promise<number> {
