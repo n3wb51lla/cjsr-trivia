@@ -28,7 +28,7 @@ export function getPointsForRound(round: RoundNumber): number {
 }
 
 export function isBreakAfterQuestion(index: number): boolean {
-  return schedule.breaksAfterQuestions.includes(index);
+  return (schedule.breaksAfterQuestions as number[]).includes(index);
 }
 
 export function getNextGameState(current: 'lobby' | 'question' | 'reveal' | 'break' | 'final', questionIndex: number | null): 'question' | 'reveal' | 'break' | 'final' {

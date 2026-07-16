@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "cjsr-trivia"
-  }
+    "default": "cjsr-trivia",
+    "Main": "cjsr-trivia"
+  },
+  "targets": {},
+  "etags": {}
 }

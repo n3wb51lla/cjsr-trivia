@@ -129,9 +129,9 @@ export function PlayerPage() {
     <PlayerShell status={status} error={error?.message ?? null}>
       <section className="page-card p-5 sm:p-6">
         <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Player join</p>
-        <h1 className="mt-3 font-display text-4xl leading-tight">Join Volunteer Appreciation</h1>
+        <h1 className="mt-3 font-display text-4xl leading-tight">Join CJSR Volunteer Appreciation Trivia</h1>
         <p className="mt-4 max-w-2xl text-lg text-cjsr-paper">
-          Edmonton's independent radio 88.5 FM. Listener-supported, volunteer-powered.
+          Thirty questions, one hour, no breaks. Stakes climb as we go, so pace yourself. We're spinning Canadian music from the deep past to right now. Most points at the end takes it all. The prize is glory, and glory only.
         </p>
 
         <fieldset className="mt-6">

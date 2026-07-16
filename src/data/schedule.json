@@ -3,7 +3,7 @@
   "questionsPerRound": 5,
   "regularQuestionCount": 30,
   "suddenDeathQuestionId": 31,
-  "breaksAfterQuestions": [5, 10, 15, 20, 25],
+  "breaksAfterQuestions": [],
   "targetPace": {
     "rulesWalkthroughEnd": "07:00",
     "round1End": "12:00",
