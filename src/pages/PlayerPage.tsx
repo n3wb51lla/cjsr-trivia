@@ -4,18 +4,18 @@ import { useGameSubscription } from '../hooks/useGameSubscription';
 import { useQuestionTimer } from '../hooks/useQuestionTimer';
 import { joinTeam, makeTeamNameKey, submitAnswerIfMissing } from '../lib/firebaseData';
 import { buildLeaderboard } from '../lib/leaderboard';
-import { clearStoredTeamId, getStoredGameCode, getStoredTeamId, storeGameCode, storeTeamId } from '../lib/storage';
+import { DEFAULT_GAME_CODE } from '../lib/hostState';
+import { clearStoredTeamId, getStoredTeamId, storeTeamId } from '../lib/storage';
 import { getPointsForQuestion, getQuestionByIndex, TEAM_NAMES } from '../lib/triviaData';
 
 type PlayerCount = 1 | 2 | 3 | 4;
 
 export function PlayerPage() {
-  const [gameCode, setGameCode] = useState(getStoredGameCode);
   const [storedTeamId, setStoredTeamId] = useState<string | null>(getStoredTeamId);
   const [playerCount, setPlayerCount] = useState<PlayerCount | null>(null);
   const [joiningName, setJoiningName] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
-  const { gameState, status, error } = useGameSubscription(gameCode);
+  const { gameState, status, error } = useGameSubscription(DEFAULT_GAME_CODE);
 
   const currentTeam = useMemo(
     () => gameState?.teams.find(team => team.id === storedTeamId && team.isActive) ?? null,
@@ -29,13 +29,6 @@ export function PlayerPage() {
     () => gameState?.answers.find(answer => answer.teamId === storedTeamId && answer.questionIndex === gameState.game.currentQuestionIndex) ?? null,
     [gameState?.answers, gameState?.game.currentQuestionIndex, storedTeamId],
   );
-
-  function updateGameCode(next: string) {
-    const normalized = next.trim() || 'main';
-    setGameCode(normalized);
-    storeGameCode(normalized);
-    setMessage(null);
-  }
 
   function leaveTeam() {
     clearStoredTeamId();
@@ -52,7 +45,7 @@ export function PlayerPage() {
     setJoiningName(teamName);
     setMessage(null);
     try {
-      const team = await joinTeam(gameCode, { teamName, playerCount });
+      const team = await joinTeam(DEFAULT_GAME_CODE, { teamName, playerCount });
       storeTeamId(team.id);
       setStoredTeamId(team.id);
       setMessage(`You're in as ${team.teamName}.`);
@@ -69,7 +62,7 @@ export function PlayerPage() {
       return (
         <PlayerShell status={status} error={error?.message ?? null}>
           <QuestionPanel
-            gameCode={gameCode}
+            gameCode={DEFAULT_GAME_CODE}
             team={currentTeam}
             questionIndex={gameState.game.currentQuestionIndex}
             questionStartedAt={gameState.game.questionStartedAt}
@@ -140,17 +133,6 @@ export function PlayerPage() {
         <p className="mt-4 max-w-2xl text-lg text-cjsr-paper">
           Edmonton's independent radio 88.5 FM. Listener-supported, volunteer-powered.
         </p>
-
-        <label className="mt-6 block text-sm font-bold uppercase tracking-wide" htmlFor="game-code">
-          Game code
-        </label>
-        <input
-          id="game-code"
-          className="mt-2 min-h-11 w-full max-w-xs border-2 border-cjsr-magenta bg-cjsr-black px-3 py-2 text-white"
-          value={gameCode}
-          onChange={event => updateGameCode(event.target.value)}
-          autoCapitalize="none"
-        />
 
         <fieldset className="mt-6">
           <legend className="font-display text-2xl">How many players?</legend>

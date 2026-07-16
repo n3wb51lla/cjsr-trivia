@@ -25,6 +25,7 @@ Implemented:
 
 - Vite React TypeScript foundation.
 - React Router routes for `/`, `/host`, `/screen`, and `/host/answer-key`.
+- Player root has no visible nav; host/admin nav appears from host routes.
 - Tailwind and CJSR theme variables.
 - Firebase browser client configuration with readable missing-env warning.
 - Global error boundary.
@@ -109,7 +110,7 @@ Known follow-up:
 Implemented:
 
 - Mobile-first player join page.
-- Game code field with localStorage persistence.
+- Player route assumes the default `main` game code with no visible game-code field.
 - Player count selection with 44px+ touch targets.
 - Exact team-name list with taken names disabled.
 - Firebase-backed join flow using team-name reservation plus team record creation.

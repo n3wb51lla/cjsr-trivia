@@ -20,6 +20,11 @@ Primary routes:
 - `/screen` - read-only projector display
 - `/host/answer-key` - answer key route
 
+Navigation:
+
+- The player root route is intentionally clean and has no visible nav links.
+- Host/admin nav appears only while on host routes and links to Host, Screen, and Answer key.
+
 Default game code:
 
 - `main`
@@ -168,7 +173,7 @@ Trivia data:
 
 Player flow:
 
-- Game code persistence
+- Default `main` game code with no player-facing game-code field
 - Team join with 1-4 players
 - Team name reservation and taken-name disabling
 - `team_id` localStorage rejoin
