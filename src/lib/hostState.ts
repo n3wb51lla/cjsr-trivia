@@ -1,6 +1,6 @@
 import type { FirebaseGameMeta } from './firebaseData';
 import type { Question } from '../types';
-import { getNextGameState, getQuestionByIndex, getRoundForQuestion } from './triviaData';
+import { getNextGameState, getQuestionByIndex, getRoundForQuestion, isBreakAfterQuestion } from './triviaData';
 
 export const DEFAULT_GAME_CODE = 'main';
 
@@ -42,7 +42,7 @@ export function getHostButtonLabel(meta: FirebaseGameMeta | null): string {
   if (meta.phase === 'question') return 'Reveal answer';
   if (meta.phase === 'reveal') {
     if ((meta.currentQuestionIndex ?? 0) >= 30) return 'Go to finals';
-    if (meta.currentQuestionIndex !== null && meta.currentQuestionIndex % 5 === 0) return 'Show standings';
+    if (meta.currentQuestionIndex !== null && isBreakAfterQuestion(meta.currentQuestionIndex)) return 'Show standings';
     return `Start question ${(meta.currentQuestionIndex ?? 0) + 1}`;
   }
   if (meta.phase === 'break') return `Start question ${(meta.currentQuestionIndex ?? 0) + 1}`;
