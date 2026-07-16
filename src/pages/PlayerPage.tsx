@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { Team } from '../types';
+import type { LeaderboardEntry, Team } from '../types';
 import { useGameSubscription } from '../hooks/useGameSubscription';
 import { useQuestionTimer } from '../hooks/useQuestionTimer';
 import { joinTeam, makeTeamNameKey, submitAnswerIfMissing } from '../lib/firebaseData';
+import { buildLeaderboard } from '../lib/leaderboard';
 import { clearStoredTeamId, getStoredGameCode, getStoredTeamId, storeGameCode, storeTeamId } from '../lib/storage';
 import { getPointsForQuestion, getQuestionByIndex, TEAM_NAMES } from '../lib/triviaData';
 
@@ -23,6 +24,7 @@ export function PlayerPage() {
   const takenNames = useMemo(() => new Set(gameState?.teams.filter(team => team.isActive).map(team => makeTeamNameKey(team.teamName)) ?? []), [gameState?.teams]);
   const phase = gameState?.game.phase ?? 'lobby';
   const canJoin = phase === 'lobby' || phase === 'break';
+  const leaderboard = useMemo(() => buildLeaderboard(gameState?.teams ?? []), [gameState?.teams]);
   const currentAnswer = useMemo(
     () => gameState?.answers.find(answer => answer.teamId === storedTeamId && answer.questionIndex === gameState.game.currentQuestionIndex) ?? null,
     [gameState?.answers, gameState?.game.currentQuestionIndex, storedTeamId],
@@ -93,9 +95,25 @@ export function PlayerPage() {
       );
     }
 
+    if (phase === 'final') {
+      return (
+        <PlayerShell status={status} error={error?.message ?? null}>
+          <FinalPanel team={currentTeam} leaderboard={leaderboard} />
+        </PlayerShell>
+      );
+    }
+
     return (
       <PlayerShell status={status} error={error?.message ?? null}>
         <LobbyPanel team={currentTeam} phase={phase} canLeave={phase === 'lobby'} onLeave={leaveTeam} />
+      </PlayerShell>
+    );
+  }
+
+  if (phase === 'final') {
+    return (
+      <PlayerShell status={status} error={error?.message ?? null}>
+        <FinalPanel team={null} leaderboard={leaderboard} />
       </PlayerShell>
     );
   }
@@ -177,6 +195,41 @@ export function PlayerPage() {
         <TerritoryText />
       </section>
     </PlayerShell>
+  );
+}
+
+function FinalPanel({ team, leaderboard }: { team: Team | null; leaderboard: LeaderboardEntry[] }) {
+  const teamEntry = team ? leaderboard.find(entry => entry.teamId === team.id) ?? null : null;
+  const winner = leaderboard[0] ?? null;
+
+  return (
+    <section className="page-card p-6" aria-live="polite">
+      <p className="text-sm font-black uppercase tracking-wide text-cjsr-magenta">Final standings</p>
+      <h1 className="mt-3 font-display text-4xl leading-tight">
+        {teamEntry ? `${teamEntry.teamName}: #${teamEntry.rank}` : winner ? `${winner.teamName} wins!` : 'Thanks for playing!'}
+      </h1>
+      {teamEntry && (
+        <p className="mt-4 text-2xl font-black">
+          {teamEntry.score} point{teamEntry.score !== 1 ? 's' : ''}
+        </p>
+      )}
+      {winner && !teamEntry && <p className="mt-4 text-2xl font-black">{winner.score} point{winner.score !== 1 ? 's' : ''}</p>}
+
+      <ol className="mt-6 space-y-2">
+        {leaderboard.slice(0, 10).map(entry => (
+          <li
+            key={entry.teamId}
+            className={`grid grid-cols-[3rem_1fr_auto] items-center gap-3 border-2 p-3 ${entry.teamId === team?.id ? 'border-cjsr-magenta bg-cjsr-magenta text-cjsr-black' : 'border-white/30 bg-cjsr-surface text-white'}`}
+          >
+            <span className="text-xl font-black">#{entry.rank}</span>
+            <span className="min-w-0 font-bold">{entry.teamName}</span>
+            <span className="font-black">{entry.score}</span>
+          </li>
+        ))}
+      </ol>
+      {leaderboard.length === 0 && <p className="mt-4 text-lg text-cjsr-paper">No teams joined this game.</p>}
+      <TerritoryText />
+    </section>
   );
 }
 

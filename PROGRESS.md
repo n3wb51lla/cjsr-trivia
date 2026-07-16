@@ -216,6 +216,7 @@ Implemented:
 - Live question screen shows question text, point value, room timer, and lock count.
 - Break screen shows standings and the next question number.
 - Final screen shows the winner and full final standings.
+- Player phones show final standings and the joined team's final rank when the host enters finals.
 
 Verification:
 
