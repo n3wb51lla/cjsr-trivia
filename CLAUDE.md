@@ -28,6 +28,10 @@ Default game code:
 
 Recent local commits:
 
+- `de664a2 test: add full game stress simulation`
+- `04ce3e0 Create hosting.ZGlzdA.cache`
+- `d4f6210 fix: hide removed teams in host list`
+- `3cbafe7 docs: add project handoff notes`
 - `2da6453 feat: allow kicking lobby teams`
 - `94fed8d fix: fully reset game state`
 - `dc4d00b fix: show finals on player phones`
@@ -37,7 +41,9 @@ Recent local commits:
 - `110cc76 feat: add player question timer and answer locking`
 - `39ad850 feat: add host control foundation`
 
-Important: at the time this file was written, `origin/main` was at `94fed8d`, so the kick-teams commit `2da6453` had not yet been pushed.
+Important: the live Firebase Hosting site was deployed after the host-list cleanup and is available at:
+
+- `https://cjsr-trivia.web.app`
 
 ## Environment
 
@@ -92,22 +98,11 @@ Rules already deployed:
 - Host metadata write rules
 - Scoring write rules
 - Reset rules allowing host reset to clear the answers tree
+- Kick rules allowing host kick to clear a team-name reservation
 
-Rules not yet deployed at time of writing:
+Hosting already deployed:
 
-- The latest `database.rules.json` change from `2da6453`, which allows deleting a team-name reservation so kicking a team frees that team name.
-
-Before deploying that rule, get explicit approval because it expands browser-host write capability:
-
-```text
-Approve deploying Firebase rules that allow the host kick flow to free a kicked team's reserved name.
-```
-
-Then run:
-
-```bash
-npx firebase-tools deploy --only database
-```
+- Latest UI deploy completed successfully to `https://cjsr-trivia.web.app`
 
 ## Architecture
 
@@ -125,6 +120,7 @@ Key files:
 - `src/pages/PlayerPage.tsx` - player join/play/reveal/final UI
 - `src/pages/HostPage.tsx` - host controls
 - `src/pages/ScreenPage.tsx` - projector display
+- `scripts/simulateFullGame.mjs` - deterministic full-game stress simulation
 - `database.rules.json` - Realtime Database rules
 - `firebase.json` - Firebase hosting/database config
 
@@ -197,6 +193,7 @@ Host flow:
 - Skip to finals
 - Full reset to lobby while preserving joined teams, clearing scores, lock times, and answers
 - Lobby-only kick button for active teams
+- Host team list shows active teams only; kicked teams remain in Firebase but are hidden from the sidebar
 
 Projector screen:
 
@@ -211,6 +208,23 @@ Leaderboard:
 - Active teams ranked by score descending
 - Ties ordered by fastest cumulative lock time
 - Tied scores flagged for UI messaging
+
+Stress simulation:
+
+- `scripts/simulateFullGame.mjs` runs deterministic full-game simulations.
+- Usage:
+
+```bash
+node scripts/simulateFullGame.mjs 500 20 30
+```
+
+- Latest run simulated 500 games, 20 teams, 30 regular questions, and 300,000 answer records.
+- Result: all simulation invariants passed.
+- Latest observed output included:
+  - Correct answer rate: `40.54%`
+  - Timeout/null answer rate: `3.46%`
+  - Winning score range: `48 - 78`
+  - All team score range: `7 - 78`
 
 ## Current Behavior Details
 
@@ -235,16 +249,16 @@ Kick:
 - Marks team inactive.
 - Resets that team score/lock time.
 - Deletes the team-name reservation so the name can be picked again.
-- Requires the newest rules change to be deployed before name-freeing works live.
+- The host sidebar renders active teams only, so kicked teams disappear from the visible lobby list.
+- Required Firebase rules have been deployed.
 
 ## Known Follow-Ups
 
 High priority:
 
-- Push local commit `2da6453` if not already pushed.
-- Deploy the latest Firebase rules after explicit approval for kick-name freeing.
-- Deploy hosting after the latest app changes if the live site needs them.
-- Run a full dry run with host, screen, and at least two player browsers.
+- Keep real event questions in `src/data/questions.json` and run validation after edits.
+- Run a final dry run after real questions are loaded.
+- Push any local commits if GitHub is behind.
 
 Security/architecture:
 
@@ -281,6 +295,8 @@ Windows line-ending warnings have also appeared and are normal for this repo:
 ```text
 LF will be replaced by CRLF the next time Git touches it
 ```
+
+Firebase Hosting creates `.firebase/hosting.ZGlzdA.cache` during deploy. `ZGlzdA` is base64 for `dist`; it is a deploy cache for the built output. It can be left alone, but ideally `.firebase/` should be ignored if future commits should avoid cache churn.
 
 ## Files Left Untouched
 
