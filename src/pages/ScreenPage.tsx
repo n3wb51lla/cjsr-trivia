@@ -172,7 +172,7 @@ function BreakScreen({ leaderboard, nextQuestion }: { leaderboard: LeaderboardEn
         <h1 className="mt-3 font-display text-6xl leading-none">Scoreboard</h1>
         <p className="mt-6 text-2xl text-cjsr-paper">Next up: question {nextQuestion}</p>
       </section>
-      <LeaderboardPanel leaderboard={leaderboard} title="Standings" />
+      <LeaderboardPanel leaderboard={leaderboard} title="Standings" columns={2} compact />
     </div>
   );
 }
@@ -186,12 +186,24 @@ function FinalScreen({ leaderboard }: { leaderboard: LeaderboardEntry[] }) {
         <h1 className="mt-3 font-display text-6xl leading-none">{winner ? winner.teamName : 'Thanks for playing'}</h1>
         {winner && <p className="mt-6 text-3xl font-black text-cjsr-paper">{winner.score} points</p>}
       </section>
-      <LeaderboardPanel leaderboard={leaderboard} title="Final standings" />
+      <LeaderboardPanel leaderboard={leaderboard} title="Final standings" columns={2} compact />
     </div>
   );
 }
 
-function LeaderboardPanel({ leaderboard, title, limit }: { leaderboard: LeaderboardEntry[]; title: string; limit?: number }) {
+function LeaderboardPanel({
+  leaderboard,
+  title,
+  limit,
+  columns = 1,
+  compact = false,
+}: {
+  leaderboard: LeaderboardEntry[];
+  title: string;
+  limit?: number;
+  columns?: 1 | 2;
+  compact?: boolean;
+}) {
   const visibleRows = limit ? leaderboard.slice(0, limit) : leaderboard;
   return (
     <aside className="border-2 border-cjsr-magenta bg-cjsr-surface p-5">
@@ -199,12 +211,12 @@ function LeaderboardPanel({ leaderboard, title, limit }: { leaderboard: Leaderbo
       {visibleRows.length === 0 ? (
         <p className="mt-4 text-xl text-cjsr-paper">No teams yet.</p>
       ) : (
-        <ol className="mt-4 space-y-2">
+        <ol className={`mt-4 grid gap-2 ${columns === 2 ? 'xl:grid-cols-2' : ''}`}>
           {visibleRows.map(entry => (
-            <li key={entry.teamId} className="grid grid-cols-[3rem_1fr_auto] items-center gap-3 border border-white/30 p-3">
-              <span className="text-2xl font-black">#{entry.rank}</span>
-              <span className="min-w-0 text-xl font-bold">{entry.teamName}</span>
-              <span className="text-2xl font-black text-cjsr-magenta">{entry.score}</span>
+            <li key={entry.teamId} className={`grid grid-cols-[3rem_1fr_auto] items-center gap-3 border border-white/30 ${compact ? 'p-2' : 'p-3'}`}>
+              <span className={`${compact ? 'text-xl' : 'text-2xl'} font-black`}>#{entry.rank}</span>
+              <span className={`min-w-0 font-bold ${compact ? 'text-lg' : 'text-xl'}`}>{entry.teamName}</span>
+              <span className={`${compact ? 'text-xl' : 'text-2xl'} font-black text-cjsr-magenta`}>{entry.score}</span>
               {entry.isTiedOnScore && <span className="col-span-3 text-sm font-bold uppercase tracking-wide text-cjsr-paper">Tie-break: fastest total lock time</span>}
             </li>
           ))}
