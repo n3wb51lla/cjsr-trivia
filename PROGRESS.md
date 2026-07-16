@@ -140,6 +140,7 @@ Implemented:
 - Basic advance flow: lobby -> question -> reveal -> break/final.
 - Current question and correct-answer display.
 - Team count and joined-team list.
+- Lobby-only team kick control that deactivates a team and frees its team name.
 - Live question timer and answer lock count.
 - Waiting-team list while a question is open.
 - Normal advance gating until every active team locks or time expires.
@@ -156,7 +157,7 @@ Verification:
 Known follow-up:
 
 - This first host slice uses passphrase-gated browser writes to game metadata. It is suitable for local/event MVP testing, but protected serverless host actions remain the safer production architecture.
-- Updated Firebase rules must be deployed before reset can clear old answers.
+- Updated Firebase rules must be deployed before reset can clear old answers or kick can free team names.
 
 ## Phase 5 / 6
 

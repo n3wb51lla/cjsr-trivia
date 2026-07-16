@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { useGameSubscription } from '../hooks/useGameSubscription';
 import { useQuestionTimer } from '../hooks/useQuestionTimer';
 import { getOptionalEnv } from '../lib/env';
-import { finalizeQuestionScores, patchGameMeta, resetGameForReplay, writeGameMeta, type FirebaseGameMeta } from '../lib/firebaseData';
+import { finalizeQuestionScores, kickTeamFromLobby, patchGameMeta, resetGameForReplay, writeGameMeta, type FirebaseGameMeta } from '../lib/firebaseData';
 import { DEFAULT_GAME_CODE, getCurrentQuestionSummary, getHostAdvanceMeta, getHostButtonLabel, makeInitialGameMeta } from '../lib/hostState';
 import { getPointsForQuestion } from '../lib/triviaData';
 import type { Team } from '../types';
@@ -85,6 +85,14 @@ export function HostPage() {
       }
       await resetGameForReplay(DEFAULT_GAME_CODE, gameState, nextMeta);
     });
+  }
+
+  async function kickTeam(team: Team) {
+    if (meta?.phase !== 'lobby') {
+      setMessage('Teams can only be kicked while the game is in the lobby.');
+      return;
+    }
+    await runHostAction(`${team.teamName} was removed from the lobby.`, () => kickTeamFromLobby(DEFAULT_GAME_CODE, team));
   }
 
   async function runHostAction(success: string, action: () => Promise<void>) {
@@ -200,15 +208,32 @@ export function HostPage() {
 
       <aside className="page-card p-5">
         <h2 className="font-display text-2xl">Teams joined</h2>
-        <p className="mt-1 text-cjsr-paper">{teams.length} team{teams.length !== 1 ? 's' : ''}</p>
+        <p className="mt-1 text-cjsr-paper">{activeTeams.length} active team{activeTeams.length !== 1 ? 's' : ''}</p>
         <ol className="mt-4 space-y-2">
           {teams.map(team => (
-            <li key={team.id} className="border border-white/30 p-3">
-              <span className="font-bold">{team.teamName}</span>
-              <span className="block text-sm text-cjsr-paper">{team.playerCount} player{team.playerCount !== 1 ? 's' : ''}</span>
+            <li key={team.id} className={`border p-3 ${team.isActive ? 'border-white/30' : 'border-neutral-700 opacity-60'}`}>
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <span className="font-bold">{team.teamName}</span>
+                  <span className="block text-sm text-cjsr-paper">
+                    {team.playerCount} player{team.playerCount !== 1 ? 's' : ''}{!team.isActive && ' · removed'}
+                  </span>
+                </div>
+                {team.isActive && (
+                  <button
+                    type="button"
+                    disabled={busy || meta?.phase !== 'lobby'}
+                    onClick={() => void kickTeam(team)}
+                    className="min-h-9 border border-cjsr-magenta px-2 py-1 text-xs font-black uppercase tracking-wide text-cjsr-magenta disabled:border-neutral-700 disabled:text-neutral-500"
+                  >
+                    Kick
+                  </button>
+                )}
+              </div>
             </li>
           ))}
         </ol>
+        {meta?.phase !== 'lobby' && activeTeams.length > 0 && <p className="mt-3 text-sm text-cjsr-paper">Kicking is available in the lobby only.</p>}
       </aside>
     </div>
   );

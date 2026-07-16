@@ -105,6 +105,27 @@ export async function joinTeam(gameCode: string, input: JoinTeamInput): Promise<
   return { id: teamId, gameId: gameCode, ...team };
 }
 
+export async function kickTeamFromLobby(gameCode: string, team: Team): Promise<void> {
+  const teamNameKey = makeTeamNameKey(team.teamName);
+  const kickedTeam: FirebaseTeam = {
+    teamName: team.teamName,
+    playerCount: team.playerCount,
+    score: 0,
+    cumulativeLockMs: 0,
+    joinedAt: team.joinedAt,
+    isActive: false,
+  };
+  const updates: Record<string, unknown> = {
+    [teamPath(gameCode, team.id)]: kickedTeam,
+  };
+
+  if (teamNameKey) {
+    updates[teamNameReservationPath(gameCode, teamNameKey)] = null;
+  }
+
+  await update(ref(requireDatabase()), updates);
+}
+
 export async function submitAnswerIfMissing(
   gameCode: string,
   teamId: string,

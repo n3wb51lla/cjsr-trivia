@@ -12,7 +12,7 @@
         "teamNames": {
           "$teamNameKey": {
             ".read": true,
-            ".write": "!data.exists() && newData.isString()"
+            ".write": "newData.val() === null || (!data.exists() && newData.isString())"
           }
         },
         "teams": {
