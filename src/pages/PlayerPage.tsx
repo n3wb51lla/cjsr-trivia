@@ -134,7 +134,7 @@ export function PlayerPage() {
         <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Player join</p>
         <h1 className="mt-3 font-display text-4xl leading-tight">Join CJSR Volunteer Appreciation Trivia</h1>
         <p className="mt-4 max-w-2xl text-lg text-cjsr-paper">
-          Thirty questions, one hour, no breaks. Stakes climb as we go, so pace yourself. We're spinning Canadian music from the deep past to right now. Most points at the end takes it all. The prize is glory, and glory only.
+          Thirty questions, one hour, no breaks. Stakes climb as we go, so pace yourself. We're spinning Canadian music from the deep past to right now. Most points at the end takes it all. The prize you take home is glory and CJSR SWAGGGGGG.
         </p>
 
         <fieldset className="mt-6">
