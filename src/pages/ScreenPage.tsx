@@ -88,7 +88,7 @@ function LobbyScreen({ teamCount, leaderboard }: { teamCount: number; leaderboar
     <div className="grid min-h-[62vh] gap-5 lg:grid-cols-[1.4fr_1fr]">
       <section className="flex flex-col justify-center border-2 border-cjsr-red bg-cjsr-surface p-8">
         <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Lobby</p>
-        <h1 className="mt-3 font-display text-6xl leading-none">Volunteer Appreciation</h1>
+        <h1 className="mt-3 font-display text-6xl leading-none">Volunteer Appreciation Trivia</h1>
         <p className="mt-6 text-2xl text-cjsr-paper">{teamCount} team{teamCount !== 1 ? 's' : ''} joined</p>
       </section>
       <LeaderboardPanel leaderboard={leaderboard} title="Teams" />
