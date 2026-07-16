@@ -166,28 +166,43 @@ function RevealScreen({
 
 function BreakScreen({ leaderboard, nextQuestion }: { leaderboard: LeaderboardEntry[]; nextQuestion: number }) {
   return (
-    <div className="grid gap-5 lg:grid-cols-[1fr_1.2fr]">
-      <section className="flex flex-col justify-center border-2 border-cjsr-magenta bg-cjsr-surface p-8">
-        <p className="text-sm font-black uppercase tracking-wide text-cjsr-magenta">Standings</p>
-        <h1 className="mt-3 font-display text-6xl leading-none">Scoreboard</h1>
-        <p className="mt-6 text-2xl text-cjsr-paper">Next up: question {nextQuestion}</p>
-      </section>
-      <LeaderboardPanel leaderboard={leaderboard} title="Standings" columns={2} compact />
-    </div>
+    <ScoreboardScreen
+      eyebrow="Standings"
+      title="Scoreboard"
+      detail={`Next up: question ${nextQuestion}`}
+      leaderboard={leaderboard}
+    />
   );
 }
 
 function FinalScreen({ leaderboard }: { leaderboard: LeaderboardEntry[] }) {
   const winner = leaderboard[0] ?? null;
+  const detail = winner ? `${winner.teamName} leads with ${winner.score} points` : undefined;
+  return <ScoreboardScreen eyebrow="Final" title="Final standings" detail={detail} leaderboard={leaderboard} />;
+}
+
+function ScoreboardScreen({
+  eyebrow,
+  title,
+  detail,
+  leaderboard,
+}: {
+  eyebrow: string;
+  title: string;
+  detail?: string;
+  leaderboard: LeaderboardEntry[];
+}) {
   return (
-    <div className="grid gap-5 lg:grid-cols-[1fr_1.2fr]">
-      <section className="flex flex-col justify-center border-2 border-cjsr-magenta bg-cjsr-surface p-8">
-        <p className="text-sm font-black uppercase tracking-wide text-cjsr-magenta">Final</p>
-        <h1 className="mt-3 font-display text-6xl leading-none">{winner ? winner.teamName : 'Thanks for playing'}</h1>
-        {winner && <p className="mt-6 text-3xl font-black text-cjsr-paper">{winner.score} points</p>}
-      </section>
-      <LeaderboardPanel leaderboard={leaderboard} title="Final standings" columns={2} compact />
-    </div>
+    <section className="border-2 border-cjsr-magenta bg-cjsr-surface p-6">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="text-sm font-black uppercase tracking-wide text-cjsr-magenta">{eyebrow}</p>
+          <h1 className="mt-1 font-display text-5xl leading-none">{title}</h1>
+        </div>
+        {detail && <p className="text-right text-2xl font-bold text-cjsr-paper">{detail}</p>}
+      </div>
+      <LeaderboardPanel leaderboard={leaderboard} title="Scores" columns={2} projector />
+    </section>
   );
 }
 
@@ -197,26 +212,28 @@ function LeaderboardPanel({
   limit,
   columns = 1,
   compact = false,
+  projector = false,
 }: {
   leaderboard: LeaderboardEntry[];
   title: string;
   limit?: number;
   columns?: 1 | 2;
   compact?: boolean;
+  projector?: boolean;
 }) {
   const visibleRows = limit ? leaderboard.slice(0, limit) : leaderboard;
   return (
-    <aside className="border-2 border-cjsr-magenta bg-cjsr-surface p-5">
-      <h2 className="font-display text-3xl">{title}</h2>
+    <aside className={projector ? 'mt-6' : 'border-2 border-cjsr-magenta bg-cjsr-surface p-5'}>
+      {!projector && <h2 className="font-display text-3xl">{title}</h2>}
       {visibleRows.length === 0 ? (
         <p className="mt-4 text-xl text-cjsr-paper">No teams yet.</p>
       ) : (
-        <ol className={`mt-4 grid gap-2 ${columns === 2 ? 'xl:grid-cols-2' : ''}`}>
+        <ol className={`${projector ? 'mt-0' : 'mt-4'} grid gap-3 ${columns === 2 ? 'lg:grid-cols-2' : ''}`}>
           {visibleRows.map(entry => (
-            <li key={entry.teamId} className={`grid grid-cols-[3rem_1fr_auto] items-center gap-3 border border-white/30 ${compact ? 'p-2' : 'p-3'}`}>
-              <span className={`${compact ? 'text-xl' : 'text-2xl'} font-black`}>#{entry.rank}</span>
-              <span className={`min-w-0 font-bold ${compact ? 'text-lg' : 'text-xl'}`}>{entry.teamName}</span>
-              <span className={`${compact ? 'text-xl' : 'text-2xl'} font-black text-cjsr-magenta`}>{entry.score}</span>
+            <li key={entry.teamId} className={`grid items-center gap-3 border border-white/30 ${projector ? 'grid-cols-[4.5rem_1fr_5rem] p-4' : 'grid-cols-[3rem_1fr_auto]'} ${compact ? 'p-2' : projector ? '' : 'p-3'}`}>
+              <span className={`${projector ? 'text-4xl' : compact ? 'text-xl' : 'text-2xl'} font-black`}>#{entry.rank}</span>
+              <span className={`min-w-0 font-bold leading-tight ${projector ? 'text-3xl' : compact ? 'text-lg' : 'text-xl'}`}>{entry.teamName}</span>
+              <span className={`${projector ? 'text-5xl' : compact ? 'text-xl' : 'text-2xl'} font-black text-cjsr-magenta`}>{entry.score}</span>
               {entry.isTiedOnScore && <span className="col-span-3 text-sm font-bold uppercase tracking-wide text-cjsr-paper">Tie-break: fastest total lock time</span>}
             </li>
           ))}
