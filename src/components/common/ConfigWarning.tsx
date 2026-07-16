@@ -10,7 +10,7 @@ export function ConfigWarning() {
       <div className="mx-auto max-w-6xl">
         <p className="font-bold">Configuration warning</p>
         <p className="mt-1 text-sm">
-          Missing Supabase environment variables: {status.missing.join(', ')}. Add them to `.env.local` using `.env.example`.
+          Missing Firebase environment variables: {status.missing.join(', ')}. Add them to `.env.local` using `.env.example`.
         </p>
       </div>
     </section>

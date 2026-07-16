@@ -1,0 +1,30 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "games": {
+      "$gameCode": {
+        ".read": true,
+        "meta": {
+          ".read": true,
+          ".write": false
+        },
+        "teams": {
+          ".read": true,
+          "$teamId": {
+            ".write": "newData.exists() && !data.exists() && newData.child('teamName').isString() && newData.child('playerCount').isNumber() && newData.child('playerCount').val() >= 1 && newData.child('playerCount').val() <= 4"
+          }
+        },
+        "answers": {
+          ".read": true,
+          "$teamId": {
+            "$questionId": {
+              ".write": "newData.exists() && !data.exists() && newData.child('teamId').val() === $teamId && (newData.child('choiceIndex').val() === null || (newData.child('choiceIndex').isNumber() && newData.child('choiceIndex').val() >= 0 && newData.child('choiceIndex').val() <= 3))"
+            }
+          }
+        }
+      }
+    }
+  }
+}
+

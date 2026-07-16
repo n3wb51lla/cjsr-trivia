@@ -10,5 +10,6 @@ The working method is intentionally phase-based:
 4. Update `PROGRESS.md` after each phase.
 5. Prefer reliability, persistence, accessibility, and recovery over visual polish.
 
-Phase 0 covers only the Vite React TypeScript foundation, routing, Tailwind setup, Supabase client configuration, environment validation, global CJSR theme variables, and an error boundary.
+Phase 0 covers only the Vite React TypeScript foundation, routing, Tailwind setup, Firebase client configuration, environment validation, global CJSR theme variables, and an error boundary.
 
+Backend pivot: the project now uses Firebase Realtime Database instead of Supabase because the event needs a temporary free/low-friction realtime backend.

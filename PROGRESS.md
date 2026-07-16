@@ -4,7 +4,7 @@
 
 - [x] Phase 0: Repository and build foundation
 - [x] Phase 1: Static data and shared types
-- [ ] Phase 2: Supabase schema, policies, and data access
+- [ ] Phase 2: Firebase Realtime Database rules and data access
 - [ ] Phase 3: Shared synchronization layer
 - [ ] Phase 4: Player join, rejoin, and lobby
 - [ ] Phase 5: Server-authoritative question timer
@@ -26,7 +26,7 @@ Implemented:
 - Vite React TypeScript foundation.
 - React Router routes for `/`, `/host`, `/screen`, and `/host/answer-key`.
 - Tailwind and CJSR theme variables.
-- Supabase browser client configuration with readable missing-env warning.
+- Firebase browser client configuration with readable missing-env warning.
 - Global error boundary.
 - Placeholder pages for player, host, projector, and answer key.
 - Lint and production build scripts.
@@ -62,7 +62,27 @@ Context correction:
 - Updated `questions.json` to the specified `{ id, round, text, choices, answer }` shape.
 - Updated brand colors toward near-black, #f01d4f, white/#e5e5e5.
 
+## Backend Pivot
+
+Decision:
+
+- Use Firebase Realtime Database instead of Supabase for the event backend.
+
+Implemented:
+
+- Replaced Supabase dependency with Firebase.
+- Replaced Supabase env vars with Firebase web config env vars.
+- Added Firebase client initialization in `src/lib/firebase.ts`.
+- Added typed Firebase path helpers in `src/lib/firebasePaths.ts`.
+- Added early Firebase data-access helpers in `src/lib/firebaseData.ts`.
+- Added `firebase.json` and `database.rules.json` starter rules.
+
+Known follow-up:
+
+- Host mutations, scoring, reset, and game-state advancement should use Vercel serverless functions with Firebase Admin credentials, or much tighter Firebase rules.
+- Team-name uniqueness should be enforced with a canonical reservation path in the join-flow phase.
+
 ## Notes
 
 - Existing files `build_question_bank.py` and `CJSR_Volunteer_Appreciation_Trivia_Question_Bank.docx` predate the app scaffold and are left untouched.
-- Supabase service-role secrets must never be exposed through `VITE_` variables.
+- Firebase Admin credentials must never be exposed through `VITE_` variables.

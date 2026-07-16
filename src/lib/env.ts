@@ -1,4 +1,10 @@
-const REQUIRED_ENV = ['VITE_SUPABASE_URL', 'VITE_SUPABASE_ANON_KEY'] as const;
+const REQUIRED_ENV = [
+  'VITE_FIREBASE_API_KEY',
+  'VITE_FIREBASE_AUTH_DOMAIN',
+  'VITE_FIREBASE_DATABASE_URL',
+  'VITE_FIREBASE_PROJECT_ID',
+  'VITE_FIREBASE_APP_ID',
+] as const;
 
 type RequiredEnvKey = (typeof REQUIRED_ENV)[number];
 
@@ -23,3 +29,6 @@ export function getRequiredEnv(key: RequiredEnvKey): string {
   return value;
 }
 
+export function getOptionalEnv(key: string): string | undefined {
+  return import.meta.env[key];
+}

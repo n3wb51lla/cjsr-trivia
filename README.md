@@ -18,16 +18,28 @@ Create local environment values:
 cp .env.example .env.local
 ```
 
-Add:
+Add Firebase web app values:
 
 ```text
-VITE_SUPABASE_URL=...
-VITE_SUPABASE_ANON_KEY=...
+VITE_FIREBASE_API_KEY=...
+VITE_FIREBASE_AUTH_DOMAIN=...
+VITE_FIREBASE_DATABASE_URL=...
+VITE_FIREBASE_PROJECT_ID=...
+VITE_FIREBASE_APP_ID=...
+VITE_HOST_PASSPHRASE=...
 ```
 
-Do not put a Supabase service-role key in any `VITE_` variable.
+Do not put Firebase Admin SDK credentials or private keys in any `VITE_` variable.
 
-The host passphrase is a UI gate only. Privileged database actions must be protected through Supabase RPC functions or serverless routes in later phases.
+The host passphrase is a UI gate only. Privileged database actions must be protected through Vercel serverless routes with Firebase Admin credentials, or carefully scoped Firebase Realtime Database rules.
+
+## Firebase Setup
+
+1. Create a Firebase project.
+2. Add a Web App and copy its config into `.env.local`.
+3. Enable Realtime Database.
+4. Start in locked mode, then publish this repo's `database.rules.json` once reviewed.
+5. Keep Firebase Admin credentials out of the browser. If later phases need admin actions, put those credentials in Vercel environment variables only.
 
 Run locally:
 
