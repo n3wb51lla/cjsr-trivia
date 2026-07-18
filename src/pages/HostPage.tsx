@@ -3,9 +3,9 @@ import { HostGate } from '../components/host/HostGate';
 import { useGameSubscription } from '../hooks/useGameSubscription';
 import { useQuestionTimer } from '../hooks/useQuestionTimer';
 import { finalizeQuestionScores, kickTeamFromLobby, patchGameMeta, resetGameForReplay, setTeamScore, writeGameMeta, type FirebaseGameMeta } from '../lib/firebaseData';
-import { DEFAULT_GAME_CODE, getCurrentQuestionSummary, getHostAdvanceMeta, getHostButtonLabel, makeInitialGameMeta } from '../lib/hostState';
+import { DEFAULT_GAME_CODE, getCurrentQuestionSummary, getHostAdvanceMeta, getHostButtonLabel, isSuddenDeathAvailable, makeInitialGameMeta } from '../lib/hostState';
 import { buildLeaderboard } from '../lib/leaderboard';
-import { getPointsForQuestion, resolveQuestions } from '../lib/triviaData';
+import { getPointsForQuestion, getSuddenDeathQuestionId, resolveQuestions } from '../lib/triviaData';
 import type { LeaderboardEntry, Team } from '../types';
 
 const EMPTY_TEAMS: Team[] = [];
@@ -34,6 +34,8 @@ export function HostPage() {
   const isQuestionLive = meta?.phase === 'question';
   const allTeamsLocked = activeTeams.length > 0 && lockedCount >= activeTeams.length;
   const canAdvance = !isQuestionLive || allTeamsLocked || timer.isExpired;
+  const hasTopTie = leaderboard[0]?.isTiedOnScore ?? false;
+  const suddenDeathAvailable = isSuddenDeathAvailable(meta, hasTopTie);
 
   async function initializeLobby() {
     await runHostAction('Lobby initialized.', () => writeGameMeta(DEFAULT_GAME_CODE, makeInitialGameMeta(DEFAULT_GAME_CODE)));
@@ -41,12 +43,29 @@ export function HostPage() {
 
   async function advance(force = false) {
     if (!force && !canAdvance) return;
+    if (!force && suddenDeathAvailable) {
+      await startSuddenDeath();
+      return;
+    }
     await runHostAction(force ? 'Forced advance and finalized open answers.' : 'Advanced game state.', async () => {
       if (gameState && meta?.phase === 'question' && meta.currentQuestionIndex && question) {
         await finalizeQuestionScores(DEFAULT_GAME_CODE, gameState, meta.currentQuestionIndex, question.answer, getPointsForQuestion(questions, meta.currentQuestionIndex));
       }
       await writeGameMeta(DEFAULT_GAME_CODE, getHostAdvanceMeta(meta, questions, DEFAULT_GAME_CODE));
     });
+  }
+
+  async function startSuddenDeath() {
+    const now = Date.now();
+    await runHostAction('Sudden death started - tiebreaker question is live.', () => writeGameMeta(DEFAULT_GAME_CODE, {
+      code: DEFAULT_GAME_CODE,
+      phase: 'question',
+      currentQuestionIndex: getSuddenDeathQuestionId(),
+      currentRound: 'suddenDeath',
+      questionStartedAt: now,
+      startedAt: meta?.startedAt ?? now,
+      createdAt: meta?.createdAt ?? now,
+    }));
   }
 
   async function skipToFinals() {
@@ -112,7 +131,16 @@ export function HostPage() {
 
         <div className="mt-6 grid gap-3 sm:grid-cols-3">
           <Stat label="State" value={meta?.phase ?? 'not initialized'} />
-          <Stat label="Question" value={meta?.currentQuestionIndex ? `Q${meta.currentQuestionIndex} of 30` : 'none'} />
+          <Stat
+            label="Question"
+            value={
+              meta?.currentQuestionIndex
+                ? meta.currentQuestionIndex === getSuddenDeathQuestionId()
+                  ? 'Sudden death'
+                  : `Q${meta.currentQuestionIndex} of 30`
+                : 'none'
+            }
+          />
           <Stat label="Point value" value={pointValue ? `${pointValue} points` : '-'} />
         </div>
 
@@ -157,7 +185,7 @@ export function HostPage() {
             Initialize lobby
           </button>
           <button type="button" disabled={busy || !canAdvance} onClick={() => void advance()} className="min-h-11 border-2 border-brand-red bg-brand-red px-5 py-2 font-black text-white disabled:opacity-50">
-            {getHostButtonLabel(meta)}
+            {getHostButtonLabel(meta, hasTopTie)}
           </button>
           {isQuestionLive && (
             <button type="button" disabled={busy} onClick={() => void advance(true)} className="min-h-11 border-2 border-brand-ink px-5 py-2 font-bold disabled:opacity-50">
