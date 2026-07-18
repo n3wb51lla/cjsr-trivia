@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "prebuild": "npm run validate:data",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "validate:data": "node scripts/validateQuestions.mjs",

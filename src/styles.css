@@ -2,30 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * --color-brand-* custom properties (dark and light) are injected into
+ * index.html's <head> at build/dev time by the instance-branding Vite
+ * plugin, generated from src/config/instance.config.json. See vite.config.ts.
+ */
 :root {
-  --color-brand-red: #6F0B00;
-  --color-brand-red-light: #FF3B30;
-  --color-brand-black: #0d0d0d;
-  --color-brand-surface: #1a1a1a;
-  --color-brand-ink: #ffffff;
-  --color-brand-correct: #86efac;
-  --color-brand-yellow: #fff200;
-  --color-brand-cyan: #42d9ff;
-  --color-brand-paper: #e5e5e5;
   --font-display: Archivo Black;
   --font-body: Inter;
-  color-scheme: dark;
-}
-
-:root[data-theme='light'] {
-  --color-brand-red-light: #8a0f00;
-  --color-brand-black: #efece4;
-  --color-brand-surface: #ffffff;
-  --color-brand-ink: #141311;
-  --color-brand-correct: #15803d;
-  --color-brand-paper: #4a4744;
-  --color-brand-cyan: #0077b6;
-  color-scheme: light;
 }
 
 body {

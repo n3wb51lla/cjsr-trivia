@@ -2,10 +2,41 @@ import questions from '../src/data/questions.json' with { type: 'json' };
 import schedule from '../src/data/schedule.json' with { type: 'json' };
 import teamNames from '../src/data/teamNames.json' with { type: 'json' };
 import overflowTeamNames from '../src/data/teamNamesOverflow.json' with { type: 'json' };
+import instanceConfig from '../src/config/instance.config.json' with { type: 'json' };
 
 const errors = [];
 const ids = new Set();
 const indexes = new Set();
+
+const COLOR_TOKENS = [
+  'brandRed', 'brandRedLight', 'brandBlack', 'brandSurface',
+  'brandInk', 'brandCorrect', 'brandYellow', 'brandCyan', 'brandPaper',
+];
+const REQUIRED_INSTANCE_STRINGS = [
+  'siteTitle', 'headerText', 'lobbyHeadline', 'joinHeadline', 'joinDescription', 'teamIdStorageKey', 'themeStorageKey',
+];
+const HEX_COLOR_PATTERN = /^#[0-9a-fA-F]{6}$/;
+
+for (const key of REQUIRED_INSTANCE_STRINGS) {
+  if (typeof instanceConfig[key] !== 'string' || instanceConfig[key] === '') {
+    errors.push(`instance.config.json: "${key}" must be a non-empty string.`);
+  }
+}
+
+if (instanceConfig.territoryText !== null && typeof instanceConfig.territoryText !== 'string') {
+  errors.push('instance.config.json: "territoryText" must be a string or null.');
+}
+
+if (!Number.isInteger(instanceConfig.maxPlayersPerTeam) || instanceConfig.maxPlayersPerTeam < 1) {
+  errors.push('instance.config.json: "maxPlayersPerTeam" must be a positive integer.');
+}
+
+for (const token of COLOR_TOKENS) {
+  const entry = instanceConfig.colors?.[token];
+  if (!entry || !HEX_COLOR_PATTERN.test(entry.dark) || !HEX_COLOR_PATTERN.test(entry.light)) {
+    errors.push(`instance.config.json: colors.${token} must be { dark: "#rrggbb", light: "#rrggbb" }.`);
+  }
+}
 
 if (teamNames.length !== 20) {
   errors.push(`Expected 20 team names, found ${teamNames.length}.`);
@@ -107,4 +138,4 @@ if (errors.length > 0) {
   process.exit(1);
 }
 
-console.log(`Validated ${questions.length} questions across ${schedule.rounds.length} rounds, ${teamNames.length} team names, and ${overflowTeamNames.length} overflow team names.`);
+console.log(`Validated ${questions.length} questions across ${schedule.rounds.length} rounds, ${teamNames.length} team names, ${overflowTeamNames.length} overflow team names, and instance.config.json.`);
