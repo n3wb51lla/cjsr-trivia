@@ -1,6 +1,6 @@
 export type GamePhase = 'lobby' | 'question' | 'reveal' | 'break' | 'final' | 'sudden_death';
 
-export type RoundNumber = 1 | 2 | 3 | 4 | 5 | 6;
+export type RoundNumber = number;
 export type QuestionRound = RoundNumber | 'suddenDeath';
 
 export interface Question {

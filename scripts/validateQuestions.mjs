@@ -1,5 +1,4 @@
 import questions from '../src/data/questions.json' with { type: 'json' };
-import scoring from '../src/data/scoring.json' with { type: 'json' };
 import schedule from '../src/data/schedule.json' with { type: 'json' };
 import teamNames from '../src/data/teamNames.json' with { type: 'json' };
 import overflowTeamNames from '../src/data/teamNamesOverflow.json' with { type: 'json' };
@@ -49,26 +48,32 @@ for (const question of questions) {
   }
 }
 
-for (let index = 1; index <= schedule.regularQuestionCount; index++) {
-  const question = questions.find(q => q.id === index);
-  if (!question) {
-    errors.push(`Missing question ${index}.`);
-    continue;
+let cursor = 1;
+for (const round of schedule.rounds) {
+  for (let offset = 0; offset < round.questionCount; offset += 1) {
+    const index = cursor + offset;
+    const question = questions.find(q => q.id === index);
+    if (!question) {
+      errors.push(`Missing question ${index}.`);
+      continue;
+    }
+    if (question.round !== round.id) {
+      errors.push(`Question ${index} expected round ${round.id}, found ${question.round}.`);
+    }
   }
-  const expectedRound = Math.ceil(index / schedule.questionsPerRound);
-  if (question.round !== expectedRound) {
-    errors.push(`Question ${index} expected round ${expectedRound}, found ${question.round}.`);
+  cursor += round.questionCount;
+}
+const regularQuestionCount = cursor - 1;
+
+if (schedule.suddenDeath.enabled) {
+  const suddenDeathId = regularQuestionCount + 1;
+  const suddenDeath = questions.find(q => q.id === suddenDeathId);
+  if (!suddenDeath) {
+    errors.push(`Missing sudden death question ${suddenDeathId}.`);
+  } else if (suddenDeath.round !== 'suddenDeath') {
+    errors.push(`Question ${suddenDeathId} must be marked suddenDeath.`);
   }
 }
-
-const suddenDeath = questions.find(q => q.id === schedule.suddenDeathQuestionId);
-if (!suddenDeath) {
-  errors.push(`Missing sudden death question ${schedule.suddenDeathQuestionId}.`);
-} else if (suddenDeath.round !== 'suddenDeath') {
-  errors.push(`Question ${schedule.suddenDeathQuestionId} must be marked suddenDeath.`);
-}
-
-if (scoring['6'] !== 5) errors.push('Round six must award five points.');
 
 if (errors.length > 0) {
   console.error('Question data validation failed:');
@@ -76,4 +81,4 @@ if (errors.length > 0) {
   process.exit(1);
 }
 
-console.log(`Validated ${questions.length} questions, ${teamNames.length} team names, and ${overflowTeamNames.length} overflow team names.`);
+console.log(`Validated ${questions.length} questions across ${schedule.rounds.length} rounds, ${teamNames.length} team names, and ${overflowTeamNames.length} overflow team names.`);

@@ -1,15 +1,17 @@
 import questions from '../src/data/questions.json' with { type: 'json' };
-import scoring from '../src/data/scoring.json' with { type: 'json' };
+import schedule from '../src/data/schedule.json' with { type: 'json' };
 import teamNames from '../src/data/teamNames.json' with { type: 'json' };
 
 const runCount = Number.parseInt(process.argv[2] ?? '500', 10);
 const teamCount = Number.parseInt(process.argv[3] ?? '20', 10);
-const regularQuestionCount = Number.parseInt(process.argv[4] ?? '30', 10);
 const questionDurationMs = 20_000;
+
+const regularQuestionCount = schedule.rounds.reduce((sum, round) => sum + round.questionCount, 0);
+const pointsByRound = new Map(schedule.rounds.map(round => [round.id, round.points]));
+const maxRoundId = Math.max(...schedule.rounds.map(round => round.id));
 
 if (!Number.isInteger(runCount) || runCount < 1) throw new Error('Run count must be a positive integer.');
 if (teamCount !== 20) throw new Error('This stress sim is intended for exactly 20 teams.');
-if (regularQuestionCount !== 30) throw new Error('This stress sim is intended for exactly 30 regular questions.');
 if (teamNames.length < teamCount) throw new Error(`Expected at least ${teamCount} team names.`);
 
 const regularQuestions = questions
@@ -17,14 +19,14 @@ const regularQuestions = questions
   .sort((first, second) => first.id - second.id);
 
 if (regularQuestions.length !== regularQuestionCount) {
-  throw new Error(`Expected ${regularQuestionCount} regular questions, found ${regularQuestions.length}.`);
+  throw new Error(`Expected ${regularQuestionCount} regular questions (per schedule.json), found ${regularQuestions.length}.`);
 }
 
 for (const question of regularQuestions) {
   if (!Number.isInteger(question.id) || question.id < 1 || question.id > regularQuestionCount) {
     throw new Error(`Question has invalid id: ${question.id}`);
   }
-  if (!Number.isInteger(question.round) || question.round < 1 || question.round > 6) {
+  if (!Number.isInteger(question.round) || question.round < 1 || question.round > maxRoundId) {
     throw new Error(`Question ${question.id} has invalid round: ${question.round}`);
   }
   if (!Number.isInteger(question.answer) || question.answer < 0 || question.answer > 3) {
@@ -54,7 +56,7 @@ for (let runIndex = 0; runIndex < runCount; runIndex += 1) {
     const answers = state.teams.map(team => makeAnswer(random, team.id, question, questionStartedAt));
     assertUniqueAnswers(answers, question.id, teamCount);
 
-    const points = scoring[String(question.round)];
+    const points = pointsByRound.get(question.round);
     assert(Number.isInteger(points) && points > 0, `Missing points for round ${question.round}.`);
 
     for (const team of state.teams) {

@@ -1,15 +1,34 @@
 import questionsJson from '../data/questions.json';
 import schedule from '../data/schedule.json';
-import scoring from '../data/scoring.json';
 import teamNames from '../data/teamNames.json';
 import overflowTeamNames from '../data/teamNamesOverflow.json';
 import type { GameState, Question, QuestionRound, RoundNumber } from '../types';
 
+export interface RoundConfig {
+  readonly id: RoundNumber;
+  readonly questionCount: number;
+  readonly points: number;
+  readonly breakAfter: boolean;
+}
+
+interface RoundBoundary {
+  readonly round: RoundConfig;
+  readonly startId: number;
+  readonly endId: number;
+}
+
+const ROUNDS: readonly RoundConfig[] = schedule.rounds;
+const SUDDEN_DEATH_ENABLED: boolean = schedule.suddenDeath.enabled;
+const ROUND_BOUNDARIES: readonly RoundBoundary[] = computeRoundBoundaries(ROUNDS);
+
 export const SEED_QUESTIONS = parseQuestions(questionsJson);
 export const TEAM_NAMES = teamNames as readonly string[];
 export const OVERFLOW_TEAM_NAMES = overflowTeamNames as readonly string[];
-export const SUDDEN_DEATH_POINTS = 5;
-export const ROUND_ORDER: readonly QuestionRound[] = [1, 2, 3, 4, 5, 6, 'suddenDeath'];
+export const SUDDEN_DEATH_POINTS = schedule.suddenDeath.points;
+export const ROUND_ORDER: readonly QuestionRound[] = [
+  ...ROUNDS.map(round => round.id),
+  ...(SUDDEN_DEATH_ENABLED ? (['suddenDeath'] as const) : []),
+];
 
 export function resolveQuestions(gameState: GameState | null): readonly Question[] {
   return gameState?.questions.length ? gameState.questions : SEED_QUESTIONS;
@@ -30,12 +49,30 @@ export function getPointsForQuestion(questions: readonly Question[], index: numb
   return getPointsForRound(round);
 }
 
-export function getPointsForRound(round: RoundNumber): number {
-  return scoring[String(round) as keyof typeof scoring];
+export function getPointsForRound(roundId: RoundNumber): number {
+  const round = ROUNDS.find(candidate => candidate.id === roundId);
+  if (!round) throw new Error(`Unknown round: ${roundId}`);
+  return round.points;
+}
+
+export function getRegularQuestionCount(): number {
+  return ROUNDS.reduce((sum, round) => sum + round.questionCount, 0);
+}
+
+export function getLastRoundId(): RoundNumber | null {
+  return ROUNDS.length > 0 ? ROUNDS[ROUNDS.length - 1].id : null;
 }
 
 export function isBreakAfterQuestion(index: number): boolean {
-  return (schedule.breaksAfterQuestions as number[]).includes(index);
+  return ROUND_BOUNDARIES.some(boundary => boundary.endId === index && boundary.round.breakAfter);
+}
+
+export function isSuddenDeathEnabled(): boolean {
+  return SUDDEN_DEATH_ENABLED;
+}
+
+export function getSuddenDeathQuestionId(): number | null {
+  return SUDDEN_DEATH_ENABLED ? getRegularQuestionCount() + 1 : null;
 }
 
 export function getNextGameState(current: 'lobby' | 'question' | 'reveal' | 'break' | 'final', questionIndex: number | null): 'question' | 'reveal' | 'break' | 'final' {
@@ -44,7 +81,7 @@ export function getNextGameState(current: 'lobby' | 'question' | 'reveal' | 'bre
   if (current === 'break') return 'question';
   if (current === 'final') return 'final';
   if (questionIndex === null) return 'question';
-  if (questionIndex >= schedule.regularQuestionCount) return 'final';
+  if (questionIndex >= getRegularQuestionCount()) return 'final';
   if (isBreakAfterQuestion(questionIndex)) return 'break';
   return 'question';
 }
@@ -53,8 +90,14 @@ export function getQuestionDurationMs(): number {
   return schedule.questionDurationSeconds * 1000;
 }
 
-export function getSuddenDeathQuestionId(): number {
-  return schedule.suddenDeathQuestionId;
+function computeRoundBoundaries(rounds: readonly RoundConfig[]): readonly RoundBoundary[] {
+  let cursor = 1;
+  return rounds.map(round => {
+    const startId = cursor;
+    const endId = cursor + round.questionCount - 1;
+    cursor = endId + 1;
+    return { round, startId, endId };
+  });
 }
 
 function parseQuestions(value: unknown): readonly Question[] {
@@ -78,7 +121,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 function isQuestionRound(value: unknown): value is QuestionRound {
-  return value === 'suddenDeath' || value === 1 || value === 2 || value === 3 || value === 4 || value === 5 || value === 6;
+  return value === 'suddenDeath' || (typeof value === 'number' && Number.isInteger(value) && value >= 1);
 }
 
 function isFourChoices(value: unknown): value is readonly [string, string, string, string] {

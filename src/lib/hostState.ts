@@ -1,6 +1,6 @@
 import type { FirebaseGameMeta } from './firebaseData';
 import type { Question } from '../types';
-import { getNextGameState, getQuestionByIndex, getRoundForQuestion, isBreakAfterQuestion } from './triviaData';
+import { getNextGameState, getQuestionByIndex, getRegularQuestionCount, getRoundForQuestion, isBreakAfterQuestion, isSuddenDeathEnabled } from './triviaData';
 
 export const DEFAULT_GAME_CODE = 'main';
 
@@ -41,10 +41,8 @@ export function getHostButtonLabel(meta: FirebaseGameMeta | null, hasTopTie = fa
   if (!meta || meta.phase === 'lobby') return 'Start question 1';
   if (meta.phase === 'question') return 'Reveal answer';
   if (meta.phase === 'reveal') {
-    if ((meta.currentQuestionIndex ?? 0) >= 30) {
-      if (meta.currentQuestionIndex === 30 && hasTopTie) return 'Start sudden death';
-      return 'Go to finals';
-    }
+    if (isSuddenDeathAvailable(meta, hasTopTie)) return 'Start sudden death';
+    if ((meta.currentQuestionIndex ?? 0) >= getRegularQuestionCount()) return 'Go to finals';
     if (meta.currentQuestionIndex !== null && isBreakAfterQuestion(meta.currentQuestionIndex)) return 'Show standings';
     return `Start question ${(meta.currentQuestionIndex ?? 0) + 1}`;
   }
@@ -53,7 +51,7 @@ export function getHostButtonLabel(meta: FirebaseGameMeta | null, hasTopTie = fa
 }
 
 export function isSuddenDeathAvailable(meta: FirebaseGameMeta | null, hasTopTie: boolean): boolean {
-  return meta?.phase === 'reveal' && meta.currentQuestionIndex === 30 && hasTopTie;
+  return meta?.phase === 'reveal' && meta.currentQuestionIndex === getRegularQuestionCount() && hasTopTie && isSuddenDeathEnabled();
 }
 
 export function getCurrentQuestionSummary(questions: readonly Question[], questionIndex: number | null) {
@@ -65,5 +63,5 @@ function getNextQuestionIndex(currentQuestionIndex: number | null, currentPhase:
   if (nextPhase === 'final') return currentQuestionIndex;
   if (nextPhase !== 'question') return currentQuestionIndex;
   if (currentQuestionIndex === null || currentPhase === 'lobby') return 1;
-  return Math.min(currentQuestionIndex + 1, 30);
+  return Math.min(currentQuestionIndex + 1, getRegularQuestionCount());
 }
