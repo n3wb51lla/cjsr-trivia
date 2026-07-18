@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { HostGate } from '../components/host/HostGate';
 import { useGameSubscription } from '../hooks/useGameSubscription';
-import { ensureQuestionsSeeded, writeQuestion } from '../lib/firebaseData';
+import { bulkWriteQuestions, ensureQuestionsSeeded, writeQuestion } from '../lib/firebaseData';
 import { DEFAULT_GAME_CODE } from '../lib/hostState';
+import { downloadQuestionTemplate, parseQuestionWorkbook } from '../lib/questionImport';
+import { validateQuestionRow, type QuestionRowResult } from '../lib/questionValidation';
 import { ROUND_ORDER, SEED_QUESTIONS, getPointsForRound, resolveQuestions, SUDDEN_DEATH_POINTS } from '../lib/triviaData';
 import type { Question } from '../types';
 
@@ -46,7 +48,9 @@ function QuestionsEditor() {
       ) : seedError ? (
         <p className="mt-6 font-bold text-brand-red-light" role="alert">{seedError}</p>
       ) : (
-        ROUND_ORDER.map(round => {
+        <>
+          <ImportPanel questions={questions} />
+          {ROUND_ORDER.map(round => {
           const roundQuestions = questions.filter(question => question.round === round);
           if (roundQuestions.length === 0) return null;
           const points = round === 'suddenDeath' ? SUDDEN_DEATH_POINTS : getPointsForRound(round);
@@ -65,8 +69,131 @@ function QuestionsEditor() {
               </ol>
             </section>
           );
-        })
+        })}
+        </>
       )}
+    </section>
+  );
+}
+
+function ImportPanel({ questions }: { questions: readonly Question[] }) {
+  const [rows, setRows] = useState<QuestionRowResult[] | null>(null);
+  const [isParsing, setIsParsing] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  async function handleFileSelected(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setIsParsing(true);
+    setMessage(null);
+    try {
+      const parsedRows = await parseQuestionWorkbook(file);
+      setRows(parsedRows.map(row => validateQuestionRow(row, questions)));
+    } catch (caught) {
+      setMessage(caught instanceof Error ? caught.message : 'Could not read that file.');
+      setRows(null);
+    } finally {
+      setIsParsing(false);
+    }
+  }
+
+  function clearImport() {
+    setRows(null);
+    setMessage(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  }
+
+  async function confirmImport() {
+    if (!rows || rows.some(row => row.errors.length > 0)) return;
+    setIsImporting(true);
+    setMessage(null);
+    try {
+      const importedQuestions = rows.map(row => row.question).filter((question): question is Question => question !== null);
+      await bulkWriteQuestions(DEFAULT_GAME_CODE, importedQuestions);
+      setRows(null);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      setMessage(`Imported ${importedQuestions.length} question${importedQuestions.length !== 1 ? 's' : ''}.`);
+    } catch (caught) {
+      setMessage(caught instanceof Error ? caught.message : 'Could not import questions.');
+    } finally {
+      setIsImporting(false);
+    }
+  }
+
+  const errorCount = rows?.filter(row => row.errors.length > 0).length ?? 0;
+  const canImport = rows !== null && rows.length > 0 && errorCount === 0;
+
+  return (
+    <section className="mb-8 border-2 border-brand-ink/50 p-4">
+      <h2 className="font-display text-2xl">Bulk import from spreadsheet</h2>
+      <p className="mt-2 text-brand-paper">
+        Download a template, fill in the questions you want to change, then upload it here. Import only edits existing questions - it can't add or remove any.
+      </p>
+      <div className="mt-4 flex flex-wrap items-center gap-3">
+        <button
+          type="button"
+          onClick={() => void downloadQuestionTemplate(questions)}
+          className="min-h-11 border-2 border-brand-ink px-4 py-2 font-bold text-brand-ink"
+        >
+          Download template
+        </button>
+        <label className="min-h-11 cursor-pointer border-2 border-brand-red bg-brand-red px-4 py-2 font-black text-white">
+          Upload filled template
+          <input ref={fileInputRef} type="file" accept=".xlsx" onChange={event => void handleFileSelected(event)} className="sr-only" />
+        </label>
+        {isParsing && <span className="text-sm font-bold text-brand-paper">Reading file...</span>}
+      </div>
+
+      {rows && rows.length > 0 && (
+        <div className="mt-4">
+          <div className="max-h-80 overflow-y-auto border border-brand-ink/50">
+            <table className="w-full text-left text-sm">
+              <thead>
+                <tr className="border-b border-brand-ink/50 text-brand-red-light">
+                  <th className="p-2">Row</th>
+                  <th className="p-2">Q#</th>
+                  <th className="p-2">Text</th>
+                  <th className="p-2">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map(row => (
+                  <tr key={row.rowNumber} className="border-b border-brand-ink/20 align-top">
+                    <td className="p-2">{row.rowNumber}</td>
+                    <td className="p-2">{row.id ?? '-'}</td>
+                    <td className="p-2">{row.text ? `${row.text.slice(0, 40)}${row.text.length > 40 ? '...' : ''}` : '-'}</td>
+                    <td className="p-2">
+                      {row.errors.length === 0 ? (
+                        <span className="text-brand-correct">Valid</span>
+                      ) : (
+                        <span className="text-brand-red-light">{row.errors.join(' ')}</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="mt-3 flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              disabled={!canImport || isImporting}
+              onClick={() => void confirmImport()}
+              className="min-h-10 border-2 border-brand-red bg-brand-red px-4 py-2 font-black text-white disabled:border-brand-paper/40 disabled:bg-brand-surface disabled:text-brand-paper/70"
+            >
+              {isImporting ? 'Importing...' : `Import ${rows.length} question${rows.length !== 1 ? 's' : ''}`}
+            </button>
+            <button type="button" onClick={clearImport} disabled={isImporting} className="min-h-10 border border-brand-ink/50 px-4 py-2 font-bold text-brand-paper">
+              Clear
+            </button>
+            {errorCount > 0 && <span className="text-sm font-bold text-brand-red-light">{errorCount} row{errorCount !== 1 ? 's' : ''} need fixing before you can import.</span>}
+          </div>
+        </div>
+      )}
+
+      {message && <p className="mt-3 font-bold text-brand-paper" role="status">{message}</p>}
     </section>
   );
 }
