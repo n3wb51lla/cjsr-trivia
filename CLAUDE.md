@@ -36,15 +36,15 @@ Default game code:
 
 Recent commits on `main` (newest first):
 
-- `7943beb Add bulk question import from .xlsx spreadsheet`
-- `ceeb6df Extract branding/copy into config, rename cjsr-* tokens to brand-*`
-- `c519a55 v2 Plan`
-- `73cb035 Joining late`
-- `0399c43 Clean break`
+- `3c96d64 Make round structure data-driven: unlimited questions, dynamic rounds`
+- `2e569a9 Add free-text team naming alongside the curated pun-name list`
+- `6519d00 Document sudden-death and bulk-import bug fixes in CLAUDE.md`
+- `b42801d Fix bugs found in full-project bug bash`
+- `0fd7a8f Update CLAUDE.md for completed Phase 1 white-label work`
 
-There is also a `template` branch (`35c2848` as of last sync), branched from `main`, with CJSR-specific files removed (see "Product Direction"). It's periodically merged forward from `main` to pick up generic improvements — check its own git log for how current it is relative to `main`.
+There is also a `template` branch (`f01b52b` as of last sync), branched from `main`, with CJSR-specific files removed (see "Product Direction"). It's periodically merged forward from `main` to pick up generic improvements — check its own git log for how current it is relative to `main`. As of this commit, `template` is fully caught up to `main` (everything through E1 is merged in).
 
-Important: the live Firebase Hosting site is available at `https://cjsr-trivia.web.app`. It was redeployed after the initial red/logo rebrand, but everything since then — the dark/light theme system, the live question/answer editor, the printable answer key, all player-facing copy changes, overflow team names, the branding-config extraction, and the bulk xlsx import — has **not** been confirmed deployed to hosting. Re-run `npx firebase-tools deploy --only hosting` before relying on any of this live. (Database rules, including the `questions` write rule, **have** been deployed via `npx firebase-tools deploy --only database` — that part is current.)
+Important: the live Firebase Hosting site is available at `https://cjsr-trivia.web.app`. It was redeployed after the initial red/logo rebrand, but everything since then — the dark/light theme system, the live question/answer editor, the printable answer key, all player-facing copy changes, overflow team names, the branding-config extraction, the bulk xlsx import, free-text team naming, the sudden-death fix, and the E1 dynamic-rounds refactor — has **not** been confirmed deployed to hosting. Re-run `npx firebase-tools deploy --only hosting` before relying on any of this live. (Database rules **have** been kept current via `npx firebase-tools deploy --only database` after every rules change this session, including the E1 bound loosening — that part is current as of `3c96d64`.)
 
 This repo's git state has previously changed without an explicit `git commit`/`git push` from a session (some earlier commits with generic messages like `Fix` and `UI improvements` were made by a mechanism outside any Claude Code git command). More recent commits (the ones listed above) were made directly via normal `git commit`/`git push` in-session. Don't assume commit messages describe *why* something changed for the older, generically-named ones — check this file or the conversation history instead.
 
@@ -346,7 +346,7 @@ After the CJSR event, the owner decided to turn this codebase into a resellable 
 - Configurable max players per team (currently hardcoded `1|2|3|4`). Not started.
 - Image and video clue questions via Firebase Storage (not currently used anywhere in this app) — recommended default is video renders on `/screen` only (shared projector), not autoplaying independently on every player's phone, to avoid audio chaos in the room; images can render on both. Not started.
 
-Recommended sequencing: ship the remaining Phase 1 item (free-text team naming) before starting Phase 2, and within Phase 2, dynamic rounds before question types (question types are the highest-effort/highest-risk piece — new domain-type shape, new scoring branches, new UI in every page).
+Phase 1 is fully done. Within Phase 2, E1 (dynamic rounds) is done; remaining recommended order is E5 (team cap, small) or E6 (media questions, needs Firebase Storage) before E2 (question types), since E2 is the highest-effort/highest-risk piece — new domain-type shape, new scoring branches, new UI in every page. Nothing after E1 has been scoped into a concrete plan yet — do that (design + explicit confirm with the user) before implementing, same as every part so far.
 
 ## Known Follow-Ups
 
