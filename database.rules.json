@@ -18,7 +18,7 @@
         "teams": {
           ".read": true,
           "$teamId": {
-            ".write": "newData.exists() && newData.child('teamName').isString() && newData.child('teamName').val().length > 0 && newData.child('playerCount').isNumber() && newData.child('playerCount').val() >= 1 && newData.child('playerCount').val() <= 4 && newData.child('score').isNumber() && newData.child('score').val() >= 0 && newData.child('cumulativeLockMs').isNumber() && newData.child('cumulativeLockMs').val() >= 0 && newData.child('isActive').isBoolean()"
+            ".write": "newData.exists() && newData.child('teamName').isString() && newData.child('teamName').val().length > 0 && newData.child('teamName').val().length <= 40 && newData.child('playerCount').isNumber() && newData.child('playerCount').val() >= 1 && newData.child('playerCount').val() <= 4 && newData.child('score').isNumber() && newData.child('score').val() >= 0 && newData.child('cumulativeLockMs').isNumber() && newData.child('cumulativeLockMs').val() >= 0 && newData.child('isActive').isBoolean()"
           }
         },
         "answers": {

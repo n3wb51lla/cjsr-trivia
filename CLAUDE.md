@@ -299,7 +299,8 @@ Kick:
 - Deletes the team-name reservation so the name can be picked again.
 - The host sidebar renders active teams only, so kicked teams disappear from the visible lobby list.
 - Required Firebase rules have been deployed.
-- Recommended as the moderation mechanism if/when free-text team naming ships (Product Direction, Phase 1) — scan the lobby before starting and kick anything inappropriate, rather than building dedicated moderation tooling.
+- This is the moderation mechanism for free-text team naming (see Player flow) — scan the lobby before starting and kick anything inappropriate, rather than dedicated moderation tooling.
+- Important operational/testing note: **team rows can never be fully deleted via client writes, only marked inactive.** The `teams/$teamId` rule's `.write` condition starts with `newData.exists() && ...`, which is only true for writes that set a value — a delete (`newData.val() === null`) makes `newData.exists()` false, so the whole condition short-circuits to `false` and the rule rejects it. Combined with kick only working in the `lobby` phase, this means a team joined outside the lobby (including via a live smoke test against the real "main" game) **cannot be removed at all** once created — not kicked (wrong phase), not deleted (rule blocks it). Never run a live join test against the production game unless it's currently in `lobby` phase; verify client-side behavior (rendering, validation, "taken" checks) without actually submitting instead.
 
 Manual score corrections:
 
@@ -328,14 +329,14 @@ UI repetition cleanup:
 
 After the CJSR event, the owner decided to turn this codebase into a resellable trivia-night product rather than a one-off CJSR app: clone the repo per customer, reconfigure, redeploy under the customer's own Firebase project. Not a multi-tenant SaaS — no auth/tenant-isolation work is planned. A detailed implementation plan exists (was last saved to a local Claude Code plan file during a planning session; if that's not available, this section plus a fresh audit of any remaining CJSR-specific content is enough to reconstruct it). Two phases:
 
-**Phase 1 — branding/copy/import: DONE.**
+**Phase 1 — branding/copy/import/team-naming: DONE.**
 
 - ✅ All CJSR-specific copy centralized into `src/config/site.ts` instead of scattered literal strings across `App.tsx`/`ScreenPage.tsx`/`PlayerPage.tsx`. Zero visible change for the current CJSR event — verified live.
 - ✅ `cjsr-*` Tailwind tokens renamed to `brand-*` everywhere (`tailwind.config.js`, `src/styles.css`, 9 components). Verified live — dark/light theme, colors, all copy unchanged.
 - ✅ Logo asset renamed to generic `src/assets/logo.png`.
 - ✅ `template` branch created off `main` with CJSR-specific root files (`CJSR LOGO.jpg`, question-bank docx/generator script) and internal docs (this file, `PROGRESS.md`, `IMPLEMENTATION_PLAN.md`, `cjsr-trivia-codex-prompt.md`) removed. `main` keeps everything untouched as the live CJSR instance. README updated with a "Setting up for a new customer" checklist. `template` is periodically merged forward from `main` to inherit generic (non-CJSR-specific) improvements — it is **not** automatically kept in sync, check its log.
 - ✅ Bulk `.xlsx` question import/export shipped on `/host/questions` (see "Question editing" above for the mechanism). Uses `xlsx` (SheetJS) installed from `https://cdn.sheetjs.com/...` rather than the npm registry — the latest npm-published version (0.18.5) has two unpatched high-severity CVEs (prototype pollution, ReDoS) that matter here because this code parses untrusted host-uploaded files. The CDN-installed version (0.20.3 as of this writing) is patched. If bumping this dependency, get the current version+URL from SheetJS's own docs, not just `npm update` (npm's registry copy won't move past 0.18.5). The `xlsx` import is also dynamically `import()`ed (not a static top-level import) so it code-splits into its own chunk and isn't downloaded by every player joining on `/` — it was originally static and nearly doubled the main bundle (447KB → 947KB) before this was caught and fixed during the same session.
-- Not done yet: free-text team naming (let players type their own name instead of only picking from the curated pun list). Data layer already supports it (`joinTeam`, the team-write rule) with no changes needed — this is purely a `PlayerPage.tsx` UI addition (text input alongside the existing buttons; empty `TEAM_NAMES` config = text-input-only, no separate mode flag needed). Moderation should lean on the existing kick feature rather than new tooling.
+- ✅ Free-text team naming: a "name your own team" text input sits alongside the curated-name buttons on `/`, calling the same `handleJoin`. If `TEAM_NAMES` is empty, only the text input renders (no separate mode flag). Shows an instant client-side "(taken)" check against the live roster before submitting. `database.rules.json`'s team-write rule got one addition, a 40-char cap on `teamName` (`newData.child('teamName').val().length <= 40`), matching the existing pattern used for question text. Moderation leans on the existing kick feature, not new tooling.
 
 **Phase 2 — structural flexibility (bigger, touches types/DB rules/scoring, not yet started):**
 

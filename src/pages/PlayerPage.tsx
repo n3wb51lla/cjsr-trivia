@@ -15,6 +15,7 @@ export function PlayerPage() {
   const [storedTeamId, setStoredTeamId] = useState<string | null>(getStoredTeamId);
   const [playerCount, setPlayerCount] = useState<PlayerCount | null>(null);
   const [joiningName, setJoiningName] = useState<string | null>(null);
+  const [customName, setCustomName] = useState('');
   const [message, setMessage] = useState<string | null>(null);
   const { gameState, status, error } = useGameSubscription(DEFAULT_GAME_CODE);
   const questions = useMemo(() => resolveQuestions(gameState), [gameState]);
@@ -26,6 +27,8 @@ export function PlayerPage() {
   const takenNames = useMemo(() => new Set(gameState?.teams.filter(team => team.isActive).map(team => makeTeamNameKey(team.teamName)) ?? []), [gameState?.teams]);
   const isPrimaryListFull = useMemo(() => TEAM_NAMES.length > 0 && TEAM_NAMES.every(name => takenNames.has(makeTeamNameKey(name))), [takenNames]);
   const availableTeamNames = isPrimaryListFull ? [...TEAM_NAMES, ...OVERFLOW_TEAM_NAMES] : TEAM_NAMES;
+  const customNameKey = makeTeamNameKey(customName);
+  const isCustomNameTaken = customNameKey !== '' && takenNames.has(customNameKey);
   const phase = gameState?.game.phase ?? 'lobby';
   const canJoin = phase === 'lobby' || phase === 'reveal' || phase === 'break';
   const leaderboard = useMemo(() => buildLeaderboard(gameState?.teams ?? []), [gameState?.teams]);
@@ -157,29 +160,67 @@ export function PlayerPage() {
           </div>
         </fieldset>
 
+        {TEAM_NAMES.length > 0 && (
+          <section className="mt-7">
+            <h2 className="font-display text-2xl">Choose a team name</h2>
+            {isPrimaryListFull && (
+              <p className="mt-2 text-sm font-bold text-brand-paper">More names unlocked because the first 20 are full.</p>
+            )}
+            <div className="mt-3 grid gap-2 sm:grid-cols-2">
+              {availableTeamNames.map(teamName => {
+                const taken = takenNames.has(makeTeamNameKey(teamName));
+                return (
+                  <button
+                    key={teamName}
+                    type="button"
+                    disabled={taken || !playerCount || joiningName !== null}
+                    onClick={() => void handleJoin(teamName)}
+                    className="min-h-14 border-2 border-brand-ink bg-brand-surface px-4 py-3 text-left font-bold text-brand-ink disabled:border-brand-paper/40 disabled:bg-brand-surface disabled:text-brand-paper/70"
+                  >
+                    <span>{teamName}</span>
+                    {taken && <span className="ml-2 text-sm uppercase tracking-wide">(taken)</span>}
+                    {joiningName === teamName && <span className="ml-2 text-sm uppercase tracking-wide">(joining...)</span>}
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
         <section className="mt-7">
-          <h2 className="font-display text-2xl">Choose a team name</h2>
-          {isPrimaryListFull && (
-            <p className="mt-2 text-sm font-bold text-brand-paper">More names unlocked because the first 20 are full.</p>
-          )}
-          <div className="mt-3 grid gap-2 sm:grid-cols-2">
-            {availableTeamNames.map(teamName => {
-              const taken = takenNames.has(makeTeamNameKey(teamName));
-              return (
-                <button
-                  key={teamName}
-                  type="button"
-                  disabled={taken || !playerCount || joiningName !== null}
-                  onClick={() => void handleJoin(teamName)}
-                  className="min-h-14 border-2 border-brand-ink bg-brand-surface px-4 py-3 text-left font-bold text-brand-ink disabled:border-brand-paper/40 disabled:bg-brand-surface disabled:text-brand-paper/70"
-                >
-                  <span>{teamName}</span>
-                  {taken && <span className="ml-2 text-sm uppercase tracking-wide">(taken)</span>}
-                  {joiningName === teamName && <span className="ml-2 text-sm uppercase tracking-wide">(joining...)</span>}
-                </button>
-              );
-            })}
-          </div>
+          <h2 className="font-display text-2xl">{TEAM_NAMES.length > 0 ? 'Or name your own team' : 'Name your team'}</h2>
+          <form
+            className="mt-3 flex flex-col gap-2 sm:flex-row"
+            onSubmit={event => {
+              event.preventDefault();
+              const trimmed = customName.trim();
+              if (!trimmed) {
+                setMessage('Type a team name first.');
+                return;
+              }
+              void handleJoin(trimmed);
+            }}
+          >
+            <label className="sr-only" htmlFor="custom-team-name">Team name</label>
+            <input
+              id="custom-team-name"
+              type="text"
+              value={customName}
+              onChange={event => setCustomName(event.target.value)}
+              maxLength={40}
+              placeholder="Type your own team name"
+              disabled={!playerCount || joiningName !== null}
+              className="min-h-14 flex-1 border-2 border-brand-ink bg-brand-surface px-4 py-3 text-brand-ink disabled:border-brand-paper/40 disabled:bg-brand-surface disabled:text-brand-paper/70"
+            />
+            <button
+              type="submit"
+              disabled={!playerCount || joiningName !== null || !customName.trim() || isCustomNameTaken}
+              className="min-h-14 border-2 border-brand-red bg-brand-red px-5 py-3 font-black text-white disabled:border-brand-paper/40 disabled:bg-brand-surface disabled:text-brand-paper/70"
+            >
+              {joiningName === customName.trim() ? 'Joining...' : 'Join'}
+            </button>
+          </form>
+          {isCustomNameTaken && <p className="mt-2 text-sm font-bold text-brand-paper">That name is taken.</p>}
         </section>
 
         {message && <p className="mt-4 font-bold text-brand-red-light" role="status">{message}</p>}
