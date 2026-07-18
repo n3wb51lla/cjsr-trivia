@@ -1,6 +1,7 @@
-import type { Question } from '../types';
+import type { ChoiceIndex, Question } from '../types';
 
 const MAX_TEXT_LENGTH = 140;
+const MAX_MEDIA_URL_LENGTH = 2048;
 const ANSWER_LETTERS = ['A', 'B', 'C', 'D'] as const;
 
 export interface QuestionRowInput {
@@ -13,6 +14,8 @@ export interface QuestionRowInput {
   readonly choiceC: unknown;
   readonly choiceD: unknown;
   readonly correctAnswer: unknown;
+  readonly mediaType: unknown;
+  readonly mediaUrl: unknown;
 }
 
 export interface QuestionRowResult {
@@ -49,30 +52,74 @@ export function validateQuestionRow(row: QuestionRowInput, existingQuestions: re
   if (!text) errors.push('Question text is required.');
   if (text.length > MAX_TEXT_LENGTH) errors.push(`Question text must be ${MAX_TEXT_LENGTH} characters or fewer.`);
 
+  const mediaType = typeof row.mediaType === 'string' ? row.mediaType.trim().toLowerCase() : '';
+  const mediaUrl = typeof row.mediaUrl === 'string' ? row.mediaUrl.trim() : '';
+  let media: Question['media'] = null;
+  if (mediaType || mediaUrl) {
+    if (mediaType !== 'image' && mediaType !== 'video') errors.push('Media type must be "image" or "video".');
+    if (!mediaUrl) errors.push('Media URL is required when a media type is provided.');
+    if (mediaUrl.length > MAX_MEDIA_URL_LENGTH) errors.push(`Media URL must be ${MAX_MEDIA_URL_LENGTH} characters or fewer.`);
+    if ((mediaType === 'image' || mediaType === 'video') && mediaUrl && mediaUrl.length <= MAX_MEDIA_URL_LENGTH) {
+      media = { type: mediaType, url: mediaUrl };
+    }
+  }
+
+  if (existing.type === 'free_text') {
+    const acceptedAnswers = typeof row.correctAnswer === 'string'
+      ? row.correctAnswer.split(';').map(answer => answer.trim()).filter(answer => answer !== '')
+      : [];
+    if (acceptedAnswers.length === 0) errors.push('At least one accepted answer is required, separated by semicolons (this question is free-text).');
+    if (acceptedAnswers.some(answer => answer.length > MAX_TEXT_LENGTH)) errors.push(`Each accepted answer must be ${MAX_TEXT_LENGTH} characters or fewer.`);
+
+    if (errors.length > 0) {
+      return { rowNumber: row.rowNumber, id, text, question: null, errors };
+    }
+
+    return {
+      rowNumber: row.rowNumber,
+      id,
+      text,
+      question: { id, round: existing.round, text, media, type: 'free_text', acceptedAnswers },
+      errors: [],
+    };
+  }
+
   const choices = [row.choiceA, row.choiceB, row.choiceC, row.choiceD].map(choice => (typeof choice === 'string' ? choice.trim() : ''));
   choices.forEach((choice, index) => {
     if (!choice) errors.push(`Choice ${ANSWER_LETTERS[index]} is required.`);
   });
 
-  const answerLetter = typeof row.correctAnswer === 'string' ? row.correctAnswer.trim().toUpperCase() : '';
-  const answerIndex = ANSWER_LETTERS.indexOf(answerLetter as (typeof ANSWER_LETTERS)[number]);
-  if (answerIndex === -1) errors.push('Correct answer must be A, B, C, or D.');
+  const answerLetters = typeof row.correctAnswer === 'string'
+    ? row.correctAnswer.split(',').map(letter => letter.trim().toUpperCase()).filter(letter => letter !== '')
+    : [];
+  const answerIndexes = [...new Set(answerLetters.map(letter => ANSWER_LETTERS.indexOf(letter as (typeof ANSWER_LETTERS)[number])))] as ChoiceIndex[];
+  const hasInvalidLetter = answerLetters.length === 0 || answerIndexes.includes(-1 as ChoiceIndex);
+
+  if (existing.type === 'multi_select') {
+    if (hasInvalidLetter) errors.push('Correct answer must be one or more of A, B, C, D separated by commas (this question is multi-select).');
+  } else if (hasInvalidLetter || answerIndexes.length !== 1) {
+    errors.push('Correct answer must be a single letter: A, B, C, or D.');
+  }
 
   if (errors.length > 0) {
     return { rowNumber: row.rowNumber, id, text, question: null, errors };
   }
 
+  const questionBase = {
+    id,
+    round: existing.round,
+    text,
+    choices: choices as [string, string, string, string],
+    media,
+  };
+
   return {
     rowNumber: row.rowNumber,
     id,
     text,
-    question: {
-      id,
-      round: existing.round,
-      text,
-      choices: choices as [string, string, string, string],
-      answer: answerIndex as 0 | 1 | 2 | 3,
-    },
+    question: existing.type === 'multi_select'
+      ? { ...questionBase, type: 'multi_select' as const, answers: answerIndexes }
+      : { ...questionBase, type: 'multiple_choice' as const, answer: answerIndexes[0] },
     errors: [],
   };
 }

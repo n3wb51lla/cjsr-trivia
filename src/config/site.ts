@@ -5,6 +5,7 @@ export interface SiteConfig {
   readonly joinDescription: string;
   readonly territoryText: string | null;
   readonly teamIdStorageKey: string;
+  readonly maxPlayersPerTeam: number;
 }
 
 export const siteConfig: SiteConfig = {
@@ -16,4 +17,5 @@ export const siteConfig: SiteConfig = {
   territoryText:
     'CJSR is located in amiskwaciy-waskahikan, the city of Edmonton, on Treaty 6 territory and region 4 of the Metis Nation of Alberta.',
   teamIdStorageKey: 'cjsr-trivia.teamId',
+  maxPlayersPerTeam: 4,
 };

@@ -37,19 +37,38 @@ export function AnswerKeyPage() {
                 </span>
               </h2>
               <ol className="mt-3 space-y-4">
-                {roundQuestions.map(question => (
-                  <li key={question.id} className="break-inside-avoid">
-                    <p className="font-bold">Q{question.id}. {question.text}</p>
-                    <ul className="mt-1 grid gap-1 sm:grid-cols-2">
-                      {question.choices.map((choice, index) => (
-                        <li key={index} className={index === question.answer ? 'font-black underline decoration-2' : ''}>
-                          {String.fromCharCode(65 + index)}. {choice}
-                          {index === question.answer && ' ✓'}
-                        </li>
-                      ))}
-                    </ul>
-                  </li>
-                ))}
+                {roundQuestions.map(question => {
+                  if (question.type === 'free_text') {
+                    return (
+                      <li key={question.id} className="break-inside-avoid">
+                        <p className="font-bold">
+                          Q{question.id}. {question.text}
+                          <span className="ml-2 font-normal italic">(free text, auto-graded)</span>
+                          {question.media && <span className="ml-2 font-normal italic">({question.media.type} clue)</span>}
+                        </p>
+                        <p className="mt-1">Accepted: {question.acceptedAnswers.join(', ')}</p>
+                      </li>
+                    );
+                  }
+                  const correctIndexes: readonly number[] = question.type === 'multi_select' ? question.answers : [question.answer];
+                  return (
+                    <li key={question.id} className="break-inside-avoid">
+                      <p className="font-bold">
+                        Q{question.id}. {question.text}
+                        {question.type === 'multi_select' && <span className="ml-2 font-normal italic">(select all that apply)</span>}
+                        {question.media && <span className="ml-2 font-normal italic">({question.media.type} clue)</span>}
+                      </p>
+                      <ul className="mt-1 grid gap-1 sm:grid-cols-2">
+                        {question.choices.map((choice, index) => (
+                          <li key={index} className={correctIndexes.includes(index) ? 'font-black underline decoration-2' : ''}>
+                            {String.fromCharCode(65 + index)}. {choice}
+                            {correctIndexes.includes(index) && ' ✓'}
+                          </li>
+                        ))}
+                      </ul>
+                    </li>
+                  );
+                })}
               </ol>
             </section>
           );

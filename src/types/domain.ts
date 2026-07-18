@@ -3,19 +3,44 @@ export type GamePhase = 'lobby' | 'question' | 'reveal' | 'break' | 'final' | 's
 export type RoundNumber = number;
 export type QuestionRound = RoundNumber | 'suddenDeath';
 
-export interface Question {
+export interface QuestionMedia {
+  readonly type: 'image' | 'video';
+  readonly url: string;
+}
+
+export type ChoiceIndex = 0 | 1 | 2 | 3;
+
+interface QuestionBase {
   readonly id: number;
   readonly round: QuestionRound;
   readonly text: string;
-  readonly choices: readonly [string, string, string, string];
-  readonly answer: 0 | 1 | 2 | 3;
+  readonly media: QuestionMedia | null;
 }
+
+export interface MultipleChoiceQuestion extends QuestionBase {
+  readonly type: 'multiple_choice';
+  readonly choices: readonly [string, string, string, string];
+  readonly answer: ChoiceIndex;
+}
+
+export interface MultiSelectQuestion extends QuestionBase {
+  readonly type: 'multi_select';
+  readonly choices: readonly [string, string, string, string];
+  readonly answers: readonly ChoiceIndex[];
+}
+
+export interface FreeTextQuestion extends QuestionBase {
+  readonly type: 'free_text';
+  readonly acceptedAnswers: readonly string[];
+}
+
+export type Question = MultipleChoiceQuestion | MultiSelectQuestion | FreeTextQuestion;
 
 export interface Team {
   readonly id: string;
   readonly gameId: string;
   readonly teamName: string;
-  readonly playerCount: 1 | 2 | 3 | 4;
+  readonly playerCount: number;
   readonly score: number;
   readonly cumulativeLockMs: number;
   readonly joinedAt: number;
@@ -27,7 +52,9 @@ export interface Answer {
   readonly gameId: string;
   readonly teamId: string;
   readonly questionIndex: number;
-  readonly choiceIndex: 0 | 1 | 2 | 3 | null;
+  readonly choiceIndex: ChoiceIndex | null;
+  readonly choiceIndexes: readonly ChoiceIndex[] | null;
+  readonly textAnswer: string | null;
   readonly lockedAt: number;
   readonly timeToLockMs: number | null;
   readonly isCorrect: boolean | null;

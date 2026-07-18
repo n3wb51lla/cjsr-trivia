@@ -2,7 +2,7 @@ import questionsJson from '../data/questions.json';
 import schedule from '../data/schedule.json';
 import teamNames from '../data/teamNames.json';
 import overflowTeamNames from '../data/teamNamesOverflow.json';
-import type { GameState, Question, QuestionRound, RoundNumber } from '../types';
+import type { GameState, Question, QuestionMedia, QuestionRound, RoundNumber } from '../types';
 
 export interface RoundConfig {
   readonly id: RoundNumber;
@@ -107,13 +107,24 @@ function parseQuestions(value: unknown): readonly Question[] {
 
 function parseQuestion(value: unknown): Question {
   if (!isRecord(value)) throw new Error('Question must be an object.');
-  const { id, round, text, choices, answer } = value;
+  const { id, round, text, choices, answer, answers, acceptedAnswers, media, type } = value;
   if (typeof id !== 'number' || !Number.isInteger(id)) throw new Error('Question id must be an integer.');
   if (!isQuestionRound(round)) throw new Error(`Question ${id} has invalid round.`);
   if (typeof text !== 'string') throw new Error(`Question ${id} text must be a string.`);
+  if (media !== undefined && media !== null && !isQuestionMedia(media)) throw new Error(`Question ${id} has invalid media.`);
+  const mediaValue = media ?? null;
+
+  if (type === 'free_text') {
+    if (!isAcceptedAnswers(acceptedAnswers)) throw new Error(`Question ${id} has invalid acceptedAnswers.`);
+    return { id, round, text, type: 'free_text', acceptedAnswers, media: mediaValue };
+  }
   if (!isFourChoices(choices)) throw new Error(`Question ${id} must have four choices.`);
+  if (type === 'multi_select') {
+    if (!isAnswerIndexArray(answers)) throw new Error(`Question ${id} has invalid answers array.`);
+    return { id, round, text, choices, type: 'multi_select', answers, media: mediaValue };
+  }
   if (!isAnswerIndex(answer)) throw new Error(`Question ${id} has invalid answer index.`);
-  return { id, round, text, choices, answer };
+  return { id, round, text, choices, type: 'multiple_choice', answer, media: mediaValue };
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -128,6 +139,19 @@ function isFourChoices(value: unknown): value is readonly [string, string, strin
   return Array.isArray(value) && value.length === 4 && value.every(choice => typeof choice === 'string');
 }
 
+function isAnswerIndexArray(value: unknown): value is readonly (0 | 1 | 2 | 3)[] {
+  return Array.isArray(value) && value.length >= 1 && value.length <= 4 && value.every(isAnswerIndex);
+}
+
+function isAcceptedAnswers(value: unknown): value is readonly string[] {
+  return Array.isArray(value) && value.length >= 1 && value.every(entry => typeof entry === 'string' && entry.trim().length > 0);
+}
+
 function isAnswerIndex(value: unknown): value is 0 | 1 | 2 | 3 {
   return value === 0 || value === 1 || value === 2 || value === 3;
+}
+
+function isQuestionMedia(value: unknown): value is QuestionMedia {
+  if (!isRecord(value)) return false;
+  return (value.type === 'image' || value.type === 'video') && typeof value.url === 'string' && value.url.length > 0;
 }

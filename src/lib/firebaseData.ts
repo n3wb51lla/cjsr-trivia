@@ -1,5 +1,7 @@
 import { get, onValue, push, ref, remove, runTransaction, serverTimestamp, set, update, type Unsubscribe } from 'firebase/database';
-import type { Answer, Game, GameState, Question, Team } from '../types';
+import type { Answer, ChoiceIndex, Game, GameState, Question, QuestionMedia, Team } from '../types';
+import { siteConfig } from '../config/site';
+import { isFuzzyMatch } from './textMatching';
 import { firebaseServices } from './firebase';
 import {
   answerPath, answersPath, gameMetaPath, gamePath, questionPath, questionsPath, teamCumulativeLockMsPath, teamNameReservationPath, teamPath, teamScorePath,
@@ -15,11 +17,13 @@ export type FirebaseAnswer = Omit<Answer, 'id' | 'gameId'>;
 
 export interface JoinTeamInput {
   readonly teamName: string;
-  readonly playerCount: 1 | 2 | 3 | 4;
+  readonly playerCount: number;
 }
 
 export interface SubmitAnswerInput {
-  readonly choiceIndex: 0 | 1 | 2 | 3 | null;
+  readonly choiceIndex: ChoiceIndex | null;
+  readonly choiceIndexes: readonly ChoiceIndex[] | null;
+  readonly textAnswer: string | null;
   readonly timeToLockMs: number | null;
 }
 
@@ -152,6 +156,8 @@ export async function submitAnswerIfMissing(
     teamId,
     questionIndex: questionId,
     choiceIndex: input.choiceIndex,
+    choiceIndexes: input.choiceIndexes,
+    textAnswer: input.textAnswer,
     lockedAt: Date.now(),
     timeToLockMs: input.timeToLockMs,
     isCorrect: null,
@@ -168,27 +174,31 @@ export async function submitAnswerIfMissing(
   return saved as FirebaseAnswer;
 }
 
-export async function finalizeQuestionScores(gameCode: string, state: GameState, questionId: number, correctChoice: 0 | 1 | 2 | 3, points: number): Promise<void> {
+export async function finalizeQuestionScores(gameCode: string, state: GameState, question: Question, points: number): Promise<void> {
   const activeTeams = state.teams.filter(team => team.isActive);
   const updates: Record<string, unknown> = {};
 
   for (const team of activeTeams) {
-    const existing = state.answers.find(answer => answer.teamId === team.id && answer.questionIndex === questionId);
+    const existing = state.answers.find(answer => answer.teamId === team.id && answer.questionIndex === question.id);
     const choiceIndex = existing?.choiceIndex ?? null;
-    const isCorrect = choiceIndex === correctChoice;
+    const choiceIndexes = existing?.choiceIndexes ?? null;
+    const textAnswer = existing?.textAnswer ?? null;
+    const isCorrect = isAnswerCorrect(question, choiceIndex, choiceIndexes, textAnswer);
     const pointsAwarded = isCorrect ? points : 0;
     const timeToLockMs = existing?.timeToLockMs ?? null;
     const finalizedAnswer: FirebaseAnswer = {
       teamId: team.id,
-      questionIndex: questionId,
+      questionIndex: question.id,
       choiceIndex,
+      choiceIndexes,
+      textAnswer,
       lockedAt: existing?.lockedAt ?? Date.now(),
       timeToLockMs,
       isCorrect,
       pointsAwarded,
     };
 
-    updates[answerPath(gameCode, team.id, questionId)] = finalizedAnswer;
+    updates[answerPath(gameCode, team.id, question.id)] = finalizedAnswer;
     updates[teamScorePath(gameCode, team.id)] = team.score + pointsAwarded;
     updates[teamCumulativeLockMsPath(gameCode, team.id)] = team.cumulativeLockMs + (timeToLockMs ?? 0);
   }
@@ -196,6 +206,40 @@ export async function finalizeQuestionScores(gameCode: string, state: GameState,
   if (Object.keys(updates).length > 0) {
     await update(ref(requireDatabase()), updates);
   }
+}
+
+function isAnswerCorrect(question: Question, choiceIndex: ChoiceIndex | null, choiceIndexes: readonly ChoiceIndex[] | null, textAnswer: string | null): boolean {
+  if (question.type === 'multi_select') {
+    const selected = new Set(choiceIndexes ?? []);
+    return selected.size === question.answers.length && question.answers.every(answer => selected.has(answer));
+  }
+  if (question.type === 'free_text') {
+    return textAnswer !== null && isFuzzyMatch(textAnswer, question.acceptedAnswers);
+  }
+  return choiceIndex === question.answer;
+}
+
+export async function setAnswerCorrectness(gameCode: string, team: Team, answer: Answer, points: number, isCorrect: boolean): Promise<void> {
+  const pointsAwarded = isCorrect ? points : 0;
+  const scoreDelta = pointsAwarded - answer.pointsAwarded;
+  const updatedAnswer: FirebaseAnswer = {
+    teamId: answer.teamId,
+    questionIndex: answer.questionIndex,
+    choiceIndex: answer.choiceIndex,
+    choiceIndexes: answer.choiceIndexes,
+    textAnswer: answer.textAnswer,
+    lockedAt: answer.lockedAt,
+    timeToLockMs: answer.timeToLockMs,
+    isCorrect,
+    pointsAwarded,
+  };
+
+  const updates: Record<string, unknown> = {
+    [answerPath(gameCode, team.id, answer.questionIndex)]: updatedAnswer,
+    [teamScorePath(gameCode, team.id)]: Math.max(0, team.score + scoreDelta),
+  };
+
+  await update(ref(requireDatabase()), updates);
 }
 
 export async function resetGameForReplay(gameCode: string, state: GameState, meta: FirebaseGameMeta): Promise<void> {
@@ -213,13 +257,7 @@ export async function resetGameForReplay(gameCode: string, state: GameState, met
 }
 
 export async function writeQuestion(gameCode: string, question: Question): Promise<void> {
-  await set(ref(requireDatabase(), questionPath(gameCode, question.id)), {
-    id: question.id,
-    round: question.round,
-    text: question.text,
-    choices: question.choices,
-    answer: question.answer,
-  });
+  await set(ref(requireDatabase(), questionPath(gameCode, question.id)), questionPayload(question));
 }
 
 export async function ensureQuestionsSeeded(gameCode: string, seedQuestions: readonly Question[]): Promise<void> {
@@ -231,18 +269,29 @@ export async function ensureQuestionsSeeded(gameCode: string, seedQuestions: rea
 export async function bulkWriteQuestions(gameCode: string, questions: readonly Question[]): Promise<void> {
   const updates: Record<string, unknown> = {};
   for (const question of questions) {
-    updates[questionPath(gameCode, question.id)] = {
-      id: question.id,
-      round: question.round,
-      text: question.text,
-      choices: question.choices,
-      answer: question.answer,
-    };
+    updates[questionPath(gameCode, question.id)] = questionPayload(question);
   }
 
   if (Object.keys(updates).length > 0) {
     await update(ref(requireDatabase()), updates);
   }
+}
+
+function questionPayload(question: Question): Record<string, unknown> {
+  const base = {
+    id: question.id,
+    round: question.round,
+    text: question.text,
+    media: question.media,
+    type: question.type,
+  };
+  if (question.type === 'free_text') {
+    return { ...base, acceptedAnswers: question.acceptedAnswers };
+  }
+  if (question.type === 'multi_select') {
+    return { ...base, choices: question.choices, answers: question.answers };
+  }
+  return { ...base, choices: question.choices, answer: question.answer };
 }
 
 export async function fetchServerTimeOffsetMs(): Promise<number> {
@@ -284,19 +333,15 @@ function parseGameState(gameCode: string, value: unknown): GameState {
         teamId,
         questionIndex: parseNumber(answer.questionIndex, Number(questionId)),
         choiceIndex: parseChoice(answer.choiceIndex),
+        choiceIndexes: parseChoiceIndexes(answer.choiceIndexes),
+        textAnswer: typeof answer.textAnswer === 'string' ? answer.textAnswer : null,
         lockedAt: parseNumber(answer.lockedAt, 0),
         timeToLockMs: parseNullableNumber(answer.timeToLockMs),
         isCorrect: typeof answer.isCorrect === 'boolean' ? answer.isCorrect : null,
         pointsAwarded: parseNumber(answer.pointsAwarded, 0),
       })),
     ),
-    questions: parseRecordList<Question>(root.questions, (id, question) => ({
-      id: parseNumber(question.id, Number(id)),
-      round: parseQuestionRound(question.round),
-      text: typeof question.text === 'string' ? question.text : '',
-      choices: parseChoices(question.choices),
-      answer: parseChoice(question.answer) ?? 0,
-    })),
+    questions: parseRecordList<Question>(root.questions, parseQuestionRecord),
   };
 }
 
@@ -323,7 +368,7 @@ function parseCurrentRound(value: unknown): Game['currentRound'] {
 }
 
 function parsePlayerCount(value: unknown): Team['playerCount'] {
-  if (value === 1 || value === 2 || value === 3 || value === 4) return value;
+  if (typeof value === 'number' && Number.isInteger(value) && value >= 1 && value <= siteConfig.maxPlayersPerTeam) return value;
   return 1;
 }
 
@@ -332,12 +377,54 @@ function parseChoice(value: unknown): Answer['choiceIndex'] {
   return null;
 }
 
+function parseChoiceIndexes(value: unknown): Answer['choiceIndexes'] {
+  if (!Array.isArray(value)) return null;
+  const indexes = value.filter((entry): entry is ChoiceIndex => entry === 0 || entry === 1 || entry === 2 || entry === 3);
+  return indexes.length > 0 ? indexes : null;
+}
+
 function parseQuestionRound(value: unknown): Question['round'] {
   if (value === 'suddenDeath' || value === 1 || value === 2 || value === 3 || value === 4 || value === 5 || value === 6) return value;
   return 1;
 }
 
-function parseChoices(value: unknown): Question['choices'] {
+function parseQuestionRecord(id: string, question: Record<string, unknown>): Question {
+  const base = {
+    id: parseNumber(question.id, Number(id)),
+    round: parseQuestionRound(question.round),
+    text: typeof question.text === 'string' ? question.text : '',
+    media: parseQuestionMedia(question.media),
+  };
+  if (question.type === 'free_text') {
+    return { ...base, type: 'free_text', acceptedAnswers: parseAcceptedAnswers(question.acceptedAnswers) };
+  }
+  const choices = parseChoices(question.choices);
+  if (question.type === 'multi_select') {
+    return { ...base, type: 'multi_select', choices, answers: parseAnswerIndexes(question.answers) };
+  }
+  return { ...base, type: 'multiple_choice', choices, answer: parseChoice(question.answer) ?? 0 };
+}
+
+function parseAcceptedAnswers(value: unknown): readonly string[] {
+  if (!Array.isArray(value)) return [''];
+  const answers = value.filter((entry): entry is string => typeof entry === 'string' && entry.trim().length > 0);
+  return answers.length > 0 ? answers : [''];
+}
+
+function parseAnswerIndexes(value: unknown): readonly ChoiceIndex[] {
+  if (!Array.isArray(value)) return [0];
+  const indexes = [...new Set(value.filter((entry): entry is ChoiceIndex => entry === 0 || entry === 1 || entry === 2 || entry === 3))];
+  return indexes.length > 0 ? indexes : [0];
+}
+
+function parseQuestionMedia(value: unknown): QuestionMedia | null {
+  if (!isRecord(value)) return null;
+  if (value.type !== 'image' && value.type !== 'video') return null;
+  if (typeof value.url !== 'string' || value.url.length === 0) return null;
+  return { type: value.type, url: value.url };
+}
+
+function parseChoices(value: unknown): readonly [string, string, string, string] {
   if (Array.isArray(value) && value.length === 4 && value.every(choice => typeof choice === 'string')) {
     return value as [string, string, string, string];
   }

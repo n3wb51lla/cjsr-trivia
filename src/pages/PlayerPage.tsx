@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { LeaderboardEntry, Question, Team } from '../types';
+import type { ChoiceIndex, LeaderboardEntry, Question, Team } from '../types';
 import { useGameSubscription } from '../hooks/useGameSubscription';
 import { useQuestionTimer } from '../hooks/useQuestionTimer';
 import { joinTeam, makeTeamNameKey, submitAnswerIfMissing } from '../lib/firebaseData';
@@ -9,7 +9,7 @@ import { clearStoredTeamId, getStoredTeamId, storeTeamId } from '../lib/storage'
 import { getPointsForQuestion, getQuestionByIndex, OVERFLOW_TEAM_NAMES, resolveQuestions, TEAM_NAMES } from '../lib/triviaData';
 import { siteConfig } from '../config/site';
 
-type PlayerCount = 1 | 2 | 3 | 4;
+type PlayerCount = number;
 
 export function PlayerPage() {
   const [storedTeamId, setStoredTeamId] = useState<string | null>(getStoredTeamId);
@@ -75,6 +75,8 @@ export function PlayerPage() {
             questionIndex={gameState.game.currentQuestionIndex}
             questionStartedAt={gameState.game.questionStartedAt}
             answerChoice={currentAnswer?.choiceIndex ?? undefined}
+            answerChoiceIndexes={currentAnswer?.choiceIndexes ?? undefined}
+            answerText={currentAnswer?.textAnswer ?? undefined}
             lockedAnswerExists={currentAnswer !== null}
             lockedCount={gameState.answers.filter(answer => answer.questionIndex === gameState.game.currentQuestionIndex).length}
             teamCount={gameState.teams.filter(team => team.isActive).length}
@@ -91,6 +93,9 @@ export function PlayerPage() {
             questions={questions}
             questionIndex={gameState.game.currentQuestionIndex}
             answerChoice={currentAnswer?.choiceIndex ?? null}
+            answerChoiceIndexes={currentAnswer?.choiceIndexes ?? null}
+            answerText={currentAnswer?.textAnswer ?? null}
+            isCorrect={currentAnswer?.isCorrect ?? null}
             pointsAwarded={currentAnswer?.pointsAwarded ?? 0}
           />
         </PlayerShell>
@@ -145,8 +150,8 @@ export function PlayerPage() {
 
         <fieldset className="mt-6">
           <legend className="font-display text-2xl">How many players?</legend>
-          <div className="mt-3 grid grid-cols-4 gap-2">
-            {([1, 2, 3, 4] as const).map(count => (
+          <div className="mt-3 grid gap-2" style={{ gridTemplateColumns: `repeat(${siteConfig.maxPlayersPerTeam}, minmax(0, 1fr))` }}>
+            {Array.from({ length: siteConfig.maxPlayersPerTeam }, (_, index) => index + 1).map(count => (
               <button
                 key={count}
                 type="button"
@@ -272,6 +277,8 @@ function QuestionPanel({
   questionIndex,
   questionStartedAt,
   answerChoice,
+  answerChoiceIndexes,
+  answerText,
   lockedAnswerExists,
   lockedCount,
   teamCount,
@@ -281,13 +288,17 @@ function QuestionPanel({
   questions: readonly Question[];
   questionIndex: number;
   questionStartedAt: number | null;
-  answerChoice: 0 | 1 | 2 | 3 | null | undefined;
+  answerChoice: ChoiceIndex | null | undefined;
+  answerChoiceIndexes: readonly ChoiceIndex[] | null | undefined;
+  answerText: string | null | undefined;
   lockedAnswerExists: boolean;
   lockedCount: number;
   teamCount: number;
 }) {
   const question = getQuestionByIndex(questions, questionIndex);
-  const [selectedChoice, setSelectedChoice] = useState<0 | 1 | 2 | 3 | null>(answerChoice ?? null);
+  const [selectedChoice, setSelectedChoice] = useState<ChoiceIndex | null>(answerChoice ?? null);
+  const [selectedChoices, setSelectedChoices] = useState<ChoiceIndex[]>(answerChoiceIndexes ? [...answerChoiceIndexes] : []);
+  const [textInput, setTextInput] = useState(answerText ?? '');
   const [lockMessage, setLockMessage] = useState<string | null>(null);
   const [isLocking, setIsLocking] = useState(false);
   const timer = useQuestionTimer(questionStartedAt);
@@ -296,13 +307,23 @@ function QuestionPanel({
     if (answerChoice !== undefined) setSelectedChoice(answerChoice);
   }, [answerChoice]);
 
-  const lockAnswer = useCallback(async (choice: 0 | 1 | 2 | 3 | null, timedOut = false) => {
+  useEffect(() => {
+    if (answerChoiceIndexes !== undefined) setSelectedChoices(answerChoiceIndexes ? [...answerChoiceIndexes] : []);
+  }, [answerChoiceIndexes]);
+
+  useEffect(() => {
+    if (answerText !== undefined) setTextInput(answerText ?? '');
+  }, [answerText]);
+
+  const lockAnswer = useCallback(async (choice: ChoiceIndex | null, choiceIndexes: readonly ChoiceIndex[] | null, text: string | null, timedOut = false) => {
     if (lockedAnswerExists || isLocking) return;
     setIsLocking(true);
     setLockMessage(null);
     try {
       await submitAnswerIfMissing(gameCode, team.id, questionIndex, {
         choiceIndex: choice,
+        choiceIndexes,
+        textAnswer: text,
         timeToLockMs: questionStartedAt === null ? null : Math.max(0, timer.elapsedMs),
       });
       setLockMessage(timedOut ? 'Out of time.' : 'Locked. Waiting for the room...');
@@ -315,7 +336,7 @@ function QuestionPanel({
 
   useEffect(() => {
     if (!timer.isExpired || lockedAnswerExists || isLocking) return;
-    void lockAnswer(null, true);
+    void lockAnswer(null, null, null, true);
   }, [timer.isExpired, lockedAnswerExists, isLocking, lockAnswer]);
 
   if (!question) {
@@ -328,6 +349,27 @@ function QuestionPanel({
 
   const locked = lockedAnswerExists || lockMessage === 'Locked. Waiting for the room...' || lockMessage === 'Out of time.';
   const pointValue = getPointsForQuestion(questions, questionIndex);
+  const isMultiSelect = question.type === 'multi_select';
+  const isFreeText = question.type === 'free_text';
+  const hasSelection = isFreeText ? textInput.trim().length > 0 : isMultiSelect ? selectedChoices.length > 0 : selectedChoice !== null;
+
+  function toggleChoice(index: ChoiceIndex) {
+    if (isMultiSelect) {
+      setSelectedChoices(previous => (previous.includes(index) ? previous.filter(value => value !== index) : [...previous, index]));
+    } else {
+      setSelectedChoice(index);
+    }
+  }
+
+  function submitLock() {
+    if (isFreeText) {
+      void lockAnswer(null, null, textInput.trim());
+    } else if (isMultiSelect) {
+      void lockAnswer(null, selectedChoices, null);
+    } else {
+      void lockAnswer(selectedChoice, null, null);
+    }
+  }
 
   return (
     <section className="page-card p-5 sm:p-6" aria-live="polite">
@@ -339,6 +381,10 @@ function QuestionPanel({
         <span className="border-2 border-brand-red px-3 py-2 font-black text-brand-red-light">Worth {pointValue} point{pointValue !== 1 ? 's' : ''}</span>
       </div>
 
+      {question.media?.type === 'image' && (
+        <img src={question.media.url} alt="" className="mt-4 max-h-64 w-full border-2 border-brand-ink object-contain" />
+      )}
+
       <div className="mt-5" role="timer" aria-label={`${timer.secondsRemaining} seconds remaining`}>
         <div className="flex items-center justify-between text-sm font-bold uppercase tracking-wide">
           <span>Timer</span>
@@ -349,30 +395,48 @@ function QuestionPanel({
         </div>
       </div>
 
-      <div className="mt-6 grid gap-3">
-        {question.choices.map((choice, index) => {
-          const choiceIndex = index as 0 | 1 | 2 | 3;
-          const selected = selectedChoice === choiceIndex;
-          return (
-            <button
-              key={choice}
-              type="button"
-              disabled={locked || timer.isExpired}
-              onClick={() => setSelectedChoice(choiceIndex)}
-              className={`min-h-16 border-2 px-4 py-3 text-left text-lg font-bold disabled:opacity-55 ${selected ? 'border-brand-red bg-brand-red text-white' : 'border-brand-ink bg-brand-surface text-brand-ink'}`}
-              aria-pressed={selected}
-            >
-              <span className="mr-3 font-black">{String.fromCharCode(65 + index)}.</span>
-              {choice}
-            </button>
-          );
-        })}
-      </div>
+      {isMultiSelect && <p className="mt-4 text-sm font-bold uppercase tracking-wide text-brand-paper">Select all that apply</p>}
+
+      {isFreeText ? (
+        <div className="mt-6">
+          <label className="sr-only" htmlFor="free-text-answer">Your answer</label>
+          <input
+            id="free-text-answer"
+            type="text"
+            value={textInput}
+            disabled={locked || timer.isExpired}
+            onChange={event => setTextInput(event.target.value)}
+            maxLength={200}
+            placeholder="Type your answer"
+            className="min-h-14 w-full border-2 border-brand-ink bg-brand-surface px-4 py-3 text-lg text-brand-ink disabled:opacity-55"
+          />
+        </div>
+      ) : (
+        <div className="mt-6 grid gap-3">
+          {question.choices.map((choice, index) => {
+            const choiceIndex = index as ChoiceIndex;
+            const selected = isMultiSelect ? selectedChoices.includes(choiceIndex) : selectedChoice === choiceIndex;
+            return (
+              <button
+                key={choice}
+                type="button"
+                disabled={locked || timer.isExpired}
+                onClick={() => toggleChoice(choiceIndex)}
+                className={`min-h-16 border-2 px-4 py-3 text-left text-lg font-bold disabled:opacity-55 ${selected ? 'border-brand-red bg-brand-red text-white' : 'border-brand-ink bg-brand-surface text-brand-ink'}`}
+                aria-pressed={selected}
+              >
+                <span className="mr-3 font-black">{String.fromCharCode(65 + index)}.</span>
+                {choice}
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       <button
         type="button"
-        disabled={locked || selectedChoice === null || timer.isExpired || isLocking}
-        onClick={() => void lockAnswer(selectedChoice)}
+        disabled={locked || !hasSelection || timer.isExpired || isLocking}
+        onClick={submitLock}
         className="mt-5 min-h-14 w-full border-2 border-brand-red bg-brand-red px-5 py-3 text-xl font-black text-white disabled:border-brand-paper/40 disabled:bg-brand-surface disabled:text-brand-paper/70"
       >
         {isLocking ? 'LOCKING...' : locked ? 'LOCKED' : 'LOCK IN'}
@@ -385,19 +449,58 @@ function QuestionPanel({
   );
 }
 
-function RevealPanel({ team, questions, questionIndex, answerChoice, pointsAwarded }: { team: Team; questions: readonly Question[]; questionIndex: number; answerChoice: 0 | 1 | 2 | 3 | null; pointsAwarded: number }) {
+function RevealPanel({ team, questions, questionIndex, answerChoice, answerChoiceIndexes, answerText, isCorrect, pointsAwarded }: {
+  team: Team;
+  questions: readonly Question[];
+  questionIndex: number;
+  answerChoice: ChoiceIndex | null;
+  answerChoiceIndexes: readonly ChoiceIndex[] | null;
+  answerText: string | null;
+  isCorrect: boolean | null;
+  pointsAwarded: number;
+}) {
   const question = getQuestionByIndex(questions, questionIndex);
   if (!question) return null;
-  const correct = answerChoice === question.answer;
+
+  if (question.type === 'free_text') {
+    const timedOut = answerText === null;
+    const correct = !timedOut && (isCorrect ?? false);
+    const displayPointsAwarded = correct ? Math.max(pointsAwarded, getPointsForQuestion(questions, questionIndex)) : 0;
+    return (
+      <section className="page-card p-6" aria-live="polite">
+        <p className="text-sm font-black uppercase tracking-wide text-brand-red-light">Reveal</p>
+        <h1 className="mt-3 text-3xl font-bold">{question.text}</h1>
+        {question.media?.type === 'image' && (
+          <img src={question.media.url} alt="" className="mt-4 max-h-64 w-full border-2 border-brand-ink object-contain" />
+        )}
+        <p className="mt-5 text-lg text-brand-paper">
+          Accepted answer{question.acceptedAnswers.length !== 1 ? 's' : ''}: {question.acceptedAnswers.join(', ')}
+        </p>
+        {answerText !== null && <p className="mt-2 text-lg font-bold">Your answer: {answerText || '(blank)'}</p>}
+        <p className="mt-5 text-2xl font-black">{timedOut ? 'Timed out.' : correct ? 'Correct!' : 'Not this time.'}</p>
+        <p className="mt-2 text-xl">+{displayPointsAwarded} points - Running total: {team.score}</p>
+      </section>
+    );
+  }
+
+  const isMultiSelect = question.type === 'multi_select';
+  const correctSet = new Set<ChoiceIndex>(isMultiSelect ? question.answers : [question.answer]);
+  const teamSet = new Set<ChoiceIndex>(isMultiSelect ? (answerChoiceIndexes ?? []) : (answerChoice === null ? [] : [answerChoice]));
+  const timedOut = isMultiSelect ? answerChoiceIndexes === null : answerChoice === null;
+  const correct = !timedOut && correctSet.size === teamSet.size && [...correctSet].every(value => teamSet.has(value));
   const displayPointsAwarded = correct ? Math.max(pointsAwarded, getPointsForQuestion(questions, questionIndex)) : 0;
   return (
     <section className="page-card p-6" aria-live="polite">
       <p className="text-sm font-black uppercase tracking-wide text-brand-red-light">Reveal</p>
       <h1 className="mt-3 text-3xl font-bold">{question.text}</h1>
+      {question.media?.type === 'image' && (
+        <img src={question.media.url} alt="" className="mt-4 max-h-64 w-full border-2 border-brand-ink object-contain" />
+      )}
       <div className="mt-5 grid gap-2">
         {question.choices.map((choice, index) => {
-          const isCorrect = index === question.answer;
-          const isTeamChoice = index === answerChoice;
+          const choiceIndex = index as ChoiceIndex;
+          const isCorrect = correctSet.has(choiceIndex);
+          const isTeamChoice = teamSet.has(choiceIndex);
           return (
             <div key={choice} className={`border-2 p-3 font-bold ${isCorrect ? 'border-brand-correct text-brand-correct' : isTeamChoice ? 'border-brand-red text-brand-red-light' : 'border-brand-ink/50 text-brand-paper'}`}>
               {String.fromCharCode(65 + index)}. {choice}
@@ -407,7 +510,7 @@ function RevealPanel({ team, questions, questionIndex, answerChoice, pointsAward
           );
         })}
       </div>
-      <p className="mt-5 text-2xl font-black">{answerChoice === null ? 'Timed out.' : correct ? 'Correct!' : 'Not this time.'}</p>
+      <p className="mt-5 text-2xl font-black">{timedOut ? 'Timed out.' : correct ? 'Correct!' : 'Not this time.'}</p>
       <p className="mt-2 text-xl">+{displayPointsAwarded} points - Running total: {team.score}</p>
     </section>
   );

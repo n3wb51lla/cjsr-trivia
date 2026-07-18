@@ -4,7 +4,7 @@ import { useQuestionTimer } from '../hooks/useQuestionTimer';
 import { DEFAULT_GAME_CODE } from '../lib/hostState';
 import { buildLeaderboard } from '../lib/leaderboard';
 import { getPointsForQuestion, getQuestionByIndex, resolveQuestions } from '../lib/triviaData';
-import type { Answer, LeaderboardEntry } from '../types';
+import type { Answer, ChoiceIndex, LeaderboardEntry, Question, QuestionMedia } from '../types';
 import logo from '../assets/logo.png';
 import { ThemeToggle } from '../components/common/ThemeToggle';
 import { siteConfig } from '../config/site';
@@ -38,7 +38,9 @@ export function ScreenPage() {
         <QuestionScreen
           questionIndex={question.id}
           questionText={question.text}
-          choices={question.choices}
+          questionType={question.type}
+          choices={question.type === 'free_text' ? null : question.choices}
+          media={question.media}
           points={getPointsForQuestion(questions, question.id)}
           secondsRemaining={timer.secondsRemaining}
           progress={timer.progress}
@@ -48,8 +50,11 @@ export function ScreenPage() {
       ) : phase === 'reveal' && question ? (
         <RevealScreen
           questionText={question.text}
-          choices={question.choices}
-          correctAnswer={question.answer}
+          questionType={question.type}
+          choices={question.type === 'free_text' ? null : question.choices}
+          media={question.media}
+          correctIndexes={question.type === 'free_text' ? null : question.type === 'multi_select' ? question.answers : [question.answer]}
+          acceptedAnswers={question.type === 'free_text' ? question.acceptedAnswers : null}
           answers={currentAnswers}
           leaderboard={leaderboard}
         />
@@ -101,7 +106,9 @@ function LobbyScreen({ teamCount, leaderboard }: { teamCount: number; leaderboar
 function QuestionScreen({
   questionIndex,
   questionText,
+  questionType,
   choices,
+  media,
   points,
   secondsRemaining,
   progress,
@@ -110,7 +117,9 @@ function QuestionScreen({
 }: {
   questionIndex: number;
   questionText: string;
-  choices: readonly [string, string, string, string];
+  questionType: Question['type'];
+  choices: readonly [string, string, string, string] | null;
+  media: QuestionMedia | null;
   points: number;
   secondsRemaining: number;
   progress: number;
@@ -121,7 +130,11 @@ function QuestionScreen({
     <section className="border-2 border-brand-red bg-brand-surface p-8">
       <div className="flex flex-wrap items-start justify-between gap-6">
         <div>
-          <p className="text-sm font-black uppercase tracking-wide text-brand-red-light">Question {questionIndex}</p>
+          <p className="text-sm font-black uppercase tracking-wide text-brand-red-light">
+            Question {questionIndex}
+            {questionType === 'multi_select' && ' — select all that apply'}
+            {questionType === 'free_text' && ' — type your answer'}
+          </p>
           <h1 className="mt-4 max-w-5xl text-5xl font-black leading-tight">{questionText}</h1>
         </div>
         <div className="border-2 border-brand-ink px-5 py-4 text-center">
@@ -130,14 +143,18 @@ function QuestionScreen({
         </div>
       </div>
 
-      <div className="mt-8 grid gap-3 sm:grid-cols-2">
-        {choices.map((choice, index) => (
-          <div key={choice} className="border-2 border-brand-ink/50 p-4 text-2xl font-bold text-brand-paper">
-            <span className="mr-3 font-black">{String.fromCharCode(65 + index)}.</span>
-            {choice}
-          </div>
-        ))}
-      </div>
+      <MediaClue media={media} />
+
+      {choices && (
+        <div className="mt-8 grid gap-3 sm:grid-cols-2">
+          {choices.map((choice, index) => (
+            <div key={choice} className="border-2 border-brand-ink/50 p-4 text-2xl font-bold text-brand-paper">
+              <span className="mr-3 font-black">{String.fromCharCode(65 + index)}.</span>
+              {choice}
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className="mt-8" role="timer" aria-label={`${secondsRemaining} seconds remaining`}>
         <div className="flex items-end justify-between gap-4">
@@ -154,31 +171,45 @@ function QuestionScreen({
 
 function RevealScreen({
   questionText,
+  questionType,
   choices,
-  correctAnswer,
+  media,
+  correctIndexes,
+  acceptedAnswers,
   answers,
   leaderboard,
 }: {
   questionText: string;
-  choices: readonly [string, string, string, string];
-  correctAnswer: 0 | 1 | 2 | 3;
+  questionType: Question['type'];
+  choices: readonly [string, string, string, string] | null;
+  media: QuestionMedia | null;
+  correctIndexes: readonly ChoiceIndex[] | null;
+  acceptedAnswers: readonly string[] | null;
   answers: readonly Answer[];
   leaderboard: LeaderboardEntry[];
 }) {
   const correctCount = answers.filter(answer => answer.isCorrect).length;
+  const correctSet = new Set(correctIndexes ?? []);
   return (
     <div className="grid gap-5 lg:grid-cols-[1.35fr_1fr]">
       <section className="border-2 border-brand-red bg-brand-surface p-8">
         <p className="text-sm font-black uppercase tracking-wide text-brand-red-light">Reveal</p>
         <h1 className="mt-3 text-4xl font-black leading-tight">{questionText}</h1>
-        <div className="mt-7 grid gap-3">
-          {choices.map((choice, index) => (
-            <div key={choice} className={`border-2 p-4 text-2xl font-bold ${index === correctAnswer ? 'border-brand-correct text-brand-correct' : 'border-brand-ink/50 text-brand-paper'}`}>
-              <span className="mr-3 font-black">{String.fromCharCode(65 + index)}.</span>
-              {choice}
-            </div>
-          ))}
-        </div>
+        <MediaClue media={media} />
+        {questionType === 'free_text' ? (
+          <p className="mt-7 text-2xl font-bold text-brand-paper">
+            Accepted answer{acceptedAnswers && acceptedAnswers.length !== 1 ? 's' : ''}: {acceptedAnswers?.join(', ')}
+          </p>
+        ) : (
+          <div className="mt-7 grid gap-3">
+            {choices?.map((choice, index) => (
+              <div key={choice} className={`border-2 p-4 text-2xl font-bold ${correctSet.has(index as ChoiceIndex) ? 'border-brand-correct text-brand-correct' : 'border-brand-ink/50 text-brand-paper'}`}>
+                <span className="mr-3 font-black">{String.fromCharCode(65 + index)}.</span>
+                {choice}
+              </div>
+            ))}
+          </div>
+        )}
         <p className="mt-6 text-2xl font-bold text-brand-paper">{correctCount} team{correctCount !== 1 ? 's' : ''} got it right</p>
       </section>
       <LeaderboardPanel leaderboard={leaderboard} title="Leaderboard" limit={8} />
@@ -226,6 +257,22 @@ function ScoreboardScreen({
       <LeaderboardPanel leaderboard={leaderboard} title="Scores" columns={2} projector />
     </section>
   );
+}
+
+function MediaClue({ media }: { media: QuestionMedia | null }) {
+  if (!media) return null;
+  if (media.type === 'video') {
+    return (
+      <video
+        key={media.url}
+        src={media.url}
+        controls
+        autoPlay
+        className="mt-6 max-h-[28rem] w-full border-2 border-brand-ink bg-brand-black object-contain"
+      />
+    );
+  }
+  return <img src={media.url} alt="" className="mt-6 max-h-[28rem] w-full border-2 border-brand-ink object-contain" />;
 }
 
 function LeaderboardPanel({

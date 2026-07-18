@@ -35,16 +35,42 @@ for (const question of questions) {
   if (indexes.has(question.id)) errors.push(`Duplicate question index: ${question.id}`);
   indexes.add(question.id);
 
-  if (!Array.isArray(question.choices) || question.choices.length !== 4) {
-    errors.push(`Question ${question.id} must have exactly four choices.`);
-  }
-
-  if (!Number.isInteger(question.answer) || question.answer < 0 || question.answer > 3) {
-    errors.push(`Question ${question.id} answer must be between 0 and 3.`);
+  const questionType = question.type ?? 'multiple_choice';
+  if (questionType !== 'multiple_choice' && questionType !== 'multi_select' && questionType !== 'free_text') {
+    errors.push(`Question ${question.id} type must be "multiple_choice", "multi_select", or "free_text".`);
+  } else if (questionType === 'free_text') {
+    if (!Array.isArray(question.acceptedAnswers) || question.acceptedAnswers.length < 1) {
+      errors.push(`Question ${question.id} acceptedAnswers must be a non-empty array of strings.`);
+    } else if (question.acceptedAnswers.some(answer => typeof answer !== 'string' || answer.trim().length === 0)) {
+      errors.push(`Question ${question.id} acceptedAnswers must each be a non-empty string.`);
+    }
+  } else {
+    if (!Array.isArray(question.choices) || question.choices.length !== 4) {
+      errors.push(`Question ${question.id} must have exactly four choices.`);
+    }
+    if (questionType === 'multi_select') {
+      if (!Array.isArray(question.answers) || question.answers.length < 1 || question.answers.length > 4) {
+        errors.push(`Question ${question.id} answers must be an array of 1-4 choice indexes.`);
+      } else if (question.answers.some(answer => !Number.isInteger(answer) || answer < 0 || answer > 3)) {
+        errors.push(`Question ${question.id} answers must each be between 0 and 3.`);
+      }
+    } else if (!Number.isInteger(question.answer) || question.answer < 0 || question.answer > 3) {
+      errors.push(`Question ${question.id} answer must be between 0 and 3.`);
+    }
   }
 
   if (typeof question.text !== 'string' || question.text.length > 140) {
     errors.push(`Question ${question.id} text must be a string under 140 characters.`);
+  }
+
+  if (question.media !== undefined && question.media !== null) {
+    const { type, url } = question.media;
+    if (type !== 'image' && type !== 'video') {
+      errors.push(`Question ${question.id} media type must be "image" or "video".`);
+    }
+    if (typeof url !== 'string' || url.length === 0) {
+      errors.push(`Question ${question.id} media url must be a non-empty string.`);
+    }
   }
 }
 
