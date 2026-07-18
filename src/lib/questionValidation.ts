@@ -132,7 +132,7 @@ function toInteger(value: unknown): number | null {
 function normalizeRound(value: unknown): Question['round'] | undefined {
   if (typeof value === 'string' && value.trim().toLowerCase().replace(/\s+/g, '') === 'suddendeath') return 'suddenDeath';
   const num = toInteger(value);
-  if (num !== null && num >= 1 && num <= 6) return num as 1 | 2 | 3 | 4 | 5 | 6;
+  if (num !== null && num >= 1) return num;
   return undefined;
 }
 

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { HostGate } from '../components/host/HostGate';
 import { useGameSubscription } from '../hooks/useGameSubscription';
 import { bulkWriteQuestions, ensureQuestionsSeeded, writeQuestion } from '../lib/firebaseData';
@@ -207,6 +207,7 @@ function ImportPanel({ questions }: { questions: readonly Question[] }) {
 function QuestionEditorRow({ question, onSave }: { question: Question; onSave: (question: Question) => Promise<void> }) {
   const isFreeText = question.type === 'free_text';
   const isMultiSelect = question.type === 'multi_select';
+  const syncedQuestionRef = useRef(question);
   const [text, setText] = useState(question.text);
   const [choices, setChoices] = useState<[string, string, string, string]>(question.type === 'free_text' ? ['', '', '', ''] : [...question.choices]);
   const [answer, setAnswer] = useState<ChoiceIndex>(question.type === 'multiple_choice' ? question.answer : 0);
@@ -218,15 +219,31 @@ function QuestionEditorRow({ question, onSave }: { question: Question; onSave: (
   const [isUploading, setIsUploading] = useState(false);
   const mediaUploadConfigured = isMediaUploadConfigured();
 
-  const parsedAcceptedAnswers = acceptedAnswersText.split('\n').map(line => line.trim()).filter(line => line !== '');
+  const parsedAcceptedAnswers = useMemo(
+    () => acceptedAnswersText.split('\n').map(line => line.trim()).filter(line => line !== ''),
+    [acceptedAnswersText],
+  );
+  const draft = useMemo(() => ({
+    text,
+    choices,
+    answer,
+    selectedAnswers,
+    acceptedAnswers: parsedAcceptedAnswers,
+    media,
+  }), [answer, choices, media, parsedAcceptedAnswers, selectedAnswers, text]);
+  const isDirty = isQuestionDraftDirty(syncedQuestionRef.current, draft);
 
-  const isDirty = text !== question.text
-    || media?.url !== question.media?.url
-    || media?.type !== question.media?.type
-    || (isFreeText
-      ? !sameStringSet(parsedAcceptedAnswers, question.acceptedAnswers)
-      : choices.some((choice, index) => choice !== question.choices[index])
-        || (isMultiSelect ? !sameChoiceSet(selectedAnswers, question.answers) : answer !== question.answer));
+  useEffect(() => {
+    if (syncedQuestionRef.current === question) return;
+    if (isQuestionDraftDirty(syncedQuestionRef.current, draft)) return;
+    syncedQuestionRef.current = question;
+    setText(question.text);
+    setChoices(question.type === 'free_text' ? ['', '', '', ''] : [...question.choices]);
+    setAnswer(question.type === 'multiple_choice' ? question.answer : 0);
+    setSelectedAnswers(question.type === 'multi_select' ? [...question.answers] : []);
+    setAcceptedAnswersText(question.type === 'free_text' ? question.acceptedAnswers.join('\n') : '');
+    setMedia(question.media);
+  }, [draft, question]);
 
   async function save() {
     if (!text.trim()) {
@@ -255,6 +272,7 @@ function QuestionEditorRow({ question, onSave }: { question: Question; onSave: (
           ? { id: question.id, round: question.round, text: text.trim(), choices: trimmedChoices, media, type: 'multi_select', answers: selectedAnswers }
           : { id: question.id, round: question.round, text: text.trim(), choices: trimmedChoices, media, type: 'multiple_choice', answer };
       await onSave(updated);
+      syncedQuestionRef.current = updated;
       setStatus('Saved.');
     } catch (caught) {
       setStatus(caught instanceof Error ? caught.message : 'Could not save question.');
@@ -392,4 +410,21 @@ function sameChoiceSet(a: readonly ChoiceIndex[], b: readonly ChoiceIndex[]): bo
 function sameStringSet(a: readonly string[], b: readonly string[]): boolean {
   if (a.length !== b.length) return false;
   return a.every((value, index) => value === b[index]);
+}
+
+function isQuestionDraftDirty(question: Question, draft: {
+  readonly text: string;
+  readonly choices: readonly [string, string, string, string];
+  readonly answer: ChoiceIndex;
+  readonly selectedAnswers: readonly ChoiceIndex[];
+  readonly acceptedAnswers: readonly string[];
+  readonly media: QuestionMedia | null;
+}): boolean {
+  return draft.text !== question.text
+    || draft.media?.url !== question.media?.url
+    || draft.media?.type !== question.media?.type
+    || (question.type === 'free_text'
+      ? !sameStringSet(draft.acceptedAnswers, question.acceptedAnswers)
+      : draft.choices.some((choice, index) => choice !== question.choices[index])
+        || (question.type === 'multi_select' ? !sameChoiceSet(draft.selectedAnswers, question.answers) : draft.answer !== question.answer));
 }

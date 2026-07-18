@@ -363,7 +363,7 @@ function parsePhase(value: unknown): Game['phase'] {
 
 function parseCurrentRound(value: unknown): Game['currentRound'] {
   if (value === 'suddenDeath' || value === 'sudden_death') return 'suddenDeath';
-  if (value === 1 || value === 2 || value === 3 || value === 4 || value === 5 || value === 6) return value;
+  if (typeof value === 'number' && Number.isInteger(value) && value >= 1) return value;
   return null;
 }
 
@@ -384,7 +384,8 @@ function parseChoiceIndexes(value: unknown): Answer['choiceIndexes'] {
 }
 
 function parseQuestionRound(value: unknown): Question['round'] {
-  if (value === 'suddenDeath' || value === 1 || value === 2 || value === 3 || value === 4 || value === 5 || value === 6) return value;
+  if (value === 'suddenDeath') return value;
+  if (typeof value === 'number' && Number.isInteger(value) && value >= 1) return value;
   return 1;
 }
 
