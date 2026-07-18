@@ -35,16 +35,16 @@ function QuestionsEditor() {
 
   return (
     <section className="page-card p-6">
-      <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Host controls</p>
+      <p className="text-sm font-black uppercase tracking-wide text-brand-red-light">Host controls</p>
       <h1 className="mt-2 font-display text-4xl leading-tight">Question editor</h1>
-      <p className="mt-3 max-w-2xl text-cjsr-paper">
+      <p className="mt-3 max-w-2xl text-brand-paper">
         Round and point value are fixed. Edit the question text, the four choices, and mark the correct answer.
       </p>
 
       {isSeeding ? (
-        <p className="mt-6 text-lg text-cjsr-paper">Loading question bank...</p>
+        <p className="mt-6 text-lg text-brand-paper">Loading question bank...</p>
       ) : seedError ? (
-        <p className="mt-6 font-bold text-cjsr-red-light" role="alert">{seedError}</p>
+        <p className="mt-6 font-bold text-brand-red-light" role="alert">{seedError}</p>
       ) : (
         ROUND_ORDER.map(round => {
           const roundQuestions = questions.filter(question => question.round === round);
@@ -52,9 +52,9 @@ function QuestionsEditor() {
           const points = round === 'suddenDeath' ? SUDDEN_DEATH_POINTS : getPointsForRound(round);
           return (
             <section key={round} className="mt-8">
-              <h2 className="border-b-2 border-cjsr-ink/50 pb-1 font-display text-2xl uppercase">
+              <h2 className="border-b-2 border-brand-ink/50 pb-1 font-display text-2xl uppercase">
                 {round === 'suddenDeath' ? 'Sudden death' : `Round ${round}`}
-                <span className="ml-2 text-base font-bold normal-case text-cjsr-paper">
+                <span className="ml-2 text-base font-bold normal-case text-brand-paper">
                   ({points} pt{points !== 1 ? 's' : ''} each)
                 </span>
               </h2>
@@ -103,8 +103,8 @@ function QuestionEditorRow({ question, onSave }: { question: Question; onSave: (
   }
 
   return (
-    <li className="border-2 border-cjsr-ink/50 p-4">
-      <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Q{question.id}</p>
+    <li className="border-2 border-brand-ink/50 p-4">
+      <p className="text-sm font-black uppercase tracking-wide text-brand-red-light">Q{question.id}</p>
       <label className="sr-only" htmlFor={`question-${question.id}-text`}>Question text</label>
       <textarea
         id={`question-${question.id}-text`}
@@ -112,12 +112,12 @@ function QuestionEditorRow({ question, onSave }: { question: Question; onSave: (
         maxLength={140}
         rows={2}
         onChange={event => setText(event.target.value)}
-        className="mt-2 w-full border-2 border-cjsr-ink bg-cjsr-black px-3 py-2 text-cjsr-ink"
+        className="mt-2 w-full border-2 border-brand-ink bg-brand-black px-3 py-2 text-brand-ink"
       />
       <fieldset className="mt-3 grid gap-2 sm:grid-cols-2">
         <legend className="sr-only">Choices, with the correct one selected</legend>
         {choices.map((choice, index) => (
-          <label key={index} className="flex items-center gap-2 border border-cjsr-ink/50 p-2">
+          <label key={index} className="flex items-center gap-2 border border-brand-ink/50 p-2">
             <input
               type="radio"
               name={`question-${question.id}-answer`}
@@ -131,7 +131,7 @@ function QuestionEditorRow({ question, onSave }: { question: Question; onSave: (
               id={`question-${question.id}-choice-${index}`}
               value={choice}
               onChange={event => setChoices(previous => previous.map((current, i) => (i === index ? event.target.value : current)) as [string, string, string, string])}
-              className="min-w-0 flex-1 border border-cjsr-ink/50 bg-cjsr-black px-2 py-1 text-cjsr-ink"
+              className="min-w-0 flex-1 border border-brand-ink/50 bg-brand-black px-2 py-1 text-brand-ink"
             />
           </label>
         ))}
@@ -141,11 +141,11 @@ function QuestionEditorRow({ question, onSave }: { question: Question; onSave: (
           type="button"
           disabled={busy || !isDirty}
           onClick={() => void save()}
-          className="min-h-10 border-2 border-cjsr-red bg-cjsr-red px-4 py-2 font-black text-white disabled:border-cjsr-paper/40 disabled:bg-cjsr-surface disabled:text-cjsr-paper/70"
+          className="min-h-10 border-2 border-brand-red bg-brand-red px-4 py-2 font-black text-white disabled:border-brand-paper/40 disabled:bg-brand-surface disabled:text-brand-paper/70"
         >
           {busy ? 'Saving...' : 'Save'}
         </button>
-        {status && <span className="text-sm font-bold text-cjsr-paper">{status}</span>}
+        {status && <span className="text-sm font-bold text-brand-paper">{status}</span>}
       </div>
     </li>
   );

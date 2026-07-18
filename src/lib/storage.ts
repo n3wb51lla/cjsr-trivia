@@ -1,4 +1,6 @@
-const TEAM_ID_KEY = 'cjsr-trivia.teamId';
+import { siteConfig } from '../config/site';
+
+const TEAM_ID_KEY = siteConfig.teamIdStorageKey;
 
 export function getStoredTeamId(): string | null {
   return window.localStorage.getItem(TEAM_ID_KEY);

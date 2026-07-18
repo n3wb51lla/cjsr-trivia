@@ -4,16 +4,16 @@ export default {
   theme: {
     extend: {
       colors: {
-        cjsr: {
-          red: 'var(--color-cjsr-red)',
-          'red-light': 'var(--color-cjsr-red-light)',
-          black: 'var(--color-cjsr-black)',
-          surface: 'var(--color-cjsr-surface)',
-          ink: 'var(--color-cjsr-ink)',
-          correct: 'var(--color-cjsr-correct)',
-          yellow: 'var(--color-cjsr-yellow)',
-          cyan: 'var(--color-cjsr-cyan)',
-          paper: 'var(--color-cjsr-paper)',
+        brand: {
+          red: 'var(--color-brand-red)',
+          'red-light': 'var(--color-brand-red-light)',
+          black: 'var(--color-brand-black)',
+          surface: 'var(--color-brand-surface)',
+          ink: 'var(--color-brand-ink)',
+          correct: 'var(--color-brand-correct)',
+          yellow: 'var(--color-brand-yellow)',
+          cyan: 'var(--color-brand-cyan)',
+          paper: 'var(--color-brand-paper)',
         },
       },
       fontFamily: {

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 export type Theme = 'dark' | 'light';
 
-const STORAGE_KEY = 'cjsr-theme';
+const STORAGE_KEY = import.meta.env.VITE_THEME_STORAGE_KEY || 'trivia-theme';
 
 function readInitialTheme(): Theme {
   return document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';

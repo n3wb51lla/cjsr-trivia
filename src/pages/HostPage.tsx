@@ -104,7 +104,7 @@ export function HostPage() {
       <section className="page-card p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Host controls</p>
+            <p className="text-sm font-black uppercase tracking-wide text-brand-red-light">Host controls</p>
             <h1 className="mt-2 font-display text-4xl leading-tight">Control desk</h1>
           </div>
           <ConnectionBadge status={status} error={error?.message ?? null} />
@@ -117,61 +117,61 @@ export function HostPage() {
         </div>
 
         {isQuestionLive && (
-          <section className="mt-6 border-2 border-cjsr-ink p-4" aria-live="polite">
+          <section className="mt-6 border-2 border-brand-ink p-4" aria-live="polite">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Live lock status</p>
+                <p className="text-sm font-black uppercase tracking-wide text-brand-red-light">Live lock status</p>
                 <h2 className="mt-1 text-2xl font-bold">{lockedCount} / {activeTeams.length} teams locked</h2>
               </div>
               <div className="text-right">
-                <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Timer</p>
+                <p className="text-sm font-black uppercase tracking-wide text-brand-red-light">Timer</p>
                 <p className="text-3xl font-black">{timer.secondsRemaining}s</p>
               </div>
             </div>
-            <div className="mt-4 h-4 border-2 border-cjsr-ink bg-cjsr-black" role="timer" aria-label={`${timer.secondsRemaining} seconds remaining`}>
-              <div className="h-full bg-cjsr-red transition-[width]" style={{ width: `${Math.round(timer.progress * 100)}%` }} />
+            <div className="mt-4 h-4 border-2 border-brand-ink bg-brand-black" role="timer" aria-label={`${timer.secondsRemaining} seconds remaining`}>
+              <div className="h-full bg-brand-red transition-[width]" style={{ width: `${Math.round(timer.progress * 100)}%` }} />
             </div>
             {unlockedTeams.length > 0 ? (
-              <p className="mt-3 text-sm font-bold text-cjsr-paper">
+              <p className="mt-3 text-sm font-bold text-brand-paper">
                 Waiting on: {unlockedTeams.map(team => team.teamName).join(', ')}
               </p>
             ) : (
-              <p className="mt-3 text-sm font-bold text-cjsr-correct">All active teams are locked.</p>
+              <p className="mt-3 text-sm font-bold text-brand-correct">All active teams are locked.</p>
             )}
-            {!canAdvance && <p className="mt-3 text-sm font-bold text-cjsr-paper">Advance unlocks when all teams lock or the timer expires.</p>}
+            {!canAdvance && <p className="mt-3 text-sm font-bold text-brand-paper">Advance unlocks when all teams lock or the timer expires.</p>}
           </section>
         )}
 
         {question ? (
-          <section className="mt-6 border-2 border-cjsr-ink p-4">
-            <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Current question</p>
+          <section className="mt-6 border-2 border-brand-ink p-4">
+            <p className="text-sm font-black uppercase tracking-wide text-brand-red-light">Current question</p>
             <h2 className="mt-2 text-2xl font-bold">{question.text}</h2>
-            <p className="mt-3 text-lg text-cjsr-correct">Correct: {question.choices[question.answer]}</p>
+            <p className="mt-3 text-lg text-brand-correct">Correct: {question.choices[question.answer]}</p>
           </section>
         ) : (
-          <p className="mt-6 text-lg text-cjsr-paper">Initialize the lobby, then start question 1.</p>
+          <p className="mt-6 text-lg text-brand-paper">Initialize the lobby, then start question 1.</p>
         )}
 
         <div className="mt-6 flex flex-wrap gap-3">
-          <button type="button" disabled={busy} onClick={initializeLobby} className="min-h-11 border-2 border-cjsr-ink px-5 py-2 font-bold disabled:opacity-50">
+          <button type="button" disabled={busy} onClick={initializeLobby} className="min-h-11 border-2 border-brand-ink px-5 py-2 font-bold disabled:opacity-50">
             Initialize lobby
           </button>
-          <button type="button" disabled={busy || !canAdvance} onClick={() => void advance()} className="min-h-11 border-2 border-cjsr-red bg-cjsr-red px-5 py-2 font-black text-white disabled:opacity-50">
+          <button type="button" disabled={busy || !canAdvance} onClick={() => void advance()} className="min-h-11 border-2 border-brand-red bg-brand-red px-5 py-2 font-black text-white disabled:opacity-50">
             {getHostButtonLabel(meta)}
           </button>
           {isQuestionLive && (
-            <button type="button" disabled={busy} onClick={() => void advance(true)} className="min-h-11 border-2 border-cjsr-ink px-5 py-2 font-bold disabled:opacity-50">
+            <button type="button" disabled={busy} onClick={() => void advance(true)} className="min-h-11 border-2 border-brand-ink px-5 py-2 font-bold disabled:opacity-50">
               Force reveal
             </button>
           )}
-          <button type="button" disabled={busy} onClick={skipToFinals} className="min-h-11 border-2 border-cjsr-ink px-5 py-2 font-bold disabled:opacity-50">
+          <button type="button" disabled={busy} onClick={skipToFinals} className="min-h-11 border-2 border-brand-ink px-5 py-2 font-bold disabled:opacity-50">
             Skip to finals
           </button>
-          <button type="button" disabled={busy} onClick={resetStateOnly} className="min-h-11 border-2 border-cjsr-red px-5 py-2 font-bold text-cjsr-red-light disabled:opacity-50">
+          <button type="button" disabled={busy} onClick={resetStateOnly} className="min-h-11 border-2 border-brand-red px-5 py-2 font-bold text-brand-red-light disabled:opacity-50">
             Reset game
           </button>
         </div>
-        {message && <p className="mt-4 font-bold text-cjsr-red-light" role="status">{message}</p>}
+        {message && <p className="mt-4 font-bold text-brand-red-light" role="status">{message}</p>}
       </section>
 
       <ScorekeeperPanel
@@ -205,28 +205,28 @@ function ScorekeeperPanel({
   return (
     <aside className="page-card p-5">
       <h2 className="font-display text-2xl">Scores & teams</h2>
-      <p className="mt-1 text-cjsr-paper">{teams.length} active team{teams.length !== 1 ? 's' : ''}</p>
+      <p className="mt-1 text-brand-paper">{teams.length} active team{teams.length !== 1 ? 's' : ''}</p>
       <ol className="mt-4 space-y-3">
         {leaderboard.map(entry => {
           const team = teams.find(candidate => candidate.id === entry.teamId);
           if (!team) return null;
           return (
-            <li key={team.id} className="border border-cjsr-ink/50 p-3">
+            <li key={team.id} className="border border-brand-ink/50 p-3">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <span className="font-bold">#{entry.rank} {team.teamName}</span>
-                  <span className="block text-sm text-cjsr-paper">
+                  <span className="block text-sm text-brand-paper">
                     {team.playerCount} player{team.playerCount !== 1 ? 's' : ''}{entry.isTiedOnScore && ' - tied'}
                   </span>
                 </div>
-                <span className="text-2xl font-black text-cjsr-red-light">{team.score}</span>
+                <span className="text-2xl font-black text-brand-red-light">{team.score}</span>
               </div>
               <div className="mt-3 grid grid-cols-[auto_1fr_auto_auto] items-center gap-2">
                 <button
                   type="button"
                   disabled={busy || team.score <= 0}
                   onClick={() => void onScoreChange(team, team.score - 1)}
-                  className="min-h-10 border border-cjsr-ink px-3 py-1 font-black disabled:border-neutral-700 disabled:text-neutral-500"
+                  className="min-h-10 border border-brand-ink px-3 py-1 font-black disabled:border-neutral-700 disabled:text-neutral-500"
                   aria-label={`Subtract one point from ${team.teamName}`}
                 >
                   -1
@@ -250,13 +250,13 @@ function ScorekeeperPanel({
                   onKeyDown={event => {
                     if (event.key === 'Enter') event.currentTarget.blur();
                   }}
-                  className="min-h-10 w-full border border-cjsr-ink/50 bg-cjsr-black px-2 py-1 text-center font-bold text-cjsr-ink disabled:opacity-50"
+                  className="min-h-10 w-full border border-brand-ink/50 bg-brand-black px-2 py-1 text-center font-bold text-brand-ink disabled:opacity-50"
                 />
                 <button
                   type="button"
                   disabled={busy}
                   onClick={() => void onScoreChange(team, team.score + 1)}
-                  className="min-h-10 border border-cjsr-ink px-3 py-1 font-black disabled:border-neutral-700 disabled:text-neutral-500"
+                  className="min-h-10 border border-brand-ink px-3 py-1 font-black disabled:border-neutral-700 disabled:text-neutral-500"
                   aria-label={`Add one point to ${team.teamName}`}
                 >
                   +1
@@ -265,7 +265,7 @@ function ScorekeeperPanel({
                   type="button"
                   disabled={busy || !canKick}
                   onClick={() => void onKick(team)}
-                  className="min-h-10 border border-cjsr-red px-2 py-1 text-xs font-black uppercase tracking-wide text-cjsr-red-light disabled:border-neutral-700 disabled:text-neutral-500"
+                  className="min-h-10 border border-brand-red px-2 py-1 text-xs font-black uppercase tracking-wide text-brand-red-light disabled:border-neutral-700 disabled:text-neutral-500"
                 >
                   Kick
                 </button>
@@ -274,16 +274,16 @@ function ScorekeeperPanel({
           );
         })}
       </ol>
-      {teams.length === 0 && <p className="mt-4 text-sm font-bold text-cjsr-paper">No active teams in the lobby.</p>}
-      {!canKick && teams.length > 0 && <p className="mt-3 text-sm text-cjsr-paper">Kicking is available in the lobby only. Score edits are available any time.</p>}
+      {teams.length === 0 && <p className="mt-4 text-sm font-bold text-brand-paper">No active teams in the lobby.</p>}
+      {!canKick && teams.length > 0 && <p className="mt-3 text-sm text-brand-paper">Kicking is available in the lobby only. Score edits are available any time.</p>}
     </aside>
   );
 }
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="border-2 border-cjsr-ink p-3">
-      <p className="text-xs font-black uppercase tracking-wide text-cjsr-red-light">{label}</p>
+    <div className="border-2 border-brand-ink p-3">
+      <p className="text-xs font-black uppercase tracking-wide text-brand-red-light">{label}</p>
       <p className="mt-1 text-xl font-bold">{value}</p>
     </div>
   );
@@ -293,7 +293,7 @@ function ConnectionBadge({ status, error }: { status: string; error: string | nu
   return (
     <div className="text-right text-sm" aria-live="polite">
       <p className="font-black uppercase tracking-wide">Connection: {status}</p>
-      {error && <p className="text-cjsr-red-light">{error}</p>}
+      {error && <p className="text-brand-red-light">{error}</p>}
     </div>
   );
 }

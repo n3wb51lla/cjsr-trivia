@@ -3,11 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#6F0B00" />
-    <title>CJSR Volunteer Appreciation Trivia</title>
+    <meta name="theme-color" content="%VITE_THEME_COLOR%" />
+    <title>%VITE_SITE_TITLE%</title>
     <script>
       (function () {
-        var stored = localStorage.getItem('cjsr-theme');
+        var stored = localStorage.getItem('%VITE_THEME_STORAGE_KEY%');
         document.documentElement.dataset.theme = stored === 'light' ? 'light' : 'dark';
       })();
     </script>

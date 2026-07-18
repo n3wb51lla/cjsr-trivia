@@ -7,6 +7,7 @@ import { buildLeaderboard } from '../lib/leaderboard';
 import { DEFAULT_GAME_CODE } from '../lib/hostState';
 import { clearStoredTeamId, getStoredTeamId, storeTeamId } from '../lib/storage';
 import { getPointsForQuestion, getQuestionByIndex, OVERFLOW_TEAM_NAMES, resolveQuestions, TEAM_NAMES } from '../lib/triviaData';
+import { siteConfig } from '../config/site';
 
 type PlayerCount = 1 | 2 | 3 | 4;
 
@@ -120,9 +121,9 @@ export function PlayerPage() {
     return (
       <PlayerShell status={status} error={error?.message ?? null}>
         <section className="page-card p-6" aria-live="polite">
-          <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Question in progress</p>
+          <p className="text-sm font-black uppercase tracking-wide text-brand-red-light">Question in progress</p>
           <h1 className="mt-3 font-display text-4xl leading-tight">You'll be able to join as soon as this question wraps up.</h1>
-          <p className="mt-4 text-lg text-cjsr-paper">
+          <p className="mt-4 text-lg text-brand-paper">
             Keep this page open. It will update automatically when joining reopens.
           </p>
         </section>
@@ -133,10 +134,10 @@ export function PlayerPage() {
   return (
     <PlayerShell status={status} error={error?.message ?? null}>
       <section className="page-card p-5 sm:p-6">
-        <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Player join</p>
-        <h1 className="mt-3 font-display text-4xl leading-tight">Join CJSR Volunteer Appreciation Trivia</h1>
-        <p className="mt-4 max-w-2xl text-lg text-cjsr-paper">
-          Thirty questions, one hour, no pee breaks. Stakes climb as we go, so pace yourself. Each team has 15 seconds to answer AND LOCK IN their answers. Don't forget to lock in your answers or they won't count and your huge brains will feel bad about it. We're dialed in on Canadian music from the deep past through to present day. As radio aficionados, you all SHOULD ace this. Don't let me down. Most points at the end take it all. The prizes are CJSR swag and glory, sweet sweet glory.
+        <p className="text-sm font-black uppercase tracking-wide text-brand-red-light">Player join</p>
+        <h1 className="mt-3 font-display text-4xl leading-tight">{siteConfig.joinHeadline}</h1>
+        <p className="mt-4 max-w-2xl text-lg text-brand-paper">
+          {siteConfig.joinDescription}
         </p>
 
         <fieldset className="mt-6">
@@ -146,7 +147,7 @@ export function PlayerPage() {
               <button
                 key={count}
                 type="button"
-                className={`min-h-14 border-2 px-3 py-2 text-xl font-black ${playerCount === count ? 'border-cjsr-red bg-cjsr-red text-white' : 'border-cjsr-ink bg-cjsr-surface text-cjsr-ink'}`}
+                className={`min-h-14 border-2 px-3 py-2 text-xl font-black ${playerCount === count ? 'border-brand-red bg-brand-red text-white' : 'border-brand-ink bg-brand-surface text-brand-ink'}`}
                 onClick={() => setPlayerCount(count)}
                 aria-pressed={playerCount === count}
               >
@@ -159,7 +160,7 @@ export function PlayerPage() {
         <section className="mt-7">
           <h2 className="font-display text-2xl">Choose a team name</h2>
           {isPrimaryListFull && (
-            <p className="mt-2 text-sm font-bold text-cjsr-paper">More names unlocked because the first 20 are full.</p>
+            <p className="mt-2 text-sm font-bold text-brand-paper">More names unlocked because the first 20 are full.</p>
           )}
           <div className="mt-3 grid gap-2 sm:grid-cols-2">
             {availableTeamNames.map(teamName => {
@@ -170,7 +171,7 @@ export function PlayerPage() {
                   type="button"
                   disabled={taken || !playerCount || joiningName !== null}
                   onClick={() => void handleJoin(teamName)}
-                  className="min-h-14 border-2 border-cjsr-ink bg-cjsr-surface px-4 py-3 text-left font-bold text-cjsr-ink disabled:border-cjsr-paper/40 disabled:bg-cjsr-surface disabled:text-cjsr-paper/70"
+                  className="min-h-14 border-2 border-brand-ink bg-brand-surface px-4 py-3 text-left font-bold text-brand-ink disabled:border-brand-paper/40 disabled:bg-brand-surface disabled:text-brand-paper/70"
                 >
                   <span>{teamName}</span>
                   {taken && <span className="ml-2 text-sm uppercase tracking-wide">(taken)</span>}
@@ -181,7 +182,7 @@ export function PlayerPage() {
           </div>
         </section>
 
-        {message && <p className="mt-4 font-bold text-cjsr-red-light" role="status">{message}</p>}
+        {message && <p className="mt-4 font-bold text-brand-red-light" role="status">{message}</p>}
         <TerritoryText />
       </section>
     </PlayerShell>
@@ -194,7 +195,7 @@ function FinalPanel({ team, leaderboard }: { team: Team | null; leaderboard: Lea
 
   return (
     <section className="page-card p-6" aria-live="polite">
-      <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Final standings</p>
+      <p className="text-sm font-black uppercase tracking-wide text-brand-red-light">Final standings</p>
       <h1 className="mt-3 font-display text-4xl leading-tight">
         {teamEntry ? `${teamEntry.teamName}: #${teamEntry.rank}` : winner ? `${winner.teamName} wins!` : 'Thanks for playing!'}
       </h1>
@@ -209,7 +210,7 @@ function FinalPanel({ team, leaderboard }: { team: Team | null; leaderboard: Lea
         {leaderboard.slice(0, 10).map(entry => (
           <li
             key={entry.teamId}
-            className={`grid grid-cols-[3rem_1fr_auto] items-center gap-3 border-2 p-3 ${entry.teamId === team?.id ? 'border-cjsr-red bg-cjsr-red text-white' : 'border-cjsr-ink/50 bg-cjsr-surface text-cjsr-ink'}`}
+            className={`grid grid-cols-[3rem_1fr_auto] items-center gap-3 border-2 p-3 ${entry.teamId === team?.id ? 'border-brand-red bg-brand-red text-white' : 'border-brand-ink/50 bg-brand-surface text-brand-ink'}`}
           >
             <span className="text-xl font-black">#{entry.rank}</span>
             <span className="min-w-0 font-bold">{entry.teamName}</span>
@@ -217,7 +218,7 @@ function FinalPanel({ team, leaderboard }: { team: Team | null; leaderboard: Lea
           </li>
         ))}
       </ol>
-      {leaderboard.length === 0 && <p className="mt-4 text-lg text-cjsr-paper">No teams joined this game.</p>}
+      {leaderboard.length === 0 && <p className="mt-4 text-lg text-brand-paper">No teams joined this game.</p>}
       <TerritoryText />
     </section>
   );
@@ -291,10 +292,10 @@ function QuestionPanel({
     <section className="page-card p-5 sm:p-6" aria-live="polite">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Question {questionIndex}</p>
+          <p className="text-sm font-black uppercase tracking-wide text-brand-red-light">Question {questionIndex}</p>
           <h1 className="mt-2 text-3xl font-bold leading-tight">{question.text}</h1>
         </div>
-        <span className="border-2 border-cjsr-red px-3 py-2 font-black text-cjsr-red-light">Worth {pointValue} point{pointValue !== 1 ? 's' : ''}</span>
+        <span className="border-2 border-brand-red px-3 py-2 font-black text-brand-red-light">Worth {pointValue} point{pointValue !== 1 ? 's' : ''}</span>
       </div>
 
       <div className="mt-5" role="timer" aria-label={`${timer.secondsRemaining} seconds remaining`}>
@@ -302,8 +303,8 @@ function QuestionPanel({
           <span>Timer</span>
           <span>{timer.secondsRemaining}s</span>
         </div>
-        <div className="mt-2 h-4 border-2 border-cjsr-ink bg-cjsr-black">
-          <div className="h-full bg-cjsr-red transition-[width]" style={{ width: `${Math.round(timer.progress * 100)}%` }} />
+        <div className="mt-2 h-4 border-2 border-brand-ink bg-brand-black">
+          <div className="h-full bg-brand-red transition-[width]" style={{ width: `${Math.round(timer.progress * 100)}%` }} />
         </div>
       </div>
 
@@ -317,7 +318,7 @@ function QuestionPanel({
               type="button"
               disabled={locked || timer.isExpired}
               onClick={() => setSelectedChoice(choiceIndex)}
-              className={`min-h-16 border-2 px-4 py-3 text-left text-lg font-bold disabled:opacity-55 ${selected ? 'border-cjsr-red bg-cjsr-red text-white' : 'border-cjsr-ink bg-cjsr-surface text-cjsr-ink'}`}
+              className={`min-h-16 border-2 px-4 py-3 text-left text-lg font-bold disabled:opacity-55 ${selected ? 'border-brand-red bg-brand-red text-white' : 'border-brand-ink bg-brand-surface text-brand-ink'}`}
               aria-pressed={selected}
             >
               <span className="mr-3 font-black">{String.fromCharCode(65 + index)}.</span>
@@ -331,12 +332,12 @@ function QuestionPanel({
         type="button"
         disabled={locked || selectedChoice === null || timer.isExpired || isLocking}
         onClick={() => void lockAnswer(selectedChoice)}
-        className="mt-5 min-h-14 w-full border-2 border-cjsr-red bg-cjsr-red px-5 py-3 text-xl font-black text-white disabled:border-cjsr-paper/40 disabled:bg-cjsr-surface disabled:text-cjsr-paper/70"
+        className="mt-5 min-h-14 w-full border-2 border-brand-red bg-brand-red px-5 py-3 text-xl font-black text-white disabled:border-brand-paper/40 disabled:bg-brand-surface disabled:text-brand-paper/70"
       >
         {isLocking ? 'LOCKING...' : locked ? 'LOCKED' : 'LOCK IN'}
       </button>
 
-      <p className="mt-4 font-bold text-cjsr-paper" role="status">
+      <p className="mt-4 font-bold text-brand-paper" role="status">
         {lockMessage ?? (lockedAnswerExists ? 'Locked. Waiting for the room...' : `${lockedCount} / ${teamCount} teams locked`)}
       </p>
     </section>
@@ -350,14 +351,14 @@ function RevealPanel({ team, questions, questionIndex, answerChoice, pointsAward
   const displayPointsAwarded = correct ? Math.max(pointsAwarded, getPointsForQuestion(questions, questionIndex)) : 0;
   return (
     <section className="page-card p-6" aria-live="polite">
-      <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Reveal</p>
+      <p className="text-sm font-black uppercase tracking-wide text-brand-red-light">Reveal</p>
       <h1 className="mt-3 text-3xl font-bold">{question.text}</h1>
       <div className="mt-5 grid gap-2">
         {question.choices.map((choice, index) => {
           const isCorrect = index === question.answer;
           const isTeamChoice = index === answerChoice;
           return (
-            <div key={choice} className={`border-2 p-3 font-bold ${isCorrect ? 'border-cjsr-correct text-cjsr-correct' : isTeamChoice ? 'border-cjsr-red text-cjsr-red-light' : 'border-cjsr-ink/50 text-cjsr-paper'}`}>
+            <div key={choice} className={`border-2 p-3 font-bold ${isCorrect ? 'border-brand-correct text-brand-correct' : isTeamChoice ? 'border-brand-red text-brand-red-light' : 'border-brand-ink/50 text-brand-paper'}`}>
               {String.fromCharCode(65 + index)}. {choice}
               {isCorrect && ' (correct)'}
               {isTeamChoice && !isCorrect && ' (your answer)'}
@@ -375,8 +376,8 @@ function PlayerShell({ children, status, error }: { children: React.ReactNode; s
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-2 text-sm" aria-live="polite">
-        <span className="border border-cjsr-red px-2 py-1 font-bold uppercase tracking-wide">Connection: {status}</span>
-        {error && <span className="text-cjsr-red-light">{error}</span>}
+        <span className="border border-brand-red px-2 py-1 font-bold uppercase tracking-wide">Connection: {status}</span>
+        {error && <span className="text-brand-red-light">{error}</span>}
       </div>
       {children}
     </div>
@@ -386,30 +387,31 @@ function PlayerShell({ children, status, error }: { children: React.ReactNode; s
 function LobbyPanel({ team, phase, canLeave, onLeave }: { team: Team; phase: string; canLeave: boolean; onLeave: () => void }) {
   return (
     <section className="page-card p-6" aria-live="polite">
-      <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">You're in</p>
+      <p className="text-sm font-black uppercase tracking-wide text-brand-red-light">You're in</p>
       <h1 className="mt-3 font-display text-4xl leading-tight">{team.teamName}</h1>
-      <p className="mt-4 text-lg text-cjsr-paper">
+      <p className="mt-4 text-lg text-brand-paper">
         {team.playerCount} player{team.playerCount !== 1 ? 's' : ''}. Watch the screen for the next instruction.
       </p>
-      <p className="mt-4 text-sm uppercase tracking-wide text-cjsr-paper">Current game state: {phase}</p>
+      <p className="mt-4 text-sm uppercase tracking-wide text-brand-paper">Current game state: {phase}</p>
       <button
         type="button"
         disabled={!canLeave}
         onClick={onLeave}
-        className="mt-6 min-h-11 border-2 border-cjsr-red px-4 py-2 font-bold text-cjsr-ink disabled:border-neutral-600 disabled:text-neutral-500"
+        className="mt-6 min-h-11 border-2 border-brand-red px-4 py-2 font-bold text-brand-ink disabled:border-neutral-600 disabled:text-neutral-500"
       >
         Leave / change team
       </button>
-      {!canLeave && <p className="mt-3 text-sm text-cjsr-paper">Team changes are locked outside the lobby.</p>}
+      {!canLeave && <p className="mt-3 text-sm text-brand-paper">Team changes are locked outside the lobby.</p>}
       <TerritoryText />
     </section>
   );
 }
 
 function TerritoryText() {
+  if (!siteConfig.territoryText) return null;
   return (
-    <p className="mt-6 max-w-3xl text-sm text-cjsr-paper">
-      CJSR is located in amiskwaciy-waskahikan, the city of Edmonton, on Treaty 6 territory and region 4 of the Metis Nation of Alberta.
+    <p className="mt-6 max-w-3xl text-sm text-brand-paper">
+      {siteConfig.territoryText}
     </p>
   );
 }

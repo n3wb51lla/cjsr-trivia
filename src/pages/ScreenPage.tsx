@@ -5,8 +5,9 @@ import { DEFAULT_GAME_CODE } from '../lib/hostState';
 import { buildLeaderboard } from '../lib/leaderboard';
 import { getPointsForQuestion, getQuestionByIndex, resolveQuestions } from '../lib/triviaData';
 import type { Answer, LeaderboardEntry } from '../types';
-import cjsrLogo from '../assets/cjsr-logo.png';
+import logo from '../assets/logo.png';
 import { ThemeToggle } from '../components/common/ThemeToggle';
+import { siteConfig } from '../config/site';
 
 export function ScreenPage() {
   const { gameState, status, error } = useGameSubscription(DEFAULT_GAME_CODE);
@@ -22,10 +23,10 @@ export function ScreenPage() {
   if (!gameState) {
     return (
       <ScreenShell status={status} error={error?.message ?? null}>
-        <section className="border-2 border-cjsr-red bg-cjsr-surface p-8 text-center">
-          <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Projector screen</p>
+        <section className="border-2 border-brand-red bg-brand-surface p-8 text-center">
+          <p className="text-sm font-black uppercase tracking-wide text-brand-red-light">Projector screen</p>
           <h1 className="mt-3 font-display text-5xl leading-tight">Waiting for host</h1>
-          <p className="mt-4 text-xl text-cjsr-paper">Waiting for the host to initialize the lobby.</p>
+          <p className="mt-4 text-xl text-brand-paper">Waiting for the host to initialize the lobby.</p>
         </section>
       </ScreenShell>
     );
@@ -68,13 +69,13 @@ function ScreenShell({ status, error, children }: { status: string; error: strin
     <div className="min-h-[calc(100vh-9rem)]">
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <img src={cjsrLogo} alt="" className="h-12 w-12" />
-          <p className="font-display text-3xl uppercase text-cjsr-ink">CJSR Trivia</p>
+          <img src={logo} alt="" className="h-12 w-12" />
+          <p className="font-display text-3xl uppercase text-brand-ink">{siteConfig.headerText}</p>
         </div>
         <div className="flex items-center gap-4">
-          <div className="text-right text-sm font-bold uppercase tracking-wide text-cjsr-paper" aria-live="polite">
+          <div className="text-right text-sm font-bold uppercase tracking-wide text-brand-paper" aria-live="polite">
             <p>Connection: {status}</p>
-            {error && <p className="text-cjsr-red-light">{error}</p>}
+            {error && <p className="text-brand-red-light">{error}</p>}
           </div>
           <ThemeToggle />
         </div>
@@ -87,10 +88,10 @@ function ScreenShell({ status, error, children }: { status: string; error: strin
 function LobbyScreen({ teamCount, leaderboard }: { teamCount: number; leaderboard: LeaderboardEntry[] }) {
   return (
     <div className="grid min-h-[62vh] gap-5 lg:grid-cols-[1.4fr_1fr]">
-      <section className="flex flex-col justify-center border-2 border-cjsr-red bg-cjsr-surface p-8">
-        <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Lobby</p>
-        <h1 className="mt-3 font-display text-6xl leading-none">Volunteer Appreciation Trivia</h1>
-        <p className="mt-6 text-2xl text-cjsr-paper">{teamCount} team{teamCount !== 1 ? 's' : ''} joined</p>
+      <section className="flex flex-col justify-center border-2 border-brand-red bg-brand-surface p-8">
+        <p className="text-sm font-black uppercase tracking-wide text-brand-red-light">Lobby</p>
+        <h1 className="mt-3 font-display text-6xl leading-none">{siteConfig.lobbyHeadline}</h1>
+        <p className="mt-6 text-2xl text-brand-paper">{teamCount} team{teamCount !== 1 ? 's' : ''} joined</p>
       </section>
       <LeaderboardPanel leaderboard={leaderboard} title="Teams" />
     </div>
@@ -117,21 +118,21 @@ function QuestionScreen({
   activeTeamCount: number;
 }) {
   return (
-    <section className="border-2 border-cjsr-red bg-cjsr-surface p-8">
+    <section className="border-2 border-brand-red bg-brand-surface p-8">
       <div className="flex flex-wrap items-start justify-between gap-6">
         <div>
-          <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Question {questionIndex}</p>
+          <p className="text-sm font-black uppercase tracking-wide text-brand-red-light">Question {questionIndex}</p>
           <h1 className="mt-4 max-w-5xl text-5xl font-black leading-tight">{questionText}</h1>
         </div>
-        <div className="border-2 border-cjsr-ink px-5 py-4 text-center">
-          <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Worth</p>
+        <div className="border-2 border-brand-ink px-5 py-4 text-center">
+          <p className="text-sm font-black uppercase tracking-wide text-brand-red-light">Worth</p>
           <p className="text-4xl font-black">{points}</p>
         </div>
       </div>
 
       <div className="mt-8 grid gap-3 sm:grid-cols-2">
         {choices.map((choice, index) => (
-          <div key={choice} className="border-2 border-cjsr-ink/50 p-4 text-2xl font-bold text-cjsr-paper">
+          <div key={choice} className="border-2 border-brand-ink/50 p-4 text-2xl font-bold text-brand-paper">
             <span className="mr-3 font-black">{String.fromCharCode(65 + index)}.</span>
             {choice}
           </div>
@@ -141,10 +142,10 @@ function QuestionScreen({
       <div className="mt-8" role="timer" aria-label={`${secondsRemaining} seconds remaining`}>
         <div className="flex items-end justify-between gap-4">
           <p className="font-display text-6xl">{secondsRemaining}s</p>
-          <p className="text-2xl font-bold text-cjsr-paper">{lockedCount} / {activeTeamCount} teams locked</p>
+          <p className="text-2xl font-bold text-brand-paper">{lockedCount} / {activeTeamCount} teams locked</p>
         </div>
-        <div className="mt-4 h-8 border-2 border-cjsr-ink bg-cjsr-black">
-          <div className="h-full bg-cjsr-red transition-[width]" style={{ width: `${Math.round(progress * 100)}%` }} />
+        <div className="mt-4 h-8 border-2 border-brand-ink bg-brand-black">
+          <div className="h-full bg-brand-red transition-[width]" style={{ width: `${Math.round(progress * 100)}%` }} />
         </div>
       </div>
     </section>
@@ -167,18 +168,18 @@ function RevealScreen({
   const correctCount = answers.filter(answer => answer.isCorrect).length;
   return (
     <div className="grid gap-5 lg:grid-cols-[1.35fr_1fr]">
-      <section className="border-2 border-cjsr-red bg-cjsr-surface p-8">
-        <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">Reveal</p>
+      <section className="border-2 border-brand-red bg-brand-surface p-8">
+        <p className="text-sm font-black uppercase tracking-wide text-brand-red-light">Reveal</p>
         <h1 className="mt-3 text-4xl font-black leading-tight">{questionText}</h1>
         <div className="mt-7 grid gap-3">
           {choices.map((choice, index) => (
-            <div key={choice} className={`border-2 p-4 text-2xl font-bold ${index === correctAnswer ? 'border-cjsr-correct text-cjsr-correct' : 'border-cjsr-ink/50 text-cjsr-paper'}`}>
+            <div key={choice} className={`border-2 p-4 text-2xl font-bold ${index === correctAnswer ? 'border-brand-correct text-brand-correct' : 'border-brand-ink/50 text-brand-paper'}`}>
               <span className="mr-3 font-black">{String.fromCharCode(65 + index)}.</span>
               {choice}
             </div>
           ))}
         </div>
-        <p className="mt-6 text-2xl font-bold text-cjsr-paper">{correctCount} team{correctCount !== 1 ? 's' : ''} got it right</p>
+        <p className="mt-6 text-2xl font-bold text-brand-paper">{correctCount} team{correctCount !== 1 ? 's' : ''} got it right</p>
       </section>
       <LeaderboardPanel leaderboard={leaderboard} title="Leaderboard" limit={8} />
     </div>
@@ -214,13 +215,13 @@ function ScoreboardScreen({
   leaderboard: LeaderboardEntry[];
 }) {
   return (
-    <section className="border-2 border-cjsr-red bg-cjsr-surface p-6">
+    <section className="border-2 border-brand-red bg-brand-surface p-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-sm font-black uppercase tracking-wide text-cjsr-red-light">{eyebrow}</p>
+          <p className="text-sm font-black uppercase tracking-wide text-brand-red-light">{eyebrow}</p>
           <h1 className="mt-1 font-display text-5xl leading-none">{title}</h1>
         </div>
-        {detail && <p className="text-right text-2xl font-bold text-cjsr-paper">{detail}</p>}
+        {detail && <p className="text-right text-2xl font-bold text-brand-paper">{detail}</p>}
       </div>
       <LeaderboardPanel leaderboard={leaderboard} title="Scores" columns={2} projector />
     </section>
@@ -244,18 +245,18 @@ function LeaderboardPanel({
 }) {
   const visibleRows = limit ? leaderboard.slice(0, limit) : leaderboard;
   return (
-    <aside className={projector ? 'mt-6' : 'border-2 border-cjsr-red bg-cjsr-surface p-5'}>
+    <aside className={projector ? 'mt-6' : 'border-2 border-brand-red bg-brand-surface p-5'}>
       {!projector && <h2 className="font-display text-3xl">{title}</h2>}
       {visibleRows.length === 0 ? (
-        <p className="mt-4 text-xl text-cjsr-paper">No teams yet.</p>
+        <p className="mt-4 text-xl text-brand-paper">No teams yet.</p>
       ) : (
         <ol className={`${projector ? 'mt-0' : 'mt-4'} grid gap-3 ${columns === 2 ? 'lg:grid-cols-2' : ''}`}>
           {visibleRows.map(entry => (
-            <li key={entry.teamId} className={`grid items-center gap-3 border border-cjsr-ink/50 ${projector ? 'grid-cols-[3rem_minmax(0,1fr)_3rem] p-3 lg:grid-cols-[4.5rem_minmax(0,1fr)_5rem] lg:p-4' : 'grid-cols-[3rem_minmax(0,1fr)_auto]'} ${compact ? 'p-2' : projector ? '' : 'p-3'}`}>
+            <li key={entry.teamId} className={`grid items-center gap-3 border border-brand-ink/50 ${projector ? 'grid-cols-[3rem_minmax(0,1fr)_3rem] p-3 lg:grid-cols-[4.5rem_minmax(0,1fr)_5rem] lg:p-4' : 'grid-cols-[3rem_minmax(0,1fr)_auto]'} ${compact ? 'p-2' : projector ? '' : 'p-3'}`}>
               <span className={`${projector ? 'text-2xl lg:text-4xl' : compact ? 'text-xl' : 'text-2xl'} font-black`}>#{entry.rank}</span>
               <span className={`min-w-0 font-bold leading-tight ${projector ? 'text-xl lg:text-3xl' : compact ? 'text-lg' : 'text-xl'}`}>{entry.teamName}</span>
-              <span className={`${projector ? 'text-3xl lg:text-5xl' : compact ? 'text-xl' : 'text-2xl'} font-black text-cjsr-red-light`}>{entry.score}</span>
-              {entry.isTiedOnScore && <span className="col-span-3 text-sm font-bold uppercase tracking-wide text-cjsr-paper">Tie-break: fastest total lock time</span>}
+              <span className={`${projector ? 'text-3xl lg:text-5xl' : compact ? 'text-xl' : 'text-2xl'} font-black text-brand-red-light`}>{entry.score}</span>
+              {entry.isTiedOnScore && <span className="col-span-3 text-sm font-bold uppercase tracking-wide text-brand-paper">Tie-break: fastest total lock time</span>}
             </li>
           ))}
         </ol>
