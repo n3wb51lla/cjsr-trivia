@@ -216,6 +216,7 @@ Host flow:
 - Force reveal override
 - Scoring finalized on reveal
 - Skip to finals
+- Sudden death: after question 30's reveal, if there's a tie for first place, the primary advance button becomes "Start sudden death" instead of "Go to finals" and starts question 31 (the pre-authored sudden-death question, `schedule.suddenDeathQuestionId`). Reveal/scoring/advance-to-finals afterward reuse the existing generic machinery unchanged (they were already index-agnostic — the only actual gap was ever *getting to* question 31, which is what this adds). "Skip to finals" still bypasses it entirely if the host doesn't want to use it. This was fully unreachable before a bug-bash session found and fixed it — the data/UI (question editor, answer key) always presented sudden death as real, but no host action ever advanced into it.
 - Full reset to lobby while preserving joined teams, clearing scores, lock times, and answers
 - Lobby-only kick button for active teams
 - Host team list shows active teams only; kicked teams remain in Firebase but are hidden from the sidebar
@@ -314,6 +315,7 @@ Question editing:
 - Per-question Save writes only that question via a `set()` at its exact path; the seed step and bulk import both use a multi-location `update()` across all affected question paths rather than a single `set()` on the parent node, because a Firebase RTDB `.write` rule defined only on the `$questionId` child does not authorize a `set()` on its parent — this is the same multi-location-update pattern already used by `finalizeQuestionScores`/`resetGameForReplay`. `ensureQuestionsSeeded` and `bulkWriteQuestions` in `firebaseData.ts` share the same update-building logic.
 - Round and question id are fixed everywhere (single-row editor and bulk import both); only text, the 4 choices, and the correct-answer index are editable.
 - Bulk import UI (`ImportPanel` in `HostQuestionsPage.tsx`): download template button (generates client-side via SheetJS, one row per current question with id/round pre-filled), file upload, a preview table showing per-row validation status, and an Import button disabled until every row is valid. Watch out if touching this code: the "success message" state and the "clear the loaded file" state must not both call the same reset function, or the success message gets wiped before it renders — this exact bug shipped once and was caught by a live Playwright test, not by lint/build/typecheck.
+- A row is only treated as "the host is editing this" if it has actual content in text/choices/answer — a row with just the pre-filled id/round (i.e. untouched from the downloaded template) is skipped, not validated. `questionImport.ts`'s `parseQuestionWorkbook` reads the sheet cell-by-cell via its decoded range rather than relying on `sheet_to_json`'s default row handling, specifically so a blank row in the middle of the file doesn't shift every subsequent row's reported row number — both of these were real bugs (the "skip untouched rows" claim was false, and error messages could point at the wrong physical spreadsheet row) caught by a bug-bash session and fixed; get the git history on `questionImport.ts` before re-deriving this logic from scratch.
 
 UI repetition cleanup:
 
@@ -364,8 +366,7 @@ Security/architecture:
 
 Feature follow-ups:
 
-- Host tie indicators.
-- Better finals/sudden-death handling.
+- Host tie indicators (leaderboard already flags ties and the sudden-death trigger reacts to a top-place tie; a more visible in-UI indicator is still just a nice-to-have).
 - Host pacing and schedule support.
 - Reliability/failure dry run.
 - Question editor/import currently support edit-only (text/choices/answer); add/delete/reorder was explicitly deferred to avoid disturbing round-count and sudden-death invariants (this is also exactly what Phase 2's dynamic-rounds work would unlock).
