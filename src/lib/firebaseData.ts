@@ -225,9 +225,12 @@ export async function writeQuestion(gameCode: string, question: Question): Promi
 export async function ensureQuestionsSeeded(gameCode: string, seedQuestions: readonly Question[]): Promise<void> {
   const snapshot = await get(ref(requireDatabase(), questionsPath(gameCode)));
   if (snapshot.exists()) return;
+  await bulkWriteQuestions(gameCode, seedQuestions);
+}
 
+export async function bulkWriteQuestions(gameCode: string, questions: readonly Question[]): Promise<void> {
   const updates: Record<string, unknown> = {};
-  for (const question of seedQuestions) {
+  for (const question of questions) {
     updates[questionPath(gameCode, question.id)] = {
       id: question.id,
       round: question.round,
