@@ -53,6 +53,10 @@ export function getQuestionDurationMs(): number {
   return schedule.questionDurationSeconds * 1000;
 }
 
+export function getSuddenDeathQuestionId(): number {
+  return schedule.suddenDeathQuestionId;
+}
+
 function parseQuestions(value: unknown): readonly Question[] {
   if (!Array.isArray(value)) throw new Error('questions.json must contain an array.');
   return value.map(parseQuestion);

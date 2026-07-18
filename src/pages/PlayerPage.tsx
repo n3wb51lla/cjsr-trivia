@@ -24,7 +24,7 @@ export function PlayerPage() {
     [gameState?.teams, storedTeamId],
   );
   const takenNames = useMemo(() => new Set(gameState?.teams.filter(team => team.isActive).map(team => makeTeamNameKey(team.teamName)) ?? []), [gameState?.teams]);
-  const isPrimaryListFull = useMemo(() => TEAM_NAMES.every(name => takenNames.has(makeTeamNameKey(name))), [takenNames]);
+  const isPrimaryListFull = useMemo(() => TEAM_NAMES.length > 0 && TEAM_NAMES.every(name => takenNames.has(makeTeamNameKey(name))), [takenNames]);
   const availableTeamNames = isPrimaryListFull ? [...TEAM_NAMES, ...OVERFLOW_TEAM_NAMES] : TEAM_NAMES;
   const phase = gameState?.game.phase ?? 'lobby';
   const canJoin = phase === 'lobby' || phase === 'reveal' || phase === 'break';

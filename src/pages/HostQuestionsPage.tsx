@@ -90,6 +90,11 @@ function ImportPanel({ questions }: { questions: readonly Question[] }) {
     setMessage(null);
     try {
       const parsedRows = await parseQuestionWorkbook(file);
+      if (parsedRows.length === 0) {
+        setRows(null);
+        setMessage('No rows to import - the file has no filled-in questions, or no "Questions" sheet.');
+        return;
+      }
       setRows(parsedRows.map(row => validateQuestionRow(row, questions)));
     } catch (caught) {
       setMessage(caught instanceof Error ? caught.message : 'Could not read that file.');

@@ -37,16 +37,23 @@ export function getHostAdvanceMeta(current: FirebaseGameMeta | null, questions: 
   };
 }
 
-export function getHostButtonLabel(meta: FirebaseGameMeta | null): string {
+export function getHostButtonLabel(meta: FirebaseGameMeta | null, hasTopTie = false): string {
   if (!meta || meta.phase === 'lobby') return 'Start question 1';
   if (meta.phase === 'question') return 'Reveal answer';
   if (meta.phase === 'reveal') {
-    if ((meta.currentQuestionIndex ?? 0) >= 30) return 'Go to finals';
+    if ((meta.currentQuestionIndex ?? 0) >= 30) {
+      if (meta.currentQuestionIndex === 30 && hasTopTie) return 'Start sudden death';
+      return 'Go to finals';
+    }
     if (meta.currentQuestionIndex !== null && isBreakAfterQuestion(meta.currentQuestionIndex)) return 'Show standings';
     return `Start question ${(meta.currentQuestionIndex ?? 0) + 1}`;
   }
   if (meta.phase === 'break') return `Start question ${(meta.currentQuestionIndex ?? 0) + 1}`;
   return 'Finals';
+}
+
+export function isSuddenDeathAvailable(meta: FirebaseGameMeta | null, hasTopTie: boolean): boolean {
+  return meta?.phase === 'reveal' && meta.currentQuestionIndex === 30 && hasTopTie;
 }
 
 export function getCurrentQuestionSummary(questions: readonly Question[], questionIndex: number | null) {
