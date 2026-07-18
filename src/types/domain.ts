@@ -6,6 +6,8 @@ export type QuestionRound = RoundNumber | 'suddenDeath';
 export interface QuestionMedia {
   readonly type: 'image' | 'video';
   readonly url: string;
+  readonly altText: string;
+  readonly captionsUrl: string | null;
 }
 
 export type ChoiceIndex = 0 | 1 | 2 | 3;

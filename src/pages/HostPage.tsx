@@ -180,7 +180,7 @@ export function HostPage() {
             <p className="text-sm font-black uppercase tracking-wide text-brand-red-light">Current question</p>
             <h2 className="mt-2 text-2xl font-bold">{question.text}</h2>
             {question.media?.type === 'image' && (
-              <img src={question.media.url} alt="" className="mt-3 max-h-40 border border-brand-ink/50 object-contain" />
+              <img src={question.media.url} alt={question.media.altText} className="mt-3 max-h-40 border border-brand-ink/50 object-contain" />
             )}
             {question.media?.type === 'video' && (
               <p className="mt-3 text-sm font-bold text-brand-paper">This question has a video clue — it plays on the projector screen only.</p>

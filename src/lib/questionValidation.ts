@@ -16,6 +16,8 @@ export interface QuestionRowInput {
   readonly correctAnswer: unknown;
   readonly mediaType: unknown;
   readonly mediaUrl: unknown;
+  readonly mediaAltText: unknown;
+  readonly mediaCaptionsUrl: unknown;
 }
 
 export interface QuestionRowResult {
@@ -54,13 +56,21 @@ export function validateQuestionRow(row: QuestionRowInput, existingQuestions: re
 
   const mediaType = typeof row.mediaType === 'string' ? row.mediaType.trim().toLowerCase() : '';
   const mediaUrl = typeof row.mediaUrl === 'string' ? row.mediaUrl.trim() : '';
+  const mediaAltText = typeof row.mediaAltText === 'string' ? row.mediaAltText.trim() : '';
+  const mediaCaptionsUrl = typeof row.mediaCaptionsUrl === 'string' ? row.mediaCaptionsUrl.trim() : '';
   let media: Question['media'] = null;
-  if (mediaType || mediaUrl) {
+  if (mediaType || mediaUrl || mediaAltText) {
     if (mediaType !== 'image' && mediaType !== 'video') errors.push('Media type must be "image" or "video".');
     if (!mediaUrl) errors.push('Media URL is required when a media type is provided.');
     if (mediaUrl.length > MAX_MEDIA_URL_LENGTH) errors.push(`Media URL must be ${MAX_MEDIA_URL_LENGTH} characters or fewer.`);
-    if ((mediaType === 'image' || mediaType === 'video') && mediaUrl && mediaUrl.length <= MAX_MEDIA_URL_LENGTH) {
-      media = { type: mediaType, url: mediaUrl };
+    if (!mediaAltText) errors.push('Media alt text is required (describes the image/video for screen-reader users).');
+    if (mediaAltText.length > MAX_TEXT_LENGTH) errors.push(`Media alt text must be ${MAX_TEXT_LENGTH} characters or fewer.`);
+    if (mediaCaptionsUrl.length > MAX_MEDIA_URL_LENGTH) errors.push(`Media captions URL must be ${MAX_MEDIA_URL_LENGTH} characters or fewer.`);
+    if (
+      (mediaType === 'image' || mediaType === 'video') && mediaUrl && mediaUrl.length <= MAX_MEDIA_URL_LENGTH
+      && mediaAltText && mediaAltText.length <= MAX_TEXT_LENGTH && mediaCaptionsUrl.length <= MAX_MEDIA_URL_LENGTH
+    ) {
+      media = { type: mediaType, url: mediaUrl, altText: mediaAltText, captionsUrl: mediaCaptionsUrl || null };
     }
   }
 

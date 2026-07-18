@@ -1,7 +1,7 @@
 import type { Question } from '../types';
 import type { QuestionRowInput } from './questionValidation';
 
-const COLUMNS = ['id', 'round', 'type', 'text', 'choiceA', 'choiceB', 'choiceC', 'choiceD', 'correctAnswer', 'mediaType', 'mediaUrl'] as const;
+const COLUMNS = ['id', 'round', 'type', 'text', 'choiceA', 'choiceB', 'choiceC', 'choiceD', 'correctAnswer', 'mediaType', 'mediaUrl', 'mediaAltText', 'mediaCaptionsUrl'] as const;
 
 export async function downloadQuestionTemplate(questions: readonly Question[], filename = 'questions-template.xlsx'): Promise<void> {
   const XLSX = await import('xlsx');
@@ -18,6 +18,8 @@ export async function downloadQuestionTemplate(questions: readonly Question[], f
     correctAnswer: '',
     mediaType: '',
     mediaUrl: '',
+    mediaAltText: '',
+    mediaCaptionsUrl: '',
   }));
 
   const questionsSheet = XLSX.utils.json_to_sheet(rows, { header: [...COLUMNS] });
@@ -31,7 +33,9 @@ export async function downloadQuestionTemplate(questions: readonly Question[], f
     ['correctAnswer: for Multi-select questions, enter every correct letter separated by commas, e.g. A,C.'],
     ['correctAnswer: for Free text questions, enter every accepted answer separated by semicolons, e.g. Paris;City of Light.'],
     ['mediaType and mediaUrl are optional: set mediaType to image or video and mediaUrl to its hosted URL to attach a clue.'],
-    ['Leave mediaType and mediaUrl blank to remove any existing media on a question you are editing.'],
+    ['mediaAltText is required whenever mediaType/mediaUrl are set: describe the image/video for players using a screen reader.'],
+    ['mediaCaptionsUrl is optional: a hosted .vtt captions file URL for video clues, for deaf/hard-of-hearing players in the room.'],
+    ['Leave mediaType, mediaUrl, mediaAltText, and mediaCaptionsUrl all blank to remove any existing media on a question you are editing.'],
     [''],
     ['Save this file and upload it back on the Questions page when done.'],
     ['You only need to fill in the rows you want to change - rows with no text/choices/answer filled in are skipped.'],
@@ -88,6 +92,8 @@ export async function parseQuestionWorkbook(file: File): Promise<QuestionRowInpu
       correctAnswer: record.correctAnswer,
       mediaType: record.mediaType,
       mediaUrl: record.mediaUrl,
+      mediaAltText: record.mediaAltText,
+      mediaCaptionsUrl: record.mediaCaptionsUrl,
     });
   }
 
@@ -97,7 +103,7 @@ export async function parseQuestionWorkbook(file: File): Promise<QuestionRowInpu
 }
 
 function hasEditableContent(row: QuestionRowInput): boolean {
-  return [row.text, row.choiceA, row.choiceB, row.choiceC, row.choiceD, row.correctAnswer, row.mediaType, row.mediaUrl].some(
+  return [row.text, row.choiceA, row.choiceB, row.choiceC, row.choiceD, row.correctAnswer, row.mediaType, row.mediaUrl, row.mediaAltText, row.mediaCaptionsUrl].some(
     value => typeof value === 'string' && value.trim() !== '',
   );
 }

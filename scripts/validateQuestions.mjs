@@ -95,12 +95,18 @@ for (const question of questions) {
   }
 
   if (question.media !== undefined && question.media !== null) {
-    const { type, url } = question.media;
+    const { type, url, altText, captionsUrl } = question.media;
     if (type !== 'image' && type !== 'video') {
       errors.push(`Question ${question.id} media type must be "image" or "video".`);
     }
     if (typeof url !== 'string' || url.length === 0) {
       errors.push(`Question ${question.id} media url must be a non-empty string.`);
+    }
+    if (typeof altText !== 'string' || altText.trim().length === 0) {
+      errors.push(`Question ${question.id} media altText must be a non-empty string (required for screen-reader users).`);
+    }
+    if (captionsUrl !== undefined && captionsUrl !== null && (typeof captionsUrl !== 'string' || captionsUrl.length === 0)) {
+      errors.push(`Question ${question.id} media captionsUrl must be a non-empty string or null.`);
     }
   }
 }

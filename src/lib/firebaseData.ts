@@ -422,7 +422,9 @@ function parseQuestionMedia(value: unknown): QuestionMedia | null {
   if (!isRecord(value)) return null;
   if (value.type !== 'image' && value.type !== 'video') return null;
   if (typeof value.url !== 'string' || value.url.length === 0) return null;
-  return { type: value.type, url: value.url };
+  if (typeof value.altText !== 'string' || value.altText.trim().length === 0) return null;
+  const captionsUrl = typeof value.captionsUrl === 'string' && value.captionsUrl.length > 0 ? value.captionsUrl : null;
+  return { type: value.type, url: value.url, altText: value.altText, captionsUrl };
 }
 
 function parseChoices(value: unknown): readonly [string, string, string, string] {

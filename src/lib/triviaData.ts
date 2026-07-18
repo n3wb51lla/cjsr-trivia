@@ -112,7 +112,9 @@ function parseQuestion(value: unknown): Question {
   if (!isQuestionRound(round)) throw new Error(`Question ${id} has invalid round.`);
   if (typeof text !== 'string') throw new Error(`Question ${id} text must be a string.`);
   if (media !== undefined && media !== null && !isQuestionMedia(media)) throw new Error(`Question ${id} has invalid media.`);
-  const mediaValue = media ?? null;
+  const mediaValue: QuestionMedia | null = isQuestionMedia(media)
+    ? { type: media.type, url: media.url, altText: media.altText, captionsUrl: media.captionsUrl ?? null }
+    : null;
 
   if (type === 'free_text') {
     if (!isAcceptedAnswers(acceptedAnswers)) throw new Error(`Question ${id} has invalid acceptedAnswers.`);
@@ -153,5 +155,9 @@ function isAnswerIndex(value: unknown): value is 0 | 1 | 2 | 3 {
 
 function isQuestionMedia(value: unknown): value is QuestionMedia {
   if (!isRecord(value)) return false;
-  return (value.type === 'image' || value.type === 'video') && typeof value.url === 'string' && value.url.length > 0;
+  if (value.type !== 'image' && value.type !== 'video') return false;
+  if (typeof value.url !== 'string' || value.url.length === 0) return false;
+  if (typeof value.altText !== 'string' || value.altText.trim().length === 0) return false;
+  if (value.captionsUrl !== null && value.captionsUrl !== undefined && typeof value.captionsUrl !== 'string') return false;
+  return true;
 }

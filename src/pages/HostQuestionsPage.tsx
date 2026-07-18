@@ -5,7 +5,7 @@ import { bulkWriteQuestions, ensureQuestionsSeeded, writeQuestion } from '../lib
 import { DEFAULT_GAME_CODE } from '../lib/hostState';
 import { downloadQuestionTemplate, parseQuestionWorkbook } from '../lib/questionImport';
 import { validateQuestionRow, type QuestionRowResult } from '../lib/questionValidation';
-import { isMediaUploadConfigured, uploadQuestionMedia } from '../lib/storageMedia';
+import { isMediaUploadConfigured, uploadQuestionMedia, type UploadedMediaFile } from '../lib/storageMedia';
 import { ROUND_ORDER, SEED_QUESTIONS, getPointsForRound, resolveQuestions, SUDDEN_DEATH_POINTS } from '../lib/triviaData';
 import type { ChoiceIndex, Question, QuestionMedia } from '../types';
 
@@ -213,7 +213,9 @@ function QuestionEditorRow({ question, onSave }: { question: Question; onSave: (
   const [answer, setAnswer] = useState<ChoiceIndex>(question.type === 'multiple_choice' ? question.answer : 0);
   const [selectedAnswers, setSelectedAnswers] = useState<ChoiceIndex[]>(question.type === 'multi_select' ? [...question.answers] : []);
   const [acceptedAnswersText, setAcceptedAnswersText] = useState(question.type === 'free_text' ? question.acceptedAnswers.join('\n') : '');
-  const [media, setMedia] = useState<QuestionMedia | null>(question.media);
+  const [mediaFile, setMediaFile] = useState<UploadedMediaFile | null>(question.media ? { type: question.media.type, url: question.media.url } : null);
+  const [mediaAltText, setMediaAltText] = useState(question.media?.altText ?? '');
+  const [mediaCaptionsUrl, setMediaCaptionsUrl] = useState(question.media?.captionsUrl ?? '');
   const [status, setStatus] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -223,14 +225,18 @@ function QuestionEditorRow({ question, onSave }: { question: Question; onSave: (
     () => acceptedAnswersText.split('\n').map(line => line.trim()).filter(line => line !== ''),
     [acceptedAnswersText],
   );
+  const effectiveMedia: QuestionMedia | null = useMemo(
+    () => (mediaFile ? { type: mediaFile.type, url: mediaFile.url, altText: mediaAltText.trim(), captionsUrl: mediaCaptionsUrl.trim() || null } : null),
+    [mediaFile, mediaAltText, mediaCaptionsUrl],
+  );
   const draft = useMemo(() => ({
     text,
     choices,
     answer,
     selectedAnswers,
     acceptedAnswers: parsedAcceptedAnswers,
-    media,
-  }), [answer, choices, media, parsedAcceptedAnswers, selectedAnswers, text]);
+    media: effectiveMedia,
+  }), [answer, choices, effectiveMedia, parsedAcceptedAnswers, selectedAnswers, text]);
   const isDirty = isQuestionDraftDirty(syncedQuestionRef.current, draft);
 
   useEffect(() => {
@@ -242,7 +248,9 @@ function QuestionEditorRow({ question, onSave }: { question: Question; onSave: (
     setAnswer(question.type === 'multiple_choice' ? question.answer : 0);
     setSelectedAnswers(question.type === 'multi_select' ? [...question.answers] : []);
     setAcceptedAnswersText(question.type === 'free_text' ? question.acceptedAnswers.join('\n') : '');
-    setMedia(question.media);
+    setMediaFile(question.media ? { type: question.media.type, url: question.media.url } : null);
+    setMediaAltText(question.media?.altText ?? '');
+    setMediaCaptionsUrl(question.media?.captionsUrl ?? '');
   }, [draft, question]);
 
   async function save() {
@@ -262,15 +270,19 @@ function QuestionEditorRow({ question, onSave }: { question: Question; onSave: (
       setStatus('Select at least one correct choice.');
       return;
     }
+    if (mediaFile && !mediaAltText.trim()) {
+      setStatus('Describe the image/video for screen-reader users before saving.');
+      return;
+    }
     setBusy(true);
     setStatus(null);
     try {
       const trimmedChoices = choices.map(choice => choice.trim()) as [string, string, string, string];
       const updated: Question = isFreeText
-        ? { id: question.id, round: question.round, text: text.trim(), media, type: 'free_text', acceptedAnswers: parsedAcceptedAnswers }
+        ? { id: question.id, round: question.round, text: text.trim(), media: effectiveMedia, type: 'free_text', acceptedAnswers: parsedAcceptedAnswers }
         : isMultiSelect
-          ? { id: question.id, round: question.round, text: text.trim(), choices: trimmedChoices, media, type: 'multi_select', answers: selectedAnswers }
-          : { id: question.id, round: question.round, text: text.trim(), choices: trimmedChoices, media, type: 'multiple_choice', answer };
+          ? { id: question.id, round: question.round, text: text.trim(), choices: trimmedChoices, media: effectiveMedia, type: 'multi_select', answers: selectedAnswers }
+          : { id: question.id, round: question.round, text: text.trim(), choices: trimmedChoices, media: effectiveMedia, type: 'multiple_choice', answer };
       await onSave(updated);
       syncedQuestionRef.current = updated;
       setStatus('Saved.');
@@ -289,8 +301,10 @@ function QuestionEditorRow({ question, onSave }: { question: Question; onSave: (
     setStatus(null);
     try {
       const uploaded = await uploadQuestionMedia(DEFAULT_GAME_CODE, question.id, file);
-      setMedia(uploaded);
-      setStatus('Media uploaded. Click Save to attach it to this question.');
+      setMediaFile(uploaded);
+      setMediaAltText('');
+      setMediaCaptionsUrl('');
+      setStatus('Media uploaded. Describe it for screen-reader users, then click Save.');
     } catch (caught) {
       setStatus(caught instanceof Error ? caught.message : 'Could not upload media.');
     } finally {
@@ -334,21 +348,23 @@ function QuestionEditorRow({ question, onSave }: { question: Question; onSave: (
             const choiceIndex = index as ChoiceIndex;
             const checked = isMultiSelect ? selectedAnswers.includes(choiceIndex) : answer === choiceIndex;
             return (
-              <label key={index} className="flex items-center gap-2 border border-brand-ink/50 p-2">
-                <input
-                  type={isMultiSelect ? 'checkbox' : 'radio'}
-                  name={`question-${question.id}-answer`}
-                  checked={checked}
-                  onChange={() => {
-                    if (isMultiSelect) {
-                      setSelectedAnswers(previous => (previous.includes(choiceIndex) ? previous.filter(value => value !== choiceIndex) : [...previous, choiceIndex]));
-                    } else {
-                      setAnswer(choiceIndex);
-                    }
-                  }}
-                  aria-label={`Mark choice ${String.fromCharCode(65 + index)} as correct`}
-                />
-                <span className="font-black">{String.fromCharCode(65 + index)}.</span>
+              <div key={index} className="flex items-center gap-2 border border-brand-ink/50 p-2">
+                <label className="flex items-center gap-2">
+                  <input
+                    type={isMultiSelect ? 'checkbox' : 'radio'}
+                    name={`question-${question.id}-answer`}
+                    checked={checked}
+                    onChange={() => {
+                      if (isMultiSelect) {
+                        setSelectedAnswers(previous => (previous.includes(choiceIndex) ? previous.filter(value => value !== choiceIndex) : [...previous, choiceIndex]));
+                      } else {
+                        setAnswer(choiceIndex);
+                      }
+                    }}
+                    aria-label={`Mark choice ${String.fromCharCode(65 + index)} as correct`}
+                  />
+                  <span className="font-black">{String.fromCharCode(65 + index)}.</span>
+                </label>
                 <label className="sr-only" htmlFor={`question-${question.id}-choice-${index}`}>Choice {String.fromCharCode(65 + index)}</label>
                 <input
                   id={`question-${question.id}-choice-${index}`}
@@ -356,7 +372,7 @@ function QuestionEditorRow({ question, onSave }: { question: Question; onSave: (
                   onChange={event => setChoices(previous => previous.map((current, i) => (i === index ? event.target.value : current)) as [string, string, string, string])}
                   className="min-w-0 flex-1 border border-brand-ink/50 bg-brand-black px-2 py-1 text-brand-ink"
                 />
-              </label>
+              </div>
             );
           })}
         </fieldset>
@@ -364,21 +380,55 @@ function QuestionEditorRow({ question, onSave }: { question: Question; onSave: (
 
       <div className="mt-3">
         <p className="text-sm font-bold uppercase tracking-wide text-brand-paper">Image / video clue (optional)</p>
-        {media && (
+        {mediaFile && (
           <div className="mt-2 flex items-center gap-3">
-            {media.type === 'image' ? (
-              <img src={media.url} alt="" className="h-20 w-20 border border-brand-ink/50 object-cover" />
+            {mediaFile.type === 'image' ? (
+              <img src={mediaFile.url} alt={mediaAltText || 'Question media preview'} className="h-20 w-20 border border-brand-ink/50 object-cover" />
             ) : (
-              <video src={media.url} muted controls className="h-20 w-32 border border-brand-ink/50" />
+              <video src={mediaFile.url} muted controls className="h-20 w-32 border border-brand-ink/50" />
             )}
-            <button type="button" onClick={() => setMedia(null)} className="min-h-9 border border-brand-ink/50 px-3 py-1 text-sm font-bold text-brand-paper">
+            <button
+              type="button"
+              onClick={() => { setMediaFile(null); setMediaAltText(''); setMediaCaptionsUrl(''); }}
+              className="min-h-9 border border-brand-ink/50 px-3 py-1 text-sm font-bold text-brand-paper"
+            >
               Remove
             </button>
           </div>
         )}
+        {mediaFile && (
+          <div className="mt-2">
+            <label className="text-sm font-bold uppercase tracking-wide text-brand-paper" htmlFor={`question-${question.id}-media-alt`}>
+              Describe this image/video (required, read aloud by screen readers)
+            </label>
+            <input
+              id={`question-${question.id}-media-alt`}
+              type="text"
+              value={mediaAltText}
+              onChange={event => setMediaAltText(event.target.value)}
+              maxLength={250}
+              className="mt-1 w-full border-2 border-brand-ink bg-brand-black px-3 py-2 text-brand-ink"
+            />
+          </div>
+        )}
+        {mediaFile?.type === 'video' && (
+          <div className="mt-2">
+            <label className="text-sm font-bold uppercase tracking-wide text-brand-paper" htmlFor={`question-${question.id}-media-captions`}>
+              Captions URL (optional, hosted .vtt file, for deaf/hard-of-hearing players)
+            </label>
+            <input
+              id={`question-${question.id}-media-captions`}
+              type="text"
+              value={mediaCaptionsUrl}
+              onChange={event => setMediaCaptionsUrl(event.target.value)}
+              maxLength={2048}
+              className="mt-1 w-full border-2 border-brand-ink bg-brand-black px-3 py-2 text-brand-ink"
+            />
+          </div>
+        )}
         {mediaUploadConfigured ? (
           <label className="mt-2 inline-block min-h-10 cursor-pointer border-2 border-brand-ink px-4 py-2 font-bold text-brand-ink">
-            {isUploading ? 'Uploading...' : media ? 'Replace image/video' : 'Upload image/video'}
+            {isUploading ? 'Uploading...' : mediaFile ? 'Replace image/video' : 'Upload image/video'}
             <input type="file" accept="image/*,video/*" disabled={isUploading} onChange={event => void handleFileSelected(event)} className="sr-only" />
           </label>
         ) : (
@@ -423,6 +473,8 @@ function isQuestionDraftDirty(question: Question, draft: {
   return draft.text !== question.text
     || draft.media?.url !== question.media?.url
     || draft.media?.type !== question.media?.type
+    || draft.media?.altText !== question.media?.altText
+    || draft.media?.captionsUrl !== question.media?.captionsUrl
     || (question.type === 'free_text'
       ? !sameStringSet(draft.acceptedAnswers, question.acceptedAnswers)
       : draft.choices.some((choice, index) => choice !== question.choices[index])

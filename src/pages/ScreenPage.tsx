@@ -268,11 +268,14 @@ function MediaClue({ media }: { media: QuestionMedia | null }) {
         src={media.url}
         controls
         autoPlay
+        aria-label={media.altText}
         className="mt-6 max-h-[28rem] w-full border-2 border-brand-ink bg-brand-black object-contain"
-      />
+      >
+        {media.captionsUrl && <track kind="captions" src={media.captionsUrl} default label="Captions" />}
+      </video>
     );
   }
-  return <img src={media.url} alt="" className="mt-6 max-h-[28rem] w-full border-2 border-brand-ink object-contain" />;
+  return <img src={media.url} alt={media.altText} className="mt-6 max-h-[28rem] w-full border-2 border-brand-ink object-contain" />;
 }
 
 function LeaderboardPanel({

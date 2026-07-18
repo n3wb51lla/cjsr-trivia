@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ChoiceIndex, LeaderboardEntry, Question, Team } from '../types';
 import { useGameSubscription } from '../hooks/useGameSubscription';
 import { useQuestionTimer } from '../hooks/useQuestionTimer';
@@ -302,6 +302,7 @@ function QuestionPanel({
   const [lockMessage, setLockMessage] = useState<string | null>(null);
   const [isLocking, setIsLocking] = useState(false);
   const timer = useQuestionTimer(questionStartedAt);
+  const choiceButtonRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   useEffect(() => {
     if (answerChoice !== undefined) setSelectedChoice(answerChoice);
@@ -361,6 +362,18 @@ function QuestionPanel({
     }
   }
 
+  function handleChoiceKeyDown(event: React.KeyboardEvent<HTMLButtonElement>, index: number) {
+    if (isMultiSelect) return;
+    const total = 4; // MultipleChoiceQuestion and MultiSelectQuestion both always have exactly 4 choices
+    let nextIndex: number | null = null;
+    if (event.key === 'ArrowDown' || event.key === 'ArrowRight') nextIndex = (index + 1) % total;
+    else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') nextIndex = (index - 1 + total) % total;
+    if (nextIndex === null) return;
+    event.preventDefault();
+    setSelectedChoice(nextIndex as ChoiceIndex);
+    choiceButtonRefs.current[nextIndex]?.focus();
+  }
+
   function submitLock() {
     if (isFreeText) {
       void lockAnswer(null, null, textInput.trim());
@@ -382,7 +395,7 @@ function QuestionPanel({
       </div>
 
       {question.media?.type === 'image' && (
-        <img src={question.media.url} alt="" className="mt-4 max-h-64 w-full border-2 border-brand-ink object-contain" />
+        <img src={question.media.url} alt={question.media.altText} className="mt-4 max-h-64 w-full border-2 border-brand-ink object-contain" />
       )}
 
       <div className="mt-5" role="timer" aria-label={`${timer.secondsRemaining} seconds remaining`}>
@@ -412,18 +425,28 @@ function QuestionPanel({
           />
         </div>
       ) : (
-        <div className="mt-6 grid gap-3">
+        <div
+          className="mt-6 grid gap-3"
+          role={isMultiSelect ? undefined : 'radiogroup'}
+          aria-label={isMultiSelect ? undefined : 'Choose your answer'}
+        >
           {question.choices.map((choice, index) => {
             const choiceIndex = index as ChoiceIndex;
             const selected = isMultiSelect ? selectedChoices.includes(choiceIndex) : selectedChoice === choiceIndex;
+            const isTabStop = isMultiSelect || selected || (selectedChoice === null && index === 0);
             return (
               <button
                 key={choice}
+                ref={el => { choiceButtonRefs.current[index] = el; }}
                 type="button"
+                role={isMultiSelect ? undefined : 'radio'}
+                aria-checked={isMultiSelect ? undefined : selected}
+                aria-pressed={isMultiSelect ? selected : undefined}
+                tabIndex={isMultiSelect ? undefined : (isTabStop ? 0 : -1)}
                 disabled={locked || timer.isExpired}
                 onClick={() => toggleChoice(choiceIndex)}
+                onKeyDown={event => handleChoiceKeyDown(event, index)}
                 className={`min-h-16 border-2 px-4 py-3 text-left text-lg font-bold disabled:opacity-55 ${selected ? 'border-brand-red bg-brand-red text-white' : 'border-brand-ink bg-brand-surface text-brand-ink'}`}
-                aria-pressed={selected}
               >
                 <span className="mr-3 font-black">{String.fromCharCode(65 + index)}.</span>
                 {choice}
@@ -471,7 +494,7 @@ function RevealPanel({ team, questions, questionIndex, answerChoice, answerChoic
         <p className="text-sm font-black uppercase tracking-wide text-brand-red-light">Reveal</p>
         <h1 className="mt-3 text-3xl font-bold">{question.text}</h1>
         {question.media?.type === 'image' && (
-          <img src={question.media.url} alt="" className="mt-4 max-h-64 w-full border-2 border-brand-ink object-contain" />
+          <img src={question.media.url} alt={question.media.altText} className="mt-4 max-h-64 w-full border-2 border-brand-ink object-contain" />
         )}
         <p className="mt-5 text-lg text-brand-paper">
           Accepted answer{question.acceptedAnswers.length !== 1 ? 's' : ''}: {question.acceptedAnswers.join(', ')}
@@ -494,7 +517,7 @@ function RevealPanel({ team, questions, questionIndex, answerChoice, answerChoic
       <p className="text-sm font-black uppercase tracking-wide text-brand-red-light">Reveal</p>
       <h1 className="mt-3 text-3xl font-bold">{question.text}</h1>
       {question.media?.type === 'image' && (
-        <img src={question.media.url} alt="" className="mt-4 max-h-64 w-full border-2 border-brand-ink object-contain" />
+        <img src={question.media.url} alt={question.media.altText} className="mt-4 max-h-64 w-full border-2 border-brand-ink object-contain" />
       )}
       <div className="mt-5 grid gap-2">
         {question.choices.map((choice, index) => {
