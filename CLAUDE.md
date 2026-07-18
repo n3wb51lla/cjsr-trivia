@@ -16,6 +16,7 @@ Stack:
 Primary routes:
 
 - `/` - player join, question, reveal, and final standings flow
+- `/marketing` - local TriviaKnight marketing landing-page prototype (not deployed as of 2026-07-18; see "TriviaKnight Marketing Prototype" below)
 - `/host` - passphrase-protected host control desk
 - `/host/questions` - passphrase-protected live question/answer editor, including bulk `.xlsx` import
 - `/screen` - read-only projector display
@@ -49,6 +50,34 @@ There is also a `template` branch (`f01b52b` as of last sync), branched from `ma
 Important: the live Firebase Hosting site at `https://cjsr-trivia.web.app` and the RTDB rules for `cjsr-trivia-default-rtdb` are both **confirmed deployed and current as of `26395b5`** (deployed 2026-07-18) — this includes the dark/light theme system, the live question/answer editor, the printable answer key, all player-facing copy changes, overflow team names, the branding-config extraction, the bulk xlsx import, free-text team naming, the sudden-death fix, the E1 dynamic-rounds refactor, E2a/E2b (multi-select/free-text questions), E5 (configurable player cap), E6 (media questions), Stage 1 (`instance.config.json` consolidation), and the a11y-scan fixes. This is a snapshot as of that commit, not a standing guarantee — re-check the commit list above against what's actually deployed before assuming a *later* change is live; run `npx firebase-tools deploy --only hosting` / `--only database` again after any further changes to source or rules.
 
 This repo's git state has previously changed without an explicit `git commit`/`git push` from a session (some earlier commits with generic messages like `Fix` and `UI improvements` were made by a mechanism outside any Claude Code git command). More recent commits (the ones listed above) were made directly via normal `git commit`/`git push` in-session. Don't assume commit messages describe *why* something changed for the older, generically-named ones — check this file or the conversation history instead.
+
+## TriviaKnight Marketing Prototype
+
+An **uncommitted, local-only** TriviaKnight marketing landing page was added on 2026-07-18. It lives at `/marketing` so the existing `/` player-join route and every live CJSR workflow remain unchanged. Nothing from this marketing work has been deployed to `https://cjsr-trivia.web.app`.
+
+Files added/changed for the prototype:
+
+- `src/pages/MarketingPage.tsx` — complete one-page marketing surface: announcement bar, sticky responsive navigation, hero, HTML/CSS host-desk mockup, product promise strip, capabilities, real three-screen workflow, launch-plan pricing, FAQ, final CTA, footer, route-specific document title, and social metadata.
+- `src/App.tsx` — registers `/marketing` and gives it a full-bleed layout without the CJSR global header, Firebase config warning, or normal app-width wrapper. Existing routes retain their previous layout.
+- `src/styles.css` — adds the scoped TriviaKnight marketing system and responsive styles. The live CJSR app still uses its existing red/black customer skin outside `/marketing`.
+- `public/og.png` — generated navy/gold social-share card using the exact message “One subscription. Unlimited trivia nights.” and a text-only `TriviaKnight` treatment.
+
+Design source and brand decisions:
+
+- The supplied design package is `C:\Users\ericn\Downloads\TriviaKnight Design System.zip`. Its navy/gold/off-white palette, Archivo + IBM Plex typography, spacing, elevation, motion, voice, and verified product-workflow guidance are the working marketing source of truth.
+- **Do not use any logo in that ZIP as source material.** The owner is redesigning the TriviaKnight logo. The package's `assets/logo*.svg`, knight mark, and chess-piece treatment are temporary placeholders and must not be propagated.
+- The current prototype therefore uses a deliberately temporary **text-only** `TriviaKnight` brand treatment. `src/assets/logo.png` remains the CJSR customer logo and is also not a TriviaKnight logo.
+- Brand voice: confident, clever, plain language; address the host as “you”; no invented social proof, emoji, em dashes, or hype language. Lead with “One subscription. Unlimited trivia nights.”
+- The marketing hero/mockup and How It Works copy must remain grounded in the actual application: round-based games; multiple-choice, multi-select, and free-text questions; optional image/video clues; live host controls; team lock-ins; presenter view; scoring, leaderboard, manual corrections, and sudden-death ties.
+- Pricing and plan-tier copy on this prototype is launch positioning, not evidence of implemented authentication, billing, multi-venue workspaces, analytics, or white-label account features. CTAs currently open the existing host gate or an early-access email; no signup/billing flow was invented.
+
+Validation and POC context:
+
+- `npm run build` passes, including the automatic data/config validation: 31 questions across 6 rounds, 20 team names, 15 overflow names, and `instance.config.json`. Vite still reports the pre-existing large-chunk warning for the app/xlsx bundles; it is a warning, not a build failure.
+- The deployed POC at `https://cjsr-trivia.web.app` was visually reviewed read-only at `/`, `/host`, and `/screen` after the marketing page was built. No passphrase was entered and no Firebase state was changed.
+- Treat the deployed/current CJSR app and this file's capability record as the **functional** source of truth. Its player join sequence, live-connection state, host gate, and projector states should be preserved when translating product surfaces into the TriviaKnight brand.
+- The owner prefers the new TriviaKnight look and feel, but the marketing site and live game should not become identical. Marketing can be expansive and polished; player, host, and projector views must stay fast, sparse, room-readable, and purpose-specific.
+- Before any production deployment, decide explicitly whether `/marketing` stays a separate route, becomes the public `/` route with the player experience moved elsewhere, or ships as a separate marketing site/domain. Do not overwrite the live CJSR homepage by assumption.
 
 ## Environment
 

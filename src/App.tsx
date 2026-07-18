@@ -7,6 +7,7 @@ import { HostPage } from './pages/HostPage';
 import { HostQuestionsPage } from './pages/HostQuestionsPage';
 import { PlayerPage } from './pages/PlayerPage';
 import { ScreenPage } from './pages/ScreenPage';
+import { MarketingPage } from './pages/MarketingPage';
 import { siteConfig } from './config/site';
 import logo from './assets/logo.png';
 
@@ -23,19 +24,21 @@ export function App() {
 function AppLayout() {
   const location = useLocation();
   const isScreenRoute = location.pathname === '/screen';
+  const isMarketingRoute = location.pathname === '/marketing';
 
   return (
-    <div className="min-h-screen bg-brand-black text-brand-paper">
-      <a className="skip-link" href="#main">Skip to main content</a>
-      {!isScreenRoute && (
+    <div className={isMarketingRoute ? 'marketing-shell' : 'min-h-screen bg-brand-black text-brand-paper'}>
+      <a className={isMarketingRoute ? 'marketing-skip-link' : 'skip-link'} href="#main">Skip to main content</a>
+      {!isScreenRoute && !isMarketingRoute && (
         <header className="border-b-4 border-brand-red bg-brand-surface px-4 py-3">
           <HeaderContent />
         </header>
       )}
-      <ConfigWarning />
-      <main id="main" className={isScreenRoute ? 'mx-auto max-w-none px-4 py-4' : 'mx-auto max-w-6xl px-4 py-6'}>
+      {!isMarketingRoute && <ConfigWarning />}
+      <main id="main" className={isMarketingRoute ? '' : isScreenRoute ? 'mx-auto max-w-none px-4 py-4' : 'mx-auto max-w-6xl px-4 py-6'}>
         <Routes>
           <Route path="/" element={<PlayerPage />} />
+          <Route path="/marketing" element={<MarketingPage />} />
           <Route path="/host" element={<HostPage />} />
           <Route path="/host/questions" element={<HostQuestionsPage />} />
           <Route path="/screen" element={<ScreenPage />} />
