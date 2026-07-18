@@ -1,7 +1,7 @@
 import type { Question } from '../types';
 import type { QuestionRowInput } from './questionValidation';
 
-const COLUMNS = ['id', 'round', 'text', 'choiceA', 'choiceB', 'choiceC', 'choiceD', 'correctAnswer'] as const;
+const COLUMNS = ['id', 'round', 'type', 'text', 'choiceA', 'choiceB', 'choiceC', 'choiceD', 'correctAnswer', 'mediaType', 'mediaUrl'] as const;
 
 export async function downloadQuestionTemplate(questions: readonly Question[], filename = 'questions-template.xlsx'): Promise<void> {
   const XLSX = await import('xlsx');
@@ -9,22 +9,29 @@ export async function downloadQuestionTemplate(questions: readonly Question[], f
   const rows = questions.map(question => ({
     id: question.id,
     round: question.round === 'suddenDeath' ? 'Sudden Death' : question.round,
+    type: question.type === 'multi_select' ? 'Multi-select' : question.type === 'free_text' ? 'Free text' : 'Multiple choice',
     text: '',
     choiceA: '',
     choiceB: '',
     choiceC: '',
     choiceD: '',
     correctAnswer: '',
+    mediaType: '',
+    mediaUrl: '',
   }));
 
   const questionsSheet = XLSX.utils.json_to_sheet(rows, { header: [...COLUMNS] });
   const instructionsSheet = XLSX.utils.aoa_to_sheet([
     ['How to fill in this template'],
     [''],
-    ['id and round are fixed per question - do not change them.'],
+    ['id, round, and type are fixed per question - do not change them (type is shown for reference only and is ignored on upload).'],
     ['text: the question text, 140 characters or fewer.'],
-    ['choiceA, choiceB, choiceC, choiceD: the four answer choices.'],
-    ['correctAnswer: enter A, B, C, or D for the correct choice.'],
+    ['choiceA, choiceB, choiceC, choiceD: the four answer choices (Multiple choice and Multi-select questions only - leave blank for Free text).'],
+    ['correctAnswer: for Multiple choice questions, enter a single letter A, B, C, or D.'],
+    ['correctAnswer: for Multi-select questions, enter every correct letter separated by commas, e.g. A,C.'],
+    ['correctAnswer: for Free text questions, enter every accepted answer separated by semicolons, e.g. Paris;City of Light.'],
+    ['mediaType and mediaUrl are optional: set mediaType to image or video and mediaUrl to its hosted URL to attach a clue.'],
+    ['Leave mediaType and mediaUrl blank to remove any existing media on a question you are editing.'],
     [''],
     ['Save this file and upload it back on the Questions page when done.'],
     ['You only need to fill in the rows you want to change - rows with no text/choices/answer filled in are skipped.'],
@@ -79,6 +86,8 @@ export async function parseQuestionWorkbook(file: File): Promise<QuestionRowInpu
       choiceC: record.choiceC,
       choiceD: record.choiceD,
       correctAnswer: record.correctAnswer,
+      mediaType: record.mediaType,
+      mediaUrl: record.mediaUrl,
     });
   }
 
@@ -88,7 +97,7 @@ export async function parseQuestionWorkbook(file: File): Promise<QuestionRowInpu
 }
 
 function hasEditableContent(row: QuestionRowInput): boolean {
-  return [row.text, row.choiceA, row.choiceB, row.choiceC, row.choiceD, row.correctAnswer].some(
+  return [row.text, row.choiceA, row.choiceB, row.choiceC, row.choiceD, row.correctAnswer, row.mediaType, row.mediaUrl].some(
     value => typeof value === 'string' && value.trim() !== '',
   );
 }
