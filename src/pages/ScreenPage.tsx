@@ -37,6 +37,7 @@ export function ScreenPage() {
         <QuestionScreen
           questionIndex={question.id}
           questionText={question.text}
+          choices={question.choices}
           points={getPointsForQuestion(questions, question.id)}
           secondsRemaining={timer.secondsRemaining}
           progress={timer.progress}
@@ -99,6 +100,7 @@ function LobbyScreen({ teamCount, leaderboard }: { teamCount: number; leaderboar
 function QuestionScreen({
   questionIndex,
   questionText,
+  choices,
   points,
   secondsRemaining,
   progress,
@@ -107,6 +109,7 @@ function QuestionScreen({
 }: {
   questionIndex: number;
   questionText: string;
+  choices: readonly [string, string, string, string];
   points: number;
   secondsRemaining: number;
   progress: number;
@@ -126,7 +129,16 @@ function QuestionScreen({
         </div>
       </div>
 
-      <div className="mt-10" role="timer" aria-label={`${secondsRemaining} seconds remaining`}>
+      <div className="mt-8 grid gap-3 sm:grid-cols-2">
+        {choices.map((choice, index) => (
+          <div key={choice} className="border-2 border-cjsr-ink/50 p-4 text-2xl font-bold text-cjsr-paper">
+            <span className="mr-3 font-black">{String.fromCharCode(65 + index)}.</span>
+            {choice}
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-8" role="timer" aria-label={`${secondsRemaining} seconds remaining`}>
         <div className="flex items-end justify-between gap-4">
           <p className="font-display text-6xl">{secondsRemaining}s</p>
           <p className="text-2xl font-bold text-cjsr-paper">{lockedCount} / {activeTeamCount} teams locked</p>

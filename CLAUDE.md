@@ -316,6 +316,28 @@ UI repetition cleanup:
 - Host unlocked headline was shortened to "Control desk" because the global header already supplies the trivia context.
 - Screen waiting/lobby copy was shortened so the projector experience does not stack multiple CJSR/Trivia labels.
 
+## Product Direction: White-Label Template
+
+After the CJSR event, the owner decided to turn this codebase into a resellable trivia-night product rather than a one-off CJSR app: clone the repo per customer, reconfigure, redeploy under the customer's own Firebase project. Not a multi-tenant SaaS — no auth/tenant-isolation work is planned. A detailed implementation plan for this exists (was last saved to a local Claude Code plan file during a planning session; if that's not available, this section plus a fresh CJSR-specific-content audit is enough to reconstruct it). Two phases:
+
+**Phase 1 — branding/copy/import (smaller, not yet started):**
+
+- Centralize all CJSR-specific copy (site name, headlines, join-screen description, land acknowledgment, prize copy) into a single config file instead of scattered literal strings across `App.tsx`/`ScreenPage.tsx`/`PlayerPage.tsx`.
+- Rename the `cjsr-*` Tailwind color tokens (`tailwind.config.js`, `src/styles.css`, and every `text-cjsr-*`/`bg-cjsr-*`/`border-cjsr-*` class across ~9 component files) to generic `brand-*` tokens, so future customers only ever edit hex values in `styles.css`, never component code.
+- Strip CJSR-specific root files (`CJSR LOGO.jpg`, the question-bank docx/script) and internal handoff docs (this file, `PROGRESS.md`, `IMPLEMENTATION_PLAN.md`, `cjsr-trivia-codex-prompt.md`) before reselling.
+- Bulk question import: host downloads an `.xlsx` template (generated client-side via SheetJS, matching the event's current round structure), fills it in, uploads it back on `/host/questions`; validated client-side then bulk-written to Firebase with the same multi-location-`update()` pattern already used by `ensureQuestionsSeeded`.
+
+**Phase 2 — structural flexibility (bigger, touches types/DB rules/scoring, not yet started):**
+
+- Unlimited questions and dynamic round definitions (host configures a list of rounds, each with its own question count, point value, and whether a break follows) — replaces the current fixed `RoundNumber = 1|2|3|4|5|6` type and the `questionsPerRound`/`regularQuestionCount`/`breaksAfterQuestions` fields in `schedule.json`.
+- New question types beyond multiple-choice: free-text answers with fuzzy/typo-tolerant matching (plus a host review step before scoring is trusted, since auto-grading free text is inherently imperfect) and multi-select (multiple correct choices).
+- Per-round and per-question customizable scoring (falls out of the dynamic-round-config work above).
+- Configurable max players per team (currently hardcoded `1|2|3|4`).
+- Image and video clue questions via Firebase Storage (not currently used anywhere in this app) — recommended default is video renders on `/screen` only (shared projector), not autoplaying independently on every player's phone, to avoid audio chaos in the room; images can render on both.
+- `database.rules.json` currently hardcodes round bounds (1-6), question-index bounds (1-31), and player-count bounds (1-4) directly in rule expressions — going unlimited/dynamic means loosening these to generous static ceilings rather than trying to have rules read dynamic config, since the rules' job is shape/sanity validation and the host UI is the real enforcement layer.
+
+Recommended sequencing: ship Phase 1 and confirm it live before starting Phase 2, and within Phase 2, dynamic rounds before question types (question types are the highest-effort/highest-risk piece — new domain-type shape, new scoring branches, new UI in every page).
+
 ## Known Follow-Ups
 
 High priority:
