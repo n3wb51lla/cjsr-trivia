@@ -185,9 +185,9 @@ Trivia data:
 - Bulk `.xlsx` import/export on the same page: download a template (pre-filled with each question's fixed id/round from the current structure), fill in text/choices/correctAnswer (letter A-D), upload it back. Import only edits existing question ids — it can't add/remove/reorder. Every row must pass validation before the Import button enables; blank rows in the template are skipped so a host only needs to fill in what they're changing.
 - 20 official team names in `src/data/teamNames.json` (pub-quiz pun names: `Quizzy McQuizface`, `Agatha Quiztie`, `Les Quizerables`, etc.)
 - 15 additional "overflow" team names in `src/data/teamNamesOverflow.json`, same pun style. Hidden on the player join screen until all 20 primary names are taken, then revealed automatically (with a short "More names unlocked" note) so the event can scale past 20 teams without a code change on the night.
-- Round-based scoring
-- Schedule/break metadata (this event runs as one continuous ~1 hour block with no scheduled breaks — see `schedule.json`)
-- Shared domain types
+- Round-based scoring, dynamically defined: `schedule.json`'s `rounds` array is a list of `{ id, questionCount, points, breakAfter }` objects — round count, per-round question count, per-round points, and break placement are all just data now, not hardcoded (this event runs 6 rounds of 5, points 1-2-3-4-5-5, one continuous ~1 hour block with no breaks — every round has `breakAfter: false`). `src/data/scoring.json` no longer exists; points live on each round. `schedule.json` also has `suddenDeath: { enabled, points }` — a customer can fully disable sudden death, not just leave it unreachable.
+- `src/lib/triviaData.ts` derives everything from `schedule.rounds` at module load: `getRegularQuestionCount()` (sum of `questionCount`), `getLastRoundId()`, `isBreakAfterQuestion()` (via precomputed cumulative round boundaries), `getSuddenDeathQuestionId()` (regular count + 1, or `null` if disabled). Nothing in the codebase hardcodes `30` or `6` anymore — grep for those literals before assuming a number is safe to change only in one place.
+- Shared domain types; `RoundNumber` is now `type RoundNumber = number` (was a fixed `1|2|3|4|5|6` union) — kept as a semantic alias so signatures didn't need rewriting, but it's no longer a compile-time guarantee of a bounded round count.
 
 Player flow:
 
@@ -258,13 +258,13 @@ Branding & theming:
 Stress simulation:
 
 - `scripts/simulateFullGame.mjs` runs deterministic full-game simulations.
-- Usage:
+- Usage (question count is no longer a CLI arg — it's derived from `schedule.json`'s `rounds`):
 
 ```bash
-node scripts/simulateFullGame.mjs 500 20 30
+node scripts/simulateFullGame.mjs 500 20
 ```
 
-- Latest run simulated 500 games, 20 teams, 30 regular questions, and 300,000 answer records.
+- Latest run simulated 500 games, 20 teams, 30 regular questions (derived from `schedule.json`), and 300,000 answer records.
 - Result: all simulation invariants passed.
 - Latest observed output included:
   - Correct answer rate: `40.54%`
@@ -338,14 +338,13 @@ After the CJSR event, the owner decided to turn this codebase into a resellable 
 - ✅ Bulk `.xlsx` question import/export shipped on `/host/questions` (see "Question editing" above for the mechanism). Uses `xlsx` (SheetJS) installed from `https://cdn.sheetjs.com/...` rather than the npm registry — the latest npm-published version (0.18.5) has two unpatched high-severity CVEs (prototype pollution, ReDoS) that matter here because this code parses untrusted host-uploaded files. The CDN-installed version (0.20.3 as of this writing) is patched. If bumping this dependency, get the current version+URL from SheetJS's own docs, not just `npm update` (npm's registry copy won't move past 0.18.5). The `xlsx` import is also dynamically `import()`ed (not a static top-level import) so it code-splits into its own chunk and isn't downloaded by every player joining on `/` — it was originally static and nearly doubled the main bundle (447KB → 947KB) before this was caught and fixed during the same session.
 - ✅ Free-text team naming: a "name your own team" text input sits alongside the curated-name buttons on `/`, calling the same `handleJoin`. If `TEAM_NAMES` is empty, only the text input renders (no separate mode flag). Shows an instant client-side "(taken)" check against the live roster before submitting. `database.rules.json`'s team-write rule got one addition, a 40-char cap on `teamName` (`newData.child('teamName').val().length <= 40`), matching the existing pattern used for question text. Moderation leans on the existing kick feature, not new tooling.
 
-**Phase 2 — structural flexibility (bigger, touches types/DB rules/scoring, not yet started):**
+**Phase 2 — structural flexibility (bigger, touches types/DB rules/scoring):**
 
-- Unlimited questions and dynamic round definitions (host configures a list of rounds, each with its own question count, point value, and whether a break follows) — replaces the current fixed `RoundNumber = 1|2|3|4|5|6` type and the `questionsPerRound`/`regularQuestionCount`/`breaksAfterQuestions` fields in `schedule.json`.
-- New question types beyond multiple-choice: free-text answers with fuzzy/typo-tolerant matching (plus a host review step before scoring is trusted, since auto-grading free text is inherently imperfect) and multi-select (multiple correct choices).
-- Per-round and per-question customizable scoring (falls out of the dynamic-round-config work above).
-- Configurable max players per team (currently hardcoded `1|2|3|4`).
-- Image and video clue questions via Firebase Storage (not currently used anywhere in this app) — recommended default is video renders on `/screen` only (shared projector), not autoplaying independently on every player's phone, to avoid audio chaos in the room; images can render on both.
-- `database.rules.json` currently hardcodes round bounds (1-6), question-index bounds (1-31), and player-count bounds (1-4) directly in rule expressions — going unlimited/dynamic means loosening these to generous static ceilings rather than trying to have rules read dynamic config, since the rules' job is shape/sanity validation and the host UI is the real enforcement layer.
+- ✅ **E1 done**: unlimited questions and dynamic round definitions. `schedule.json`'s `rounds: [{ id, questionCount, points, breakAfter }]` array replaced the old fixed `questionsPerRound`/`regularQuestionCount`/`breaksAfterQuestions` fields and `scoring.json` entirely (deleted). `RoundNumber` is now `type RoundNumber = number`, no longer a `1|2|3|4|5|6` union. `database.rules.json`'s round bound (was 1-6) and question-index bound (was 1-31) loosened to generous static ceilings (200 and 1000) rather than exact limits, since the rules' job is shape/sanity validation and the host UI is the real enforcement layer. **Scope was deliberately JSON-config-only, no new live host UI** — a customer edits `schedule.json` once during event setup, same as they already hand-edit `questions.json`/`teamNames.json`; the round structure isn't something a host tweaks live mid-event. Verified as a zero-visible-behavior-change refactor for CJSR's actual event (same 6 rounds of 5, same points, same no-breaks, same sudden death) via `simulateFullGame.mjs` output matching byte-for-byte and isolated `tsx` checks importing the real functions — **not** via a live test against the production game, since `games/main` still holds CJSR's actual final results and can't be safely experimented on (see the note under "Kick" above). A second isolated check proved the new flexibility itself works, by temporarily swapping in a completely different round shape (3 rounds of 3/8/2 questions, points 2/10/100, sudden death disabled, 20s timer) and confirming every derived value adapted correctly, then restoring the real file.
+- New question types beyond multiple-choice: free-text answers with fuzzy/typo-tolerant matching (plus a host review step before scoring is trusted, since auto-grading free text is inherently imperfect) and multi-select (multiple correct choices). Not started.
+- Per-round and per-question customizable scoring — per-round points already done as part of E1; a per-question override still needs the question-types work (E2) to have somewhere to live.
+- Configurable max players per team (currently hardcoded `1|2|3|4`). Not started.
+- Image and video clue questions via Firebase Storage (not currently used anywhere in this app) — recommended default is video renders on `/screen` only (shared projector), not autoplaying independently on every player's phone, to avoid audio chaos in the room; images can render on both. Not started.
 
 Recommended sequencing: ship the remaining Phase 1 item (free-text team naming) before starting Phase 2, and within Phase 2, dynamic rounds before question types (question types are the highest-effort/highest-risk piece — new domain-type shape, new scoring branches, new UI in every page).
 

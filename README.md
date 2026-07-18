@@ -128,12 +128,13 @@ This repo is meant to be cloned per customer/event rather than run as shared mul
 1. Edit `src/config/site.ts` — site name, headlines, join-screen description, prize copy, land acknowledgment (set `territoryText: null` to omit it entirely).
 2. Replace `src/assets/logo.png` with the new logo, keeping the same filename so no code changes are needed.
 3. Edit the color values in `src/styles.css` (`--color-brand-*` under `:root` and `:root[data-theme='light']`). Tailwind class names (`bg-brand-red`, `text-brand-ink`, etc.) don't need to change — only the hex values do.
-4. Replace `src/data/questions.json` with the new event's question bank (or leave it and use `/host/questions` to import/edit live — bulk `.xlsx` import is planned but not yet built). Run `npm run validate:data` after editing.
-5. Optionally replace `src/data/teamNames.json` / `teamNamesOverflow.json` with new pun/team names, or leave them empty to have players type their own team name.
-6. Set `.env.local` — Firebase config for the new project, a new `VITE_HOST_PASSPHRASE`, and the branding env vars (`VITE_SITE_TITLE`, `VITE_THEME_COLOR`, `VITE_THEME_STORAGE_KEY`).
-7. Update `package.json`'s `name` and `.firebaserc`'s project id to match the new customer's own Firebase project (create that project first, per "Firebase Setup" above).
-8. `npm run validate:data && npm run lint && npm run build`.
-9. `npx firebase-tools deploy --only database` then `npx firebase-tools deploy --only hosting`.
+4. Edit `src/data/schedule.json`'s `rounds` array to match the event's round structure — any number of rounds, each with its own `questionCount`, `points`, and `breakAfter`. Set `suddenDeath.enabled` to `false` if the event doesn't want a tiebreaker question.
+5. Replace `src/data/questions.json` with the new event's question bank, matching the round structure from step 4 (or leave the default and use `/host/questions` to edit live, including bulk `.xlsx` import/export). Run `npm run validate:data` after editing.
+6. Optionally replace `src/data/teamNames.json` / `teamNamesOverflow.json` with new pun/team names, or leave them empty to have players type their own team name.
+7. Set `.env.local` — Firebase config for the new project, a new `VITE_HOST_PASSPHRASE`, and the branding env vars (`VITE_SITE_TITLE`, `VITE_THEME_COLOR`, `VITE_THEME_STORAGE_KEY`).
+8. Update `package.json`'s `name` and `.firebaserc`'s project id to match the new customer's own Firebase project (create that project first, per "Firebase Setup" above).
+9. `npm run validate:data && npm run lint && npm run build`.
+10. `npx firebase-tools deploy --only database` then `npx firebase-tools deploy --only hosting`.
 
 ## QR Code Guidance
 

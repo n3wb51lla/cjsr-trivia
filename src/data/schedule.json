@@ -1,22 +1,12 @@
 {
   "questionDurationSeconds": 15,
-  "questionsPerRound": 5,
-  "regularQuestionCount": 30,
-  "suddenDeathQuestionId": 31,
-  "breaksAfterQuestions": [],
-  "targetPace": {
-    "rulesWalkthroughEnd": "07:00",
-    "round1End": "12:00",
-    "break1End": "14:30",
-    "round2End": "19:30",
-    "break2End": "22:00",
-    "round3End": "27:00",
-    "break3End": "29:30",
-    "round4End": "34:30",
-    "break4End": "37:00",
-    "round5End": "42:00",
-    "break5End": "44:30",
-    "round6End": "49:30",
-    "finalsEnd": "56:00"
-  }
+  "rounds": [
+    { "id": 1, "questionCount": 5, "points": 1, "breakAfter": false },
+    { "id": 2, "questionCount": 5, "points": 2, "breakAfter": false },
+    { "id": 3, "questionCount": 5, "points": 3, "breakAfter": false },
+    { "id": 4, "questionCount": 5, "points": 4, "breakAfter": false },
+    { "id": 5, "questionCount": 5, "points": 5, "breakAfter": false },
+    { "id": 6, "questionCount": 5, "points": 5, "breakAfter": false }
+  ],
+  "suddenDeath": { "enabled": true, "points": 5 }
 }

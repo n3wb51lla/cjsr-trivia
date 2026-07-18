@@ -5,7 +5,7 @@ import { useQuestionTimer } from '../hooks/useQuestionTimer';
 import { finalizeQuestionScores, kickTeamFromLobby, patchGameMeta, resetGameForReplay, setTeamScore, writeGameMeta, type FirebaseGameMeta } from '../lib/firebaseData';
 import { DEFAULT_GAME_CODE, getCurrentQuestionSummary, getHostAdvanceMeta, getHostButtonLabel, isSuddenDeathAvailable, makeInitialGameMeta } from '../lib/hostState';
 import { buildLeaderboard } from '../lib/leaderboard';
-import { getPointsForQuestion, getSuddenDeathQuestionId, resolveQuestions } from '../lib/triviaData';
+import { getLastRoundId, getPointsForQuestion, getRegularQuestionCount, getSuddenDeathQuestionId, resolveQuestions } from '../lib/triviaData';
 import type { LeaderboardEntry, Team } from '../types';
 
 const EMPTY_TEAMS: Team[] = [];
@@ -73,8 +73,8 @@ export function HostPage() {
     await runHostAction('Skipped to finals.', () => patchGameMeta(DEFAULT_GAME_CODE, {
       code: DEFAULT_GAME_CODE,
       phase: 'final',
-      currentQuestionIndex: meta?.currentQuestionIndex ?? 30,
-      currentRound: meta?.currentRound ?? 6,
+      currentQuestionIndex: meta?.currentQuestionIndex ?? getRegularQuestionCount(),
+      currentRound: meta?.currentRound ?? getLastRoundId(),
       questionStartedAt: null,
       startedAt: meta?.startedAt ?? now,
       createdAt: meta?.createdAt ?? now,
@@ -137,7 +137,7 @@ export function HostPage() {
               meta?.currentQuestionIndex
                 ? meta.currentQuestionIndex === getSuddenDeathQuestionId()
                   ? 'Sudden death'
-                  : `Q${meta.currentQuestionIndex} of 30`
+                  : `Q${meta.currentQuestionIndex} of ${getRegularQuestionCount()}`
                 : 'none'
             }
           />
