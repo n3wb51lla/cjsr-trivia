@@ -212,8 +212,8 @@
   {
     "id": 31,
     "round": "suddenDeath",
-    "text": "Sudden death: what frequency is CJSR on in Edmonton?",
-    "choices": ["88.5 FM", "90.9 FM", "101.7 FM", "740 AM"],
-    "answer": 0
+    "text": "Sudden death: how many squares are on a standard chessboard?",
+    "choices": ["48", "56", "64", "72"],
+    "answer": 2
   }
 ]

@@ -5,7 +5,6 @@ import { DEFAULT_GAME_CODE } from '../lib/hostState';
 import { buildLeaderboard } from '../lib/leaderboard';
 import { getPointsForQuestion, getQuestionByIndex, resolveQuestions } from '../lib/triviaData';
 import type { Answer, ChoiceIndex, LeaderboardEntry, Question, QuestionMedia } from '../types';
-import logo from '../assets/logo.png';
 import { ThemeToggle } from '../components/common/ThemeToggle';
 import { siteConfig } from '../config/site';
 
@@ -73,9 +72,8 @@ function ScreenShell({ status, error, children }: { status: string; error: strin
   return (
     <div className="min-h-[calc(100vh-9rem)]">
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <img src={logo} alt="" className="h-12 w-12" />
-          <p className="font-display text-3xl uppercase text-brand-ink">{siteConfig.headerText}</p>
+        <div className="app-wordmark app-wordmark--screen" aria-label={siteConfig.headerText}>
+          <span>Trivia</span><span>Knight</span>
         </div>
         <div className="flex items-center gap-4">
           <div className="text-right text-sm font-bold uppercase tracking-wide text-brand-paper" aria-live="polite">

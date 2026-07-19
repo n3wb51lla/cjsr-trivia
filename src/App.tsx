@@ -4,12 +4,13 @@ import { ConfigWarning } from './components/common/ConfigWarning';
 import { ThemeToggle } from './components/common/ThemeToggle';
 import { AnswerKeyPage } from './pages/AnswerKeyPage';
 import { HostPage } from './pages/HostPage';
+import { HostBrandPage } from './pages/HostBrandPage';
 import { HostQuestionsPage } from './pages/HostQuestionsPage';
 import { PlayerPage } from './pages/PlayerPage';
 import { ScreenPage } from './pages/ScreenPage';
 import { MarketingPage } from './pages/MarketingPage';
+import { TriviaKnightDemoPage } from './pages/TriviaKnightDemoPage';
 import { siteConfig } from './config/site';
-import logo from './assets/logo.png';
 
 export function App() {
   return (
@@ -25,21 +26,25 @@ function AppLayout() {
   const location = useLocation();
   const isScreenRoute = location.pathname === '/screen';
   const isMarketingRoute = location.pathname === '/marketing';
+  const isDemoRoute = location.pathname === '/demo';
+  const isStandaloneRoute = isMarketingRoute || isDemoRoute;
 
   return (
-    <div className={isMarketingRoute ? 'marketing-shell' : 'min-h-screen bg-brand-black text-brand-paper'}>
-      <a className={isMarketingRoute ? 'marketing-skip-link' : 'skip-link'} href="#main">Skip to main content</a>
-      {!isScreenRoute && !isMarketingRoute && (
-        <header className="border-b-4 border-brand-red bg-brand-surface px-4 py-3">
+    <div className={isMarketingRoute ? 'marketing-shell' : isDemoRoute ? 'tk-demo-shell' : 'app-shell'}>
+      <a className={isStandaloneRoute ? 'marketing-skip-link' : 'skip-link'} href="#main">Skip to main content</a>
+      {!isScreenRoute && !isStandaloneRoute && (
+        <header className="app-header">
           <HeaderContent />
         </header>
       )}
-      {!isMarketingRoute && <ConfigWarning />}
-      <main id="main" className={isMarketingRoute ? '' : isScreenRoute ? 'mx-auto max-w-none px-4 py-4' : 'mx-auto max-w-6xl px-4 py-6'}>
+      {!isStandaloneRoute && <ConfigWarning />}
+      <main id="main" className={isStandaloneRoute ? '' : isScreenRoute ? 'app-main app-main--screen' : 'app-main'}>
         <Routes>
           <Route path="/" element={<PlayerPage />} />
           <Route path="/marketing" element={<MarketingPage />} />
+          <Route path="/demo" element={<TriviaKnightDemoPage />} />
           <Route path="/host" element={<HostPage />} />
+          <Route path="/host/brand" element={<HostBrandPage />} />
           <Route path="/host/questions" element={<HostQuestionsPage />} />
           <Route path="/screen" element={<ScreenPage />} />
           <Route path="/host/answer-key" element={<AnswerKeyPage />} />
@@ -54,18 +59,18 @@ function HeaderContent() {
   const showHostNav = location.pathname.startsWith('/host');
 
   return (
-    <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3">
-      <Link to={showHostNav ? '/host' : '/'} className="flex items-center gap-2 font-display text-2xl font-black uppercase tracking-wide text-brand-ink">
-        <img src={logo} alt="" className="h-9 w-9" />
-        {siteConfig.headerText}
+    <div className="app-header__inner">
+      <Link to={showHostNav ? '/host' : '/'} className="app-wordmark" aria-label={`${siteConfig.headerText} home`}>
+        <span>Trivia</span><span>Knight</span>
       </Link>
       <div className="flex flex-wrap items-center gap-2">
         {showHostNav && (
           <nav aria-label="Host navigation" className="flex flex-wrap gap-2 text-sm font-bold">
-            <Link className="nav-link" to="/host">Host</Link>
-            <Link className="nav-link" to="/host/questions">Questions</Link>
+            <Link className="nav-link" to="/host" aria-current={location.pathname === '/host' ? 'page' : undefined}>Host</Link>
+            <Link className="nav-link" to="/host/brand" aria-current={location.pathname === '/host/brand' ? 'page' : undefined}>Brand setup</Link>
+            <Link className="nav-link" to="/host/questions" aria-current={location.pathname === '/host/questions' ? 'page' : undefined}>Questions</Link>
             <Link className="nav-link" to="/screen">Screen</Link>
-            <Link className="nav-link" to="/host/answer-key">Answer key</Link>
+            <Link className="nav-link" to="/host/answer-key" aria-current={location.pathname === '/host/answer-key' ? 'page' : undefined}>Answer key</Link>
           </nav>
         )}
         <ThemeToggle />

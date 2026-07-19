@@ -10,14 +10,64 @@
  * plugin, generated from src/config/instance.config.json. See vite.config.ts.
  */
 :root {
-  --font-display: Archivo Black;
-  --font-body: Inter;
+  --navy-950: #070b16;
+  --navy-900: #0b1120;
+  --navy-800: #111a30;
+  --navy-700: #1a2742;
+  --navy-600: #243453;
+  --slate-200: #dde0e8;
+  --slate-300: #c4c9d5;
+  --slate-400: #9aa1b3;
+  --slate-500: #6c7488;
+  --slate-700: #333b4e;
+  --gold-300: #f2d492;
+  --gold-400: #ecc063;
+  --gold-500: #e3a838;
+  --gold-600: #c68a20;
+  --paper-0: #ffffff;
+  --paper-50: #faf8f3;
+  --paper-100: #f3efe5;
+  --font-display: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
+  --radius-2xl: 28px;
+  --radius-pill: 999px;
+  --shadow-xs: 0 1px 2px rgba(11, 17, 32, 0.06);
+  --shadow-sm: 0 2px 6px rgba(11, 17, 32, 0.08);
+  --shadow-md: 0 8px 24px rgba(11, 17, 32, 0.10);
+  --shadow-lg: 0 18px 48px rgba(11, 17, 32, 0.14);
+  --shadow-dark: 0 20px 60px rgba(0, 0, 0, 0.38);
+  --shadow-gold: 0 10px 30px rgba(227, 168, 56, 0.24);
+  --ease-out: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --dur-fast: 130ms;
+  --dur-base: 220ms;
+  --gutter: clamp(1.25rem, 0.5rem + 3vw, 2.5rem);
+}
+
+html {
+  background: var(--color-brand-black);
 }
 
 body {
   margin: 0;
   min-width: 320px;
-  font-family: var(--font-body), system-ui, sans-serif;
+  background: var(--color-brand-black);
+  color: var(--color-brand-ink);
+  font-family: var(--font-body);
+  line-height: 1.5;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  transition: border-color var(--dur-base) var(--ease-out), background-color var(--dur-base) var(--ease-out), color var(--dur-base) var(--ease-out), box-shadow var(--dur-base) var(--ease-out), transform var(--dur-fast) var(--ease-out);
 }
 
 button,
@@ -25,21 +75,98 @@ a {
   min-height: 44px;
 }
 
+button:not(:disabled) {
+  cursor: pointer;
+}
+
+button:not(:disabled):active {
+  transform: scale(0.98);
+}
+
 :focus-visible {
-  outline: 4px solid var(--color-brand-cyan);
-  outline-offset: 3px;
+  outline: 3px solid var(--gold-500);
+  outline-offset: 2px;
+}
+
+.app-shell {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 50% -20%, rgba(36, 52, 83, 0.5), transparent 38rem),
+    var(--color-brand-black);
+  color: var(--color-brand-ink);
+}
+
+:root[data-theme='light'] .app-shell {
+  background: var(--color-brand-black);
+}
+
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(11, 17, 32, 0.88);
+  padding: 0.8rem var(--gutter);
+  backdrop-filter: blur(18px);
+}
+
+:root[data-theme='light'] .app-header {
+  border-color: var(--slate-200);
+  background: rgba(250, 248, 243, 0.9);
+}
+
+.app-header__inner {
+  display: flex;
+  max-width: 1200px;
+  margin: 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.85rem;
+}
+
+.app-main {
+  width: min(100%, 1200px);
+  margin: 0 auto;
+  padding: clamp(1.5rem, 3vw, 2.5rem) var(--gutter) clamp(3rem, 6vw, 5rem);
+}
+
+.app-main--screen {
+  width: 100%;
+  max-width: none;
+}
+
+.app-wordmark {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  color: var(--color-brand-ink);
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 2.5vw, 1.65rem);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.app-wordmark span:last-child {
+  color: var(--color-brand-red-light);
+}
+
+.app-wordmark--screen {
+  font-size: clamp(1.5rem, 3vw, 2rem);
 }
 
 .skip-link {
-  position: absolute;
+  position: fixed;
   left: 1rem;
-  top: -4rem;
-  z-index: 50;
-  border: 3px solid var(--color-brand-black);
-  background: var(--color-brand-red);
-  color: white;
+  top: -5rem;
+  z-index: 100;
+  border-radius: var(--radius-md);
+  background: var(--gold-500);
+  color: var(--navy-950);
   padding: 0.75rem 1rem;
   font-weight: 800;
+  box-shadow: var(--shadow-gold);
 }
 
 .skip-link:focus {
@@ -49,31 +176,140 @@ a {
 .nav-link {
   display: inline-flex;
   align-items: center;
-  border: 2px solid var(--color-brand-red);
-  background: var(--color-brand-surface);
-  color: var(--color-brand-ink);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-brand-paper);
   padding: 0.55rem 0.8rem;
   text-decoration: none;
 }
 
+.nav-link:hover,
+.nav-link[aria-current='page'] {
+  border-color: var(--gold-500);
+  background: rgba(227, 168, 56, 0.1);
+  color: var(--gold-400);
+}
+
+:root[data-theme='light'] .nav-link {
+  border-color: var(--slate-200);
+}
+
 .page-card {
-  border: 2px solid var(--color-brand-red);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-xl);
   background: var(--color-brand-surface);
   color: var(--color-brand-ink);
-  box-shadow: 8px 8px 0 var(--color-brand-red);
+  box-shadow: var(--shadow-dark);
+}
+
+:root[data-theme='light'] .page-card {
+  border-color: var(--slate-200);
+  box-shadow: var(--shadow-md);
 }
 
 .theme-toggle {
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid var(--color-brand-red);
-  background: var(--color-brand-surface);
-  color: var(--color-brand-ink);
-  width: 44px;
+  min-width: 4.2rem;
   height: 44px;
   min-height: 44px;
-  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--radius-md);
+  background: var(--color-brand-surface);
+  color: var(--color-brand-paper);
+  padding: 0 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+:root[data-theme='light'] .theme-toggle {
+  border-color: var(--slate-200);
+}
+
+.app-shell main :is(section, aside).border-2,
+.app-shell main .page-card {
+  border-width: 1px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-dark);
+}
+
+:root[data-theme='light'] .app-shell main :is(section, aside).border-2,
+:root[data-theme='light'] .app-shell main .page-card {
+  box-shadow: var(--shadow-md);
+}
+
+.app-shell main :is(button, input, textarea, select).border-2,
+.app-shell main :is(button, input, textarea, select).border,
+.app-shell main label.border-2,
+.app-shell main div.border-2,
+.app-shell main li.border,
+.app-shell main li.border-2 {
+  border-width: 1px;
+  border-radius: var(--radius-md);
+}
+
+.app-shell main :is(button, label).bg-brand-red,
+.app-shell main .bg-brand-red.text-white {
+  color: var(--navy-950) !important;
+}
+
+.app-shell main button.bg-brand-red:not(:disabled):hover,
+.app-shell main label.bg-brand-red:hover {
+  background: var(--gold-600);
+  box-shadow: var(--shadow-gold);
+  transform: translateY(-2px);
+}
+
+.app-shell main input,
+.app-shell main textarea,
+.app-shell main select {
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+:root[data-theme='light'] .app-shell main input,
+:root[data-theme='light'] .app-shell main textarea,
+:root[data-theme='light'] .app-shell main select {
+  border-color: var(--slate-300);
+}
+
+@media (max-width: 820px) {
+  .app-header__inner {
+    align-items: flex-start;
+  }
+
+  .app-header__inner > div {
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 640px) {
+  .app-header__inner {
+    align-items: center;
+  }
+
+  .app-header nav {
+    order: 3;
+    width: 100%;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 0.25rem;
+  }
+
+  .nav-link {
+    flex: 0 0 auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms;
+    --dur-base: 0ms;
+  }
 }
 
 /* TriviaKnight marketing surface. The brand treatment is intentionally text-only

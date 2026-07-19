@@ -1,8 +1,8 @@
-# CJSR Trivia Project Handoff
+# Trivia Knight Project Handoff
 
 ## Project
 
-This repo contains the CJSR Volunteer Appreciation Trivia live multiplayer web app. It's also being developed as a white-label template for reselling to other trivia-night customers — see "Product Direction" below. `main` is the live, working CJSR instance; a `template` branch exists with CJSR-specific files stripped, periodically synced from `main`.
+This repo contains Trivia Knight, a live multiplayer trivia product evolved from the original CJSR proof of concept. The working application now uses the Trivia Knight name and Claude Design's navy/gold/off-white product system across player, host, projector, and marketing surfaces. The legacy Firebase project is still the connected POC backend, so do not deploy or mutate its live game state without explicit approval.
 
 Stack:
 
@@ -16,8 +16,10 @@ Stack:
 Primary routes:
 
 - `/` - player join, question, reveal, and final standings flow
-- `/marketing` - local TriviaKnight marketing landing-page prototype (not deployed as of 2026-07-18; see "TriviaKnight Marketing Prototype" below)
+- `/marketing` - Trivia Knight marketing landing page
+- `/demo` - local clickable product walkthrough with shared player, host, and projector state
 - `/host` - passphrase-protected host control desk
+- `/host/brand` - passphrase-protected name, logo, and color builder with device-local draft state
 - `/host/questions` - passphrase-protected live question/answer editor, including bulk `.xlsx` import
 - `/screen` - read-only projector display
 - `/host/answer-key` - passphrase-protected printable answer key
@@ -25,9 +27,9 @@ Primary routes:
 Navigation:
 
 - The player root route is intentionally clean and has no visible nav links.
-- Host/admin nav appears only while on host routes and links to Host, Questions, Screen, and Answer key.
-- The projector route intentionally hides the global app header; `/screen` owns its own logo/title/status header to avoid duplicated branding on the display.
-- The global header row no longer force-stacks on mobile; it's a single wrapping flex row so the dark/light theme toggle sits beside the logo instead of dropping to its own row when there's no host nav to share space with.
+- Host/admin nav appears only while on host routes and links to Host, Brand setup, Questions, Screen, and Answer key.
+- The projector route intentionally hides the global app header; `/screen` owns its own text-only wordmark and connection-status header.
+- All product surfaces use text-only Trivia Knight branding until the redesigned logo is supplied. Do not restore or repurpose `src/assets/logo.png`.
 
 Default game code:
 
@@ -51,22 +53,39 @@ Important: the live Firebase Hosting site at `https://cjsr-trivia.web.app` and t
 
 This repo's git state has previously changed without an explicit `git commit`/`git push` from a session (some earlier commits with generic messages like `Fix` and `UI improvements` were made by a mechanism outside any Claude Code git command). More recent commits (the ones listed above) were made directly via normal `git commit`/`git push` in-session. Don't assume commit messages describe *why* something changed for the older, generically-named ones — check this file or the conversation history instead.
 
-## TriviaKnight Marketing Prototype
+## Trivia Knight Product Surfaces
 
-An **uncommitted, local-only** TriviaKnight marketing landing page was added on 2026-07-18. It lives at `/marketing` so the existing `/` player-join route and every live CJSR workflow remain unchanged. Nothing from this marketing work has been deployed to `https://cjsr-trivia.web.app`.
+The local application now includes the marketing page, product walkthrough, white-labelled live game surfaces, and a host-only brand builder. None of this work has been deployed to `https://cjsr-trivia.web.app`.
+
+### Current local work (not deployed)
+
+This working tree is the current Trivia Knight product direction and supersedes the old visible CJSR skin:
+
+- **Product identity:** `package.json`/`package-lock.json` use `trivia-knight`; `instance.config.json` uses the Trivia Knight title, generic join/lobby copy, `trivia-knight.*` browser-storage keys, and no territory/customer acknowledgment.
+- **Design source:** Claude Design's tracked `TriviaKnight Design System/` package is the source of truth for palette, typography, spacing, radii, elevation, motion, focus, and voice. The product uses navy `#0B1120`, gold `#E3A838`, warm paper `#FAF8F3`, Archivo, IBM Plex Sans, and IBM Plex Mono. The old red/black hard-border treatment is retired.
+- **Logo constraint:** every working surface uses a text-only “Trivia Knight” wordmark. Neither the design package's temporary knight/chess assets nor the legacy `src/assets/logo.png` are imported or bundled. Wait for the owner's redesigned logo.
+- **Shared app shell:** `src/App.tsx` and the top of `src/styles.css` apply the new sticky translucent header, responsive host nav, gold active/focus states, soft shadows, thin borders, and moderate radii to player, host, projector, question editor, and answer-key workflows. Marketing and demo retain their dedicated full-bleed layouts built from the same brand language.
+- **Product walkthrough:** `/demo` is a Firebase-free local simulation with shared player, host, and projector state. Host actions immediately change the other preview surfaces. Reset returns it to a clean lobby.
+- **Host brand builder:** `/host/brand` is linked only from the host header and uses the shared `HostGate`. It supports trivia name, PNG/JPEG/WebP logo preview (1 MB limit), three preset palettes, four custom color inputs, live player/projector previews, reset, and device-local draft saving under `trivia-knight.host-brand-draft`. It does not publish, upload to Firebase, or alter the active event.
+- **Theme control:** the old CJSR cross glyph is gone. The accessible control now uses the text labels “Light” and “Dark”; theme persistence is under `trivia-knight.theme`.
+- **Sample data:** the only CJSR-branded question, the sudden-death station-frequency question, was replaced with a generic chessboard question. The remaining Canadian-music questions are sample content, not interface branding.
+- **Validation:** `npm run build` passes (including data/config validation), `npx eslint src` passes, and `git diff --check` has no content errors. Vite's existing large-chunk warning remains non-blocking.
+- **Deployment boundary:** the Firebase project/config still points at the legacy POC infrastructure. That is deployment state, not visible branding. Do not rename, deploy, or mutate it as part of the UI rebrand without an explicit migration decision.
 
 Files added/changed for the prototype:
 
 - `src/pages/MarketingPage.tsx` — complete one-page marketing surface: announcement bar, sticky responsive navigation, hero, HTML/CSS host-desk mockup, product promise strip, capabilities, real three-screen workflow, launch-plan pricing, FAQ, final CTA, footer, route-specific document title, and social metadata.
-- `src/App.tsx` — registers `/marketing` and gives it a full-bleed layout without the CJSR global header, Firebase config warning, or normal app-width wrapper. Existing routes retain their previous layout.
-- `src/styles.css` — adds the scoped TriviaKnight marketing system and responsive styles. The live CJSR app still uses its existing red/black customer skin outside `/marketing`.
+- `src/pages/TriviaKnightDemoPage.tsx` + `.css` — Firebase-free shared-state walkthrough for player, host, and projector views.
+- `src/App.tsx` — registers the marketing, demo, and host brand-builder routes, and owns the text-only Trivia Knight product header.
+- `src/styles.css` — applies the Trivia Knight design tokens and product-surface treatment across the live app while retaining scoped marketing and demo layouts.
+- `src/pages/HostBrandPage.tsx` + `.css` — host-only local brand builder for trivia name, logo preview, color schemes, and player/projector previews.
 - `public/og.png` — generated navy/gold social-share card using the exact message “One subscription. Unlimited trivia nights.” and a text-only `TriviaKnight` treatment.
 
 Design source and brand decisions:
 
 - The supplied design package is `C:\Users\ericn\Downloads\TriviaKnight Design System.zip`. Its navy/gold/off-white palette, Archivo + IBM Plex typography, spacing, elevation, motion, voice, and verified product-workflow guidance are the working marketing source of truth.
 - **Do not use any logo in that ZIP as source material.** The owner is redesigning the TriviaKnight logo. The package's `assets/logo*.svg`, knight mark, and chess-piece treatment are temporary placeholders and must not be propagated.
-- The current prototype therefore uses a deliberately temporary **text-only** `TriviaKnight` brand treatment. `src/assets/logo.png` remains the CJSR customer logo and is also not a TriviaKnight logo.
+- The current product deliberately uses a **text-only** `Trivia Knight` brand treatment. The old CJSR logo is not imported by any application surface.
 - Brand voice: confident, clever, plain language; address the host as “you”; no invented social proof, emoji, em dashes, or hype language. Lead with “One subscription. Unlimited trivia nights.”
 - The marketing hero/mockup and How It Works copy must remain grounded in the actual application: round-based games; multiple-choice, multi-select, and free-text questions; optional image/video clues; live host controls; team lock-ins; presenter view; scoring, leaderboard, manual corrections, and sudden-death ties.
 - Pricing and plan-tier copy on this prototype is launch positioning, not evidence of implemented authentication, billing, multi-venue workspaces, analytics, or white-label account features. CTAs currently open the existing host gate or an early-access email; no signup/billing flow was invented.
@@ -174,11 +193,11 @@ Key files:
 - `src/pages/HostQuestionsPage.tsx` - live question/answer editor (text, 4 choices, correct answer per question; round/points fixed, no add/delete) plus the bulk import panel
 - `src/pages/ScreenPage.tsx` - projector display
 - `src/pages/AnswerKeyPage.tsx` - printable, host-gated answer key; reads the same live question data as everything else
-- `src/components/host/HostGate.tsx` - shared passphrase-unlock gate, used by `/host`, `/host/questions`, and `/host/answer-key`
+- `src/components/host/HostGate.tsx` - shared passphrase-unlock gate, used by `/host`, `/host/brand`, `/host/questions`, and `/host/answer-key`
 - `src/hooks/useTheme.ts` - dark/light theme state; storage key comes from `instanceBranding.themeStorageKey` (`src/config/site.ts`) so it matches `index.html`'s inline pre-paint script, which can't import TS and instead gets the same key injected directly into the HTML by the `instance-branding` Vite plugin at build/dev time. These two previously read the same env var independently; a stage-1 wizard-roadmap refactor moved the value into `instance.config.json` but initially only updated the HTML side, leaving `useTheme.ts` silently falling back to a different default key (`'trivia-theme'`) than what the pre-paint script used (`'cjsr-theme'`) — caught by live verification (the theme toggle stopped persisting to `localStorage`) before it shipped. Worth remembering if this pattern (one value consumed from two different places, one that can import TS and one that can't) comes up again.
-- `src/components/common/ThemeToggle.tsx` - header theme-toggle button (upside-down cross for dark, right-side-up cross for light)
-- `src/assets/logo.png` - the app/brand logo (renamed from `cjsr-logo.png` to a generic filename so a new customer can drop in a replacement without touching code); used in the app header and the projector top bar
-- `src/styles.css` - the `brand-*` Tailwind color tokens' actual hex values no longer live here (see `instance.config.json`/`vite.config.ts` above) — this file now only has the shared, non-branded CSS (`.page-card`, `.nav-link`, focus rings, etc.) plus the `--font-display`/`--font-body` custom properties, which are still hardcoded (not yet part of `instance.config.json` — fonts were judged out of scope for the wizard-roadmap stage-1 pass, add them later if a customer needs custom fonts)
+- `src/components/common/ThemeToggle.tsx` - accessible text-labelled Light/Dark theme control
+- `src/assets/logo.png` - retained only as an unused legacy file; no application surface imports or bundles it
+- `src/styles.css` - shared Trivia Knight product tokens and shell styling plus the scoped marketing system; instance color values still enter through `instance.config.json`/`vite.config.ts`
 - `tailwind.config.js` - maps the `brand-*` Tailwind color classes to the CSS custom properties above
 - `scripts/simulateFullGame.mjs` - deterministic full-game stress simulation
 - `scripts/validateQuestions.mjs` - validates `questions.json`, `teamNames.json`, and `teamNamesOverflow.json` (including cross-file duplicate name checks)
@@ -273,7 +292,7 @@ Answer key:
 
 Projector screen:
 
-- Does not render the global app shell header, so the projector view only shows one logo/title.
+- Does not render the global app shell header, so the projector view only shows its own text-only Trivia Knight wordmark and status row.
 - Lobby joined-team count and team list; lobby headline sourced from `src/config/site.ts`
 - Live question text, **the four multiple-choice options**, point value, timer, and lock count (the options were missing from the live-question screen for a while — projector only showed text/timer while phones showed the choices; fixed)
 - Reveal answer, correct-team count, and leaderboard
@@ -289,13 +308,12 @@ Leaderboard:
 
 Branding & theming:
 
-- All `cjsr-*` Tailwind color tokens renamed to `brand-*` (`tailwind.config.js`, `src/styles.css`, and every component using `text-brand-*`/`bg-brand-*`/`border-brand-*`) — a new customer only ever edits hex values in `styles.css`, never component code, to rebrand.
-- Brand accent is `--color-brand-red` (`#6F0B00` in this deployment, CJSR's actual brand red), used for backgrounds, borders, and buttons in both themes.
-- A separate `--color-brand-red-light` token exists for text/labels on dark surfaces, since the dark brand red doesn't have enough contrast to use as text on a dark background (`#FF3B30` in dark mode, `#8a0f00` in light mode).
+- Legacy Tailwind class names remain `brand-red`/`brand-red-light` for compatibility, but they now map to Trivia Knight gold (`#E3A838`/`#ECC063` dark; `#C68A20`/`#9C6A17` light). Do not interpret the token names as a request to restore red.
+- Product foundations are deep navy, warm gold, and off-white. Gold is an accent, not a full-page background; dark and light surfaces use thin borders, moderate radii, and soft elevation from the Claude Design system.
 - `--color-brand-correct` token for "this is the correct answer" UI (reveal screens, host status text) — Tailwind's default `green-300` was previously hardcoded there and was nearly invisible (~1.4:1 contrast) against the light theme's white cards.
-- `--color-brand-ink` token replaces hardcoded `text-white`/`border-white` utility classes so text/borders flip correctly between themes. Do not reintroduce literal `text-white`/`border-white` in new code — use `text-brand-ink`/`border-brand-ink` instead, **except** on anything sitting on a `bg-brand-red` background, which should stay literal `text-white` since that background never changes between themes (this exact mismatch caused a real black-text-on-dark-red bug twice in one session — see Known Follow-Ups).
-- Logo (background removed) added to the app header (`src/App.tsx`) and the projector top bar (`src/pages/ScreenPage.tsx`); asset lives at `src/assets/logo.png`.
-- Dark/light theme toggle in the header on `/`, `/host*`, and `/screen` (the projector screen has its own copy in `ScreenShell` since it doesn't share the global header, so the host can dial the projector brightness to the venue rather than being stuck on one theme). Defaults to dark, persists to `localStorage` (key from `VITE_THEME_STORAGE_KEY`) shared across routes, applied before first paint via an inline script in `index.html` to avoid a flash of the wrong theme. Icon is an upside-down cross for dark mode, right-side-up for light mode (CJSR branding request, not a bug — a new customer may want a different icon).
+- `--color-brand-ink`/`--color-brand-paper` continue to provide theme-aware foreground contrast. Controls with a gold background use navy foreground text.
+- App and projector headers use a live-text Trivia Knight wordmark. The redesigned logo remains intentionally pending.
+- Dark/light mode is available on `/`, `/host*`, and `/screen`, defaults to dark, persists under the configured `trivia-knight.theme` key, and is applied before first paint. The control reads “Light” or “Dark.”
 - Faint `/30`-opacity dividers (leaderboard rows, list separators) were bumped to `/50` opacity — the original value was under the WCAG 3:1 non-text contrast guideline in both themes.
 
 Stress simulation:
@@ -399,7 +417,7 @@ A separate, later roadmap (external plan, reviewed and refined in-session — no
 
 - Stage 0: stable baseline (`template` merged forward, caught up to `main`).
 - ✅ **Stage 1 done**: machine-editable instance configuration. New `src/config/instance.config.json` consolidates what used to be spread across `src/config/site.ts` (hardcoded literals), `src/styles.css` (hardcoded `:root`/`:root[data-theme='light']` hex values), and three env vars (`VITE_SITE_TITLE`, `VITE_THEME_COLOR`, `VITE_THEME_STORAGE_KEY`) into one validated JSON file: copy, storage keys, `maxPlayersPerTeam`, and the full 9-token light/dark color palette. `site.ts` is now a thin typed/validated loader over it (throws a clear error at import time on malformed config, same philosophy as `triviaData.ts`'s `parseQuestion`) — critically, `siteConfig`'s public shape and import path are unchanged, so every existing consumer needed zero edits. A new `instance-branding` Vite plugin (`vite.config.ts`) injects the page `<title>`, `<meta name="theme-color">`, and a generated CSS-variable `<style>` block into `index.html`'s `<head>` at build/dev time, sourced from the same JSON — this replaces Vite's old built-in `%VITE_VAR%` HTML interpolation for those 3 values, so they're retired from `.env.local` entirely (`.env.local` now holds only genuinely deployment-specific/secret values: Firebase config + the host passphrase). The plugin's `transformIndexHtml` hook **must** use `order: 'pre'` — without it, Vite's built-in HTML plugin extracts `<style>` tag content into the CSS pipeline and tries to parse the literal `__BRAND_COLORS__` placeholder text as CSS before this plugin ever runs, a real build failure hit and fixed during implementation. `scripts/validateQuestions.mjs` (still that filename despite validating more than questions — not renamed, not worth the extra diff) gained shape validation for `instance.config.json` (required strings, `territoryText` string-or-null, positive `maxPlayersPerTeam`, all 9 color tokens present as `{dark, light}` hex pairs), and `npm run build` now runs it automatically via a new `prebuild` script, so a malformed config can't silently reach a shipped build. `schedule.json`/`questions.json`/`teamNames*.json` and the logo (`src/assets/logo.png`) were deliberately **not** relocated into new `data/`/`branding/` folders like the original plan's file-tree diagram suggested — they already satisfied "wizard edits data, not code" (JSON files, or a file the wizard just overwrites at a fixed path with zero code changes), so moving them would only have added diff and import-path churn for no benefit. Fonts (`--font-display`/`--font-body`) are still hardcoded in `styles.css`, out of scope for this stage. Verified: `validate:data`/`lint`/`build` all pass (including a deliberate malformed-config test that confirmed the validator's error messages, then reverted); live-checked against real production `/screen` and `/`, `/host`, `/host/questions`, `/host/answer-key` — title, `theme-color` meta, both themes' colors, and dark/light toggle all pixel/value-matched the pre-refactor site with zero console errors. That live check caught a real bug before it shipped: `src/hooks/useTheme.ts` independently read `VITE_THEME_STORAGE_KEY` for its own `localStorage` persistence (separate from `index.html`'s inline pre-paint script, which can't import TS) — after retiring that env var, `useTheme.ts` silently fell back to a different default key (`'trivia-theme'`) than the pre-paint script now used (`'cjsr-theme'` via the plugin), so the theme toggle stopped persisting. Fixed by pointing `useTheme.ts` at `instanceBranding.themeStorageKey` from the new loader instead. README's "Setting up for a new customer" checklist updated to match (one JSON file instead of 3 source files + 3 env vars).
-- Stage 2: local browser setup wizard (`npm run setup`, local-only, writes `instance.config.json`/data files/logo; no `/setup` route ships in production builds). Not started. Its "Questions" step will need a type picker (multiple-choice/multi-select/free-text) that doesn't exist in any current UI — the live question editor deliberately treats a question's `type` as fixed-at-authoring (see E2a above), so the wizard is the intended place for that to finally live.
+- Stage 2: a filesystem-writing setup wizard (`npm run setup`) is still not started. The new `/host/brand` page is deliberately different: it is an in-app, passphrase-gated visual prototype that saves only a device-local draft and does not write `instance.config.json`, upload a production logo, provision Firebase, or publish. A future setup wizard still needs a question-type picker because the live editor treats type as fixed at authoring.
 - Stage 3: guided Firebase provisioning/deployment (`npm run launch`). Not started.
 - Stage 4: real authentication (Firebase Auth replacing `HostGate`, privileged mutations behind a trusted server boundary, anonymous player identities + ownership-based rules instead of shape-only validation). Not started — this is where the security gap already documented under "Known Follow-Ups > Security/architecture" actually gets fixed. Explicitly flagged as needing a deliberate decision, not a default: Stages 2-3 make it easy to spin up more customer deployments that still ship with today's passphrase-only/shape-only-rules posture, so whether that's acceptable before Stage 4 lands is a call for whoever's selling deployments, not something to assume either way.
 - Stage 5: multi-event-per-customer (`events/{eventCode}/{config,questions,runtime}` replacing the current single `games/{gameCode}`, an authenticated `/host/events` dashboard). Not started.

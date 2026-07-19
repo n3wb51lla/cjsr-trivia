@@ -12,7 +12,7 @@ export function ThemeToggle() {
       aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
       title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
     >
-      <span aria-hidden="true" className={`inline-block text-xl ${isDark ? 'rotate-180' : ''}`}>&#x271d;</span>
+      <span aria-hidden="true">{isDark ? 'Light' : 'Dark'}</span>
     </button>
   );
 }

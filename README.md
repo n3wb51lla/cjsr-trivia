@@ -1,8 +1,8 @@
-# CJSR Volunteer Appreciation Trivia
+# Trivia Knight
 
-Mobile-first multiplayer trivia app, currently configured for a CJSR volunteer appreciation event. The codebase is built as a reusable template — see "Setting up for a new customer" below for how to reconfigure it for a different event/brand.
+Trivia night software for building questions, running a live host desk, collecting team answers, presenting the room display, and tracking scores in real time.
 
-Branding, copy, colors, and content all live in a small number of well-known places (`src/config/instance.config.json`, `.env.local`, `src/assets/logo.png`, `src/data/*.json`) rather than scattered through component code. `src/config/site.ts` is a typed loader over `instance.config.json`, not something you edit directly.
+The product interface follows the Trivia Knight design system: deep navy, warm gold, off-white content surfaces, Archivo display type, IBM Plex Sans body type, moderate radii, and soft elevation. Branding is text-only until the redesigned logo is supplied.
 
 ## Setup
 
@@ -114,24 +114,24 @@ npm run lint
 ## Routes
 
 - `/` — player join, question, reveal, and final standings flow
+- `/marketing` — public Trivia Knight marketing page
+- `/demo` — local, clickable player/host/projector product walkthrough
 - `/host` — passphrase-protected host control desk
+- `/host/brand` — passphrase-protected name, logo, and color builder with local draft preview
 - `/host/questions` — passphrase-protected live question/answer editor
 - `/screen` — read-only projector display
 - `/host/answer-key` — passphrase-protected printable answer key
 
-## Setting up for a new customer
+## Customizing an event
 
-This repo is meant to be cloned per customer/event rather than run as shared multi-tenant infrastructure. There's a `template` branch with the CJSR-specific assets and internal project docs already stripped out — start there instead of `main` if you're setting up a new event.
+Trivia Knight currently supports one configured event per deployment. Use the host brand builder for a safe local preview, then update the instance files before deployment.
 
-1. Edit `src/config/instance.config.json` — site title, header text, headlines, join-screen description, land acknowledgment (set `territoryText: null` to omit it entirely), storage keys, max players per team, and the full light/dark color palette (`colors.<token>.dark` / `.light`, each a `#rrggbb` hex string). This one file replaces what used to be spread across `site.ts`, `styles.css`, and three env vars. `npm run validate:data` checks its shape.
-2. Replace `src/assets/logo.png` with the new logo, keeping the same filename so no code changes are needed.
-3. Edit `src/data/schedule.json`'s `rounds` array to match the event's round structure — any number of rounds, each with its own `questionCount`, `points`, and `breakAfter`. Set `suddenDeath.enabled` to `false` if the event doesn't want a tiebreaker question.
-4. Replace `src/data/questions.json` with the new event's question bank, matching the round structure from step 3 (or leave the default and use `/host/questions` to edit live, including bulk `.xlsx` import/export). Run `npm run validate:data` after editing.
-5. Optionally replace `src/data/teamNames.json` / `teamNamesOverflow.json` with new pun/team names, or leave them empty to have players type their own team name.
-6. Set `.env.local` — Firebase config for the new project and a new `VITE_HOST_PASSPHRASE`.
-7. Update `package.json`'s `name` and `.firebaserc`'s project id to match the new customer's own Firebase project (create that project first, per "Firebase Setup" above).
-8. `npm run validate:data && npm run lint && npm run build`.
-9. `npx firebase-tools deploy --only database` then `npx firebase-tools deploy --only hosting`.
+1. Edit `src/config/instance.config.json` for product copy, storage keys, team size, and the deployment color mapping.
+2. Edit `src/data/schedule.json` to set the round structure and scoring.
+3. Edit or bulk-import `src/data/questions.json` through `/host/questions`.
+4. Optionally replace the sample team-name lists in `src/data/teamNames.json` and `teamNamesOverflow.json`.
+5. Set the Firebase connection and host passphrase in `.env.local`.
+6. Run the data validation and production build before deploying.
 
 ## QR Code Guidance
 
