@@ -1,0 +1,10 @@
+/* TriviaKnight webfonts.
+ * Served from Google Fonts. No brand-specific font files were provided in the
+ * source codebase (CJSR Trivia used Archivo Black + Inter, both Google Fonts),
+ * so TriviaKnight standardizes on a refined, confident marketing pairing:
+ *   - Archivo        display / headings (ties to the app's Archivo Black roots)
+ *   - IBM Plex Sans  body / UI text (clean, professional, high legibility)
+ *   - IBM Plex Mono  eyebrows, labels, code, small technical accents
+ * If self-hosting is required later, drop the .woff2 files into assets/fonts/
+ * and replace this @import with @font-face rules pointing at them. */
+@import url("https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap");

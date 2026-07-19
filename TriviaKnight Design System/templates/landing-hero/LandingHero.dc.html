@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Landing hero" description="TriviaKnight marketing hero with announcement bar, nav, headline, and CTAs" -->
+<helmet>
+<script src="./ds-base.js"></script>
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800;900&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap");
+body{margin:0}
+</style>
+</helmet>
+<div style="font-family:var(--font-body);background:var(--surface-canvas);color:var(--text-on-dark);min-height:100vh">
+  <x-import component-from-global-scope="TriviaKnightDesignSystem_88085a.AnnouncementBar" hint-size="100%,44px">Built for hosts who believe a subscription should include <b>unlimited trivia nights</b>.</x-import>
+  <header style="max-width:1200px;margin:0 auto;padding:16px 32px;display:flex;align-items:center;gap:16px">
+    <x-import component-from-global-scope="TriviaKnightDesignSystem_88085a.Logo" size="sm" on-dark="true" hint-size="180px,34px"></x-import>
+    <span style="flex:1"></span>
+    <x-import component-from-global-scope="TriviaKnightDesignSystem_88085a.Button" variant="ghost" size="sm" on-dark="true" href="/login" hint-size="80px,40px">Log In</x-import>
+    <x-import component-from-global-scope="TriviaKnightDesignSystem_88085a.Button" variant="primary" size="sm" href="/signup" hint-size="130px,40px">Start Hosting</x-import>
+  </header>
+  <section style="max-width:1200px;margin:0 auto;padding:80px 32px;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center">
+    <div>
+      <x-import component-from-global-scope="TriviaKnightDesignSystem_88085a.Eyebrow" on-dark="true" hint-size="320px,20px">Trivia night software built for hosts</x-import>
+      <h1 style="font-family:var(--font-display);font-weight:900;font-size:clamp(2.75rem,1.6rem+5vw,4.25rem);line-height:1.05;letter-spacing:-.03em;margin:16px 0 0">Build and host unlimited trivia nights.</h1>
+      <p style="font-size:1.25rem;line-height:1.5;color:var(--text-on-dark-muted);max-width:48ch;margin:20px 0 0">Create polished quiz nights, organize every round, and run the live show from one place. Your subscription includes unlimited games.</p>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:28px">
+        <x-import component-from-global-scope="TriviaKnightDesignSystem_88085a.Button" variant="primary" size="lg" href="/signup" hint-size="150px,52px">Start Hosting</x-import>
+        <x-import component-from-global-scope="TriviaKnightDesignSystem_88085a.Button" variant="ghost" size="lg" on-dark="true" href="/how-it-works" hint-size="180px,52px">See How It Works</x-import>
+      </div>
+      <p style="margin-top:24px;font-size:.9rem;color:var(--text-on-dark-faint)"><b style="color:var(--gold-300)">No event credits. No per-game fees.</b> No limit on how often you host.</p>
+    </div>
+    <div style="background:var(--navy-800);border:1px solid var(--surface-line-dark);border-radius:22px;box-shadow:var(--shadow-xl);min-height:340px;display:flex;align-items:center;justify-content:center;color:var(--text-on-dark-faint);font-family:var(--font-mono);font-size:.85rem">Product mockup slot</div>
+  </section>
+</div>
+</x-dc>
+</body>
+</html>

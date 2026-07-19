@@ -1,0 +1,14 @@
+<!-- @dsCard group="Brand" viewport="700x260" name="Logo" subtitle="Knight-piece mark + wordmark (temporary placeholder)" -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../styles.css"><style>
+body{margin:0;font-family:var(--font-body)}
+.grid{display:grid;grid-template-columns:1fr 1fr}
+.p{padding:28px;display:flex;flex-direction:column;gap:20px;align-items:flex-start}
+.light{background:var(--paper-50)}.dark{background:var(--navy-900)}
+.mark{width:56px;height:56px}.lock{height:44px}
+.cap{font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase}
+.light .cap{color:var(--text-muted)}.dark .cap{color:var(--text-on-dark-muted)}
+</style></head><body>
+<div class="grid">
+<div class="p light"><img class="mark" src="../assets/logo-mark.svg" alt="TriviaKnight mark"><img class="lock" src="../assets/logo.svg" alt="TriviaKnight"><span class="cap">On light</span></div>
+<div class="p dark"><img class="mark" src="../assets/logo-mark.svg" alt="TriviaKnight mark"><img class="lock" src="../assets/logo-lockup-dark.svg" alt="TriviaKnight"><span class="cap">On dark</span></div>
+</div></body></html>

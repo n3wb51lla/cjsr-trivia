@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 64" width="300" height="64" role="img" aria-label="TriviaKnight logo">
+  <rect x="2" y="2" width="60" height="60" rx="15" fill="#e3a838"></rect>
+  <rect x="2" y="2" width="60" height="60" rx="15" fill="none" stroke="#c68a20" stroke-width="1.5"></rect>
+  <path d="M14 32 C16 24 20 18 27 14 L31 7 L36 15 C41 17 45 22 44 27 L40 29 L45 33 L41 36 L45 40 C46 44 45 47 45 50 L23 50 C21 44 21 38 24 33 L17 33 L14 36 Z" fill="#0b1120"></path>
+  <circle cx="34" cy="24" r="1.6" fill="#e3a838"></circle>
+  <text x="78" y="42" font-family="Archivo, system-ui, sans-serif" font-size="30" font-weight="800" letter-spacing="-0.5" fill="#0b1120">Trivia<tspan fill="#c68a20">Knight</tspan></text>
+</svg>

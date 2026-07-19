@@ -1,0 +1,115 @@
+<!-- @dsCard group="Marketing site" viewport="1280x860" name="Landing page" subtitle="Full TriviaKnight marketing site — nav, hero, pricing, FAQ, contact" -->
+<!-- @startingPoint section="Marketing" subtitle="Complete TriviaKnight marketing landing page" viewport="1280x860" -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Primary SEO -->
+  <title>TriviaKnight | Unlimited Trivia Night Software for Hosts</title>
+  <meta name="description" content="Build, organize, and host unlimited trivia nights with TriviaKnight. Create custom quiz rounds, run live games, manage scoring, and engage your crowd." />
+  <link rel="canonical" href="https://triviaknight.app/" />
+  <meta name="robots" content="index, follow" />
+  <meta name="theme-color" content="#0b1120" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="TriviaKnight" />
+  <meta property="og:title" content="TriviaKnight | Unlimited Trivia Night Software for Hosts" />
+  <meta property="og:description" content="Build, organize, and host unlimited trivia nights. Create custom quiz rounds, run live games, and manage scoring from one place." />
+  <meta property="og:url" content="https://triviaknight.app/" />
+  <!-- TODO(assets): replace with a real 1200x630 social share image -->
+  <meta property="og:image" content="https://triviaknight.app/og-image.png" />
+  <meta property="og:image:alt" content="TriviaKnight trivia night software host interface" />
+
+  <!-- Twitter / X card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="TriviaKnight | Unlimited Trivia Night Software for Hosts" />
+  <meta name="twitter:description" content="Build, organize, and host unlimited trivia nights. One subscription. Unlimited trivia nights." />
+  <meta name="twitter:image" content="https://triviaknight.app/og-image.png" />
+
+  <!-- Favicons (placeholders — swap for real exports) -->
+  <link rel="icon" href="../../assets/logo-mark.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="../../assets/logo-mark.svg" />
+
+  <link rel="stylesheet" href="../../styles.css" />
+  <style>
+    html { scroll-behavior: smooth; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    body { margin: 0; }
+    .tk-skip { position: absolute; left: 1rem; top: -4rem; z-index: 60; background: var(--gold-500); color: var(--navy-950); padding: .7rem 1rem; border-radius: var(--radius-sm); font-weight: 700; text-decoration: none; transition: top var(--dur-base) var(--ease-out); }
+    .tk-skip:focus { top: 1rem; }
+    #root a:not([class]) { color: var(--link); }
+    #root a:not([class]):hover { color: var(--link-hover); }
+  </style>
+
+  <!-- Structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://triviaknight.app/#org",
+        "name": "TriviaKnight",
+        "url": "https://triviaknight.app/",
+        "email": "hello@triviaknight.app",
+        "logo": "https://triviaknight.app/assets/logo.svg",
+        "description": "Trivia night software for hosts, venues, and event teams."
+      },
+      {
+        "@type": "SoftwareApplication",
+        "name": "TriviaKnight",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "Web",
+        "url": "https://triviaknight.app/",
+        "description": "Build, organize, and host unlimited trivia nights. Create custom quiz rounds, run live games, manage scoring, and engage your crowd.",
+        "offers": [
+          { "@type": "Offer", "name": "Host", "price": "19", "priceCurrency": "USD", "url": "https://triviaknight.app/signup?plan=host" },
+          { "@type": "Offer", "name": "Pro Host", "price": "39", "priceCurrency": "USD", "url": "https://triviaknight.app/signup?plan=pro" },
+          { "@type": "Offer", "name": "Venue & Teams", "price": "79", "priceCurrency": "USD", "url": "https://triviaknight.app/signup?plan=venue" }
+        ]
+      },
+      {
+        "@type": "Product",
+        "name": "TriviaKnight",
+        "description": "Trivia night software with a round-based game builder, live host controls, presenter view, and scoring. Every paid plan includes unlimited trivia nights.",
+        "brand": { "@id": "https://triviaknight.app/#org" }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          { "@type": "Question", "name": "What is trivia night software?", "acceptedAnswer": { "@type": "Answer", "text": "Trivia night software helps hosts build quiz rounds, present questions to a room, manage the flow of the game, track scoring, and display standings during live events." } },
+          { "@type": "Question", "name": "Can I host unlimited trivia nights?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Every paid TriviaKnight plan includes unlimited hosted trivia nights, unlimited saved games, and unlimited custom questions." } },
+          { "@type": "Question", "name": "Does TriviaKnight charge per game?", "acceptedAnswer": { "@type": "Answer", "text": "No. Paid plans are subscriptions. There are no game credits and no per-event charges." } },
+          { "@type": "Question", "name": "Can I create my own trivia questions?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Hosts write their own custom questions and organize them into reusable games and rounds." } },
+          { "@type": "Question", "name": "Can I reuse questions and rounds?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Saved questions, rounds, and games can be reused and adapted for future events." } },
+          { "@type": "Question", "name": "Is TriviaKnight suitable for bars and restaurants?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. It is designed for recurring live trivia at bars, pubs, breweries, restaurants, and other venues." } },
+          { "@type": "Question", "name": "Can TriviaKnight be used for corporate events and fundraisers?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The game builder and live hosting tools support corporate gatherings, private events, fundraisers, and community quiz nights." } },
+          { "@type": "Question", "name": "Do I need technical experience?", "acceptedAnswer": { "@type": "Answer", "text": "No. TriviaKnight is designed for hosts who want to concentrate on the room rather than the software." } },
+          { "@type": "Question", "name": "Can multiple people manage trivia games?", "acceptedAnswer": { "@type": "Answer", "text": "The Pro Host and Venue & Teams plans include additional host or administrator accounts." } },
+          { "@type": "Question", "name": "Can I cancel my subscription?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Subscriptions can be cancelled and remain active until the end of the current billing period." } }
+        ]
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script src="../../_ds_bundle.js"></script>
+  <script src="./config.js"></script>
+  <script type="text/babel" src="./ProductMockup.jsx"></script>
+  <script type="text/babel" src="./MarketingSite.jsx"></script>
+  <script type="text/babel">
+    const App = window.MarketingSite;
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>

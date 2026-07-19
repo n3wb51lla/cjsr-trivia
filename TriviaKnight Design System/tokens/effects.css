@@ -1,0 +1,48 @@
+/* TriviaKnight effects — radii, borders, shadows, motion.
+ * Modern SaaS: soft layered elevation, moderate rounding. Gold focus rings.
+ * No brutalist hard offset shadows. */
+:root {
+  /* Radii */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
+  --radius-2xl: 28px;
+  --radius-pill: 999px;
+
+  /* Borders */
+  --border-hairline: 1px;
+  --border-thin: 1.5px;
+  --border-thick: 2px;
+
+  /* Shadows — soft, cool-tinted for light surfaces */
+  --shadow-xs: 0 1px 2px rgba(11, 17, 32, 0.06);
+  --shadow-sm: 0 2px 6px rgba(11, 17, 32, 0.08);
+  --shadow-md: 0 8px 24px rgba(11, 17, 32, 0.10);
+  --shadow-lg: 0 18px 48px rgba(11, 17, 32, 0.14);
+  --shadow-xl: 0 30px 80px rgba(11, 17, 32, 0.20);
+  /* Gold glow for emphasis (hero CTA hover, featured plan) */
+  --shadow-gold: 0 10px 30px rgba(227, 168, 56, 0.28);
+  /* Elevation on dark surfaces */
+  --shadow-dark: 0 20px 60px rgba(0, 0, 0, 0.45);
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.22, 0.61, 0.36, 1); /* @kind other */
+  --ease-in-out: cubic-bezier(0.65, 0.05, 0.36, 1); /* @kind other */
+  --dur-fast: 130ms; /* @kind other */
+  --dur-base: 220ms; /* @kind other */
+  --dur-slow: 400ms; /* @kind other */
+
+  /* Focus */
+  --focus-width: 3px;
+  --focus-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms; /* @kind other */
+    --dur-base: 0ms; /* @kind other */
+    --dur-slow: 0ms; /* @kind other */
+  }
+}
