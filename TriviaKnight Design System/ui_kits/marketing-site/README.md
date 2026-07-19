@@ -31,7 +31,7 @@ TriviaKnight brand and composed from the design-system components
 ## Grounding (what is real vs. marketing positioning)
 
 The How It Works page and the hero mockup only depict capabilities confirmed in the
-source app (`CJSR Trivia/CLAUDE.md`): round-based game building; multiple-choice,
+source app (`Trivia Knight/CLAUDE.md`): round-based game building; multiple-choice,
 multi-select, and written-answer questions with optional image/video clues; a live
 host desk (lobby → question → reveal → break → final, timers, lock-in counts, force
 reveal, sudden-death tie-break, manual score corrections); players joining on their

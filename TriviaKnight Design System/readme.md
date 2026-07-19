@@ -13,32 +13,22 @@ product surfaces.
 
 ## Sources
 
-- **Codebase:** `CJSR Trivia/` — a Vite + React 18 + TypeScript + Tailwind + Firebase
-  Realtime Database app, mounted read-only via the File System Access API. This is the
-  live multiplayer trivia app (originally "CJSR Volunteer Appreciation Trivia") being
-  white-labeled into the resellable TriviaKnight product. Its `CLAUDE.md` is the
+- **Codebase:** `Trivia Knight/` — a Vite + React 18 + TypeScript + Tailwind + Firebase
+  Realtime Database app. This is the live multiplayer Trivia Knight product. Its `CLAUDE.md` is the
   authoritative record of the real product workflow and capabilities.
-- **Logo:** the source repo ships only `src/assets/logo.png` (the CJSR customer logo),
-  which is **not** a TriviaKnight mark. No TriviaKnight logo was provided, so this system
-  includes a **temporary placeholder wordmark + knight-chess-piece mark** (see Assets),
-  explicitly meant to be swapped for a real SVG later.
+- **Logo:** no approved production logo has been provided. Product surfaces use live text.
+  The assets in this package are temporary exploration only and must not be treated as source material.
 
-### Important: two visual languages
+### Product visual language
 
-The **CJSR app** (the source code) uses a deliberately loud red/black neo-brutalist
-style — brand red `#6F0B00`, Archivo Black, thick 2px borders, hard `8px 8px 0` offset
-shadows, cyan focus rings, dark/light theme. That is the *app's* customer skin, not the
-TriviaKnight brand.
-
-This design system defines the **new TriviaKnight marketing brand** (navy + gold +
-off-white, soft elevation) per the brand brief. When building marketing artifacts, use
-this system. When recreating the *product UI* (e.g. app mockups on the marketing site),
-follow the real information architecture from the codebase but render it in the
-TriviaKnight brand, not CJSR red.
+This design system defines the Trivia Knight brand across both marketing and product
+surfaces: navy, gold, off-white, soft elevation, moderate radii, and visible gold focus
+states. Product UI should follow the real information architecture while remaining
+faster, denser, and more room-readable than the marketing site.
 
 ## Real product capabilities (source of truth for "How It Works")
 
-Confirmed from `CJSR Trivia/CLAUDE.md` and the app code. Do **not** invent beyond these:
+Confirmed from `Trivia Knight/CLAUDE.md` and the app code. Do **not** invent beyond these:
 
 - **Build & organize:** questions organized into **rounds** (round count, per-round
   question count, per-round points are all data-driven). Question types: **multiple
@@ -161,7 +151,7 @@ restrained, never illustrative or fantasy.
 
 ## ICONOGRAPHY
 
-The **CJSR source app uses no icon library** — it relies on text labels and a couple of
+The **original source app uses no icon library** — it relies on text labels and a couple of
 Unicode glyphs (the theme toggle is a "cross" character). For the TriviaKnight marketing
 brand, the brand brief specifies **Lucide** icons.
 

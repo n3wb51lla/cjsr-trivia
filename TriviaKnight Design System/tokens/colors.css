@@ -1,7 +1,7 @@
 /* TriviaKnight color system.
  * Direction: deep navy / charcoal foundations, warm gold accents, warm
- * off-white content areas. Confident, clever, reliable. Not the CJSR app's
- * red brutalist palette — this is the marketing brand.
+ * off-white content areas. Confident, clever, reliable. This is the shared
+ * product and marketing palette.
  *
  * Base ramps are raw values; semantic aliases below map intent to base. Prefer
  * the semantic aliases (--surface-*, --text-*, --accent-*) in components. */

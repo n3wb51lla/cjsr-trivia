@@ -1056,7 +1056,7 @@ Object.assign(__ds_scope, { Textarea });
 // ui_kits/marketing-site/HowItWorks.jsx
 try { (() => {
 /* Dedicated /how-it-works page. Content grounded strictly in the confirmed
- * TriviaKnight (CJSR Trivia) workflow from CLAUDE.md. No invented capabilities:
+ * TriviaKnight (Trivia Knight) workflow from CLAUDE.md. No invented capabilities:
  * no QR joining, AI, analytics dashboards, white-label, or multi-venue claims. */
 (function () {
   const NS = window.TriviaKnightDesignSystem_88085a;

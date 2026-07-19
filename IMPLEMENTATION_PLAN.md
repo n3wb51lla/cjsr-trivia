@@ -1,4 +1,4 @@
-# CJSR Trivia Implementation Plan
+# Trivia Knight Trivia Implementation Plan
 
 ## Build Approach
 
@@ -87,7 +87,7 @@ Phase 0 implements:
 - React Router routes for `/`, `/host`, `/screen`, and `/host/answer-key`.
 - Tailwind configuration.
 - Firebase client creation with readable environment warnings.
-- Global CJSR theme variables.
+- Global Trivia Knight theme variables.
 - Global error boundary.
 - Placeholder pages only.
 - Lint and production build scripts.

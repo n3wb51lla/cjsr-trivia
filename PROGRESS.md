@@ -1,4 +1,4 @@
-# CJSR Trivia Progress
+# Trivia Knight Trivia Progress
 
 ## Phase Checklist
 
@@ -26,7 +26,7 @@ Implemented:
 - Vite React TypeScript foundation.
 - React Router routes for `/`, `/host`, `/screen`, and `/host/answer-key`.
 - Player root has no visible nav; host/admin nav appears from host routes.
-- Tailwind and CJSR theme variables.
+- Tailwind and Trivia Knight theme variables.
 - Firebase browser client configuration with readable missing-env warning.
 - Global error boundary.
 - Placeholder pages for player, host, projector, and answer key.
@@ -229,5 +229,5 @@ Verification:
 
 ## Notes
 
-- Existing files `build_question_bank.py` and `CJSR_Volunteer_Appreciation_Trivia_Question_Bank.docx` predate the app scaffold and are left untouched.
+- Obsolete single-event question-bank generator and document artifacts were removed during the Trivia Knight cleanup.
 - Firebase Admin credentials must never be exposed through `VITE_` variables.
